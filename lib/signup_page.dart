@@ -18,7 +18,6 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
@@ -26,8 +25,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
   Future<void> createUserWithEmailAndPassword() async {
     try {
-      final userCredential = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
             email: emailController.text.trim(),
             password: passwordController.text.trim(),
           );
