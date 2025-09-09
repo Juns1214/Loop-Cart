@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "334458899561",
+    "project_id": "loopcart-61151",
+    "storage_bucket": "loopcart-61151.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:334458899561:android:ccc3ed12895d90d6ec66f8",
+        "android_client_info": {
+          "package_name": "com.example.flutter_application_1"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgErR6FYv5AHFgLsCOpzKuigAdxdf5VgI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
