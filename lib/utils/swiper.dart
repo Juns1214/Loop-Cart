@@ -27,7 +27,7 @@ class _SwiperState extends State<Swiper> {
     super.initState();
     _pageController = PageController(initialPage: 0);
 
-    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
       if (!mounted) return;
 
       _currentIndex = (_currentIndex + 1) % widget.pages.length;
