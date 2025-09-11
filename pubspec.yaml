@@ -86,6 +86,9 @@ flutter:
     - family: Roboto
       fonts:
         - asset: assets/fonts/Roboto-Thin.ttf
+    - family: Manrope
+      fonts:
+        - asset: assets/fonts/Manrope-SemiBold.ttf
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
   #
