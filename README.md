@@ -1,6 +1,6 @@
 # flutter_application_1
 
-A new Flutter project.
+So far I've just done the UI layout but haven't done the onClick function yet
 
 ## Getting Started
 
