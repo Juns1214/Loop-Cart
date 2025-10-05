@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_application_1/utils/firebase_options.dart';
-import 'package:flutter_application_1/pages/signup_page.dart';
-import 'package:flutter_application_1/pages/login_page.dart';
+import 'package:flutter_application_1/pages/auth/signup_page.dart';
+import 'package:flutter_application_1/pages/auth/login_page.dart';
 
 
 
