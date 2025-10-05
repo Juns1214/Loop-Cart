@@ -68,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           children: [
             SizedBox(height: 10),
-            Image.asset('assets/images/LogoIcon.png', height: 300, width: 300, fit: BoxFit.contain),
+            Image.asset('assets/images/LogoIcon.png', height: 250, width: 250, fit: BoxFit.contain),
             SizedBox(height: 20),
 
             Text(
@@ -191,7 +191,7 @@ class _LoginPageState extends State<LoginPage> {
                         "Other sign in options",
                         style: TextStyle(
                           fontFamily: 'Manrope',
-                          fontSize: 15,
+                          fontSize: 17,
                           color: Colors.black87,
                         ),
                       ),
@@ -205,8 +205,8 @@ class _LoginPageState extends State<LoginPage> {
                             },
                             customBorder: const CircleBorder(),
                             child: Container(
-                              height: 36,
-                              width: 36,
+                              height: 40,
+                              width: 40,
                               decoration: BoxDecoration(
                                 color: Colors.grey[200],
                                 shape: BoxShape.circle,
@@ -214,8 +214,8 @@ class _LoginPageState extends State<LoginPage> {
                               child: Center(
                                 child: Image.asset(
                                   'assets/images/google_icon.png',
-                                  height: 24,
-                                  width: 24,
+                                  height: 30,
+                                  width: 30,
                                   fit: BoxFit.contain,
                                 ),
                               ),
@@ -228,8 +228,8 @@ class _LoginPageState extends State<LoginPage> {
                             onTap: () {},
                             customBorder: const CircleBorder(),
                             child: Container(
-                              height: 36,
-                              width: 36,
+                              height: 40,
+                              width: 40,
                               decoration: BoxDecoration(
                                 color: Colors.grey[200],
                                 shape: BoxShape.circle,
@@ -237,8 +237,8 @@ class _LoginPageState extends State<LoginPage> {
                               child: Center(
                                 child: Image.asset(
                                   'assets/images/facebook_icon.png',
-                                  height: 24,
-                                  width: 24,
+                                  height: 30,
+                                  width: 30,
                                   fit: BoxFit.contain,
                                 ),
                               ),
@@ -251,8 +251,8 @@ class _LoginPageState extends State<LoginPage> {
                             onTap: () {},
                             customBorder: const CircleBorder(),
                             child: Container(
-                              height: 36,
-                              width: 36,
+                              height: 40,
+                              width: 40,
                               decoration: BoxDecoration(
                                 color: Colors.grey[200],
                                 shape: BoxShape.circle,
@@ -260,8 +260,8 @@ class _LoginPageState extends State<LoginPage> {
                               child: Center(
                                 child: Image.asset(
                                   'assets/images/apple_icon.png',
-                                  height: 24,
-                                  width: 24,
+                                  height: 30,
+                                  width: 30,
                                   fit: BoxFit.contain,
                                 ),
                               ),
@@ -278,7 +278,7 @@ class _LoginPageState extends State<LoginPage> {
                           style: TextStyle(
                             fontFamily: 'Manrope',
                             color: Colors.black,
-                            fontSize: 15.0,
+                            fontSize: 17.0,
                             fontWeight: FontWeight.bold,
                           ),
                           children: [
@@ -287,7 +287,7 @@ class _LoginPageState extends State<LoginPage> {
                               style: TextStyle(
                                 fontFamily: 'Manrope',
                                 color: Color(0xFF1B5E20),
-                                fontSize: 15.0,
+                                fontSize: 17.0,
                                 fontWeight: FontWeight.bold,
                               ),
                               recognizer: TapGestureRecognizer()
