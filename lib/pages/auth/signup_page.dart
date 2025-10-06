@@ -1,11 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'auth_method.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 
-void main() {
+void main() async{
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
   runApp(MyApp());
 }
@@ -22,7 +25,6 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
 class SignUpPage extends StatefulWidget {
   static MaterialPageRoute route() =>
       MaterialPageRoute(builder: (context) => const SignUpPage());
@@ -33,9 +35,10 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPageState extends State<SignUpPage> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  final phoneController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
 
   @override
@@ -43,21 +46,22 @@ class _SignUpPageState extends State<SignUpPage> {
     emailController.dispose();
     passwordController.dispose();
     phoneController.dispose();
+    confirmPasswordController.dispose();
     super.dispose();
   }
 
-  Future<void> createUserWithEmailAndPassword() async {
+  void signUpUser() async {
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
+      await AuthMethod(FirebaseAuth.instance).signUpWithEmail(
+        email: emailController.text,
+        password: passwordController.text,
+        phoneNumber: phoneController.text,
+        context: context,
       );
+      Fluttertoast.showToast(msg: "Sign up successfully");
     } on FirebaseAuthException catch (e) {
-      Fluttertoast.showToast(
-        msg: "Error creating user: ${e.message}",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-      );
+      Fluttertoast.showToast(msg: e.message ?? "An error occurred");
+
     }
   }
 
@@ -74,8 +78,8 @@ class _SignUpPageState extends State<SignUpPage> {
             SizedBox(height: 10),
             Image.asset(
               'assets/images/LogoIcon.png',
-              height: 200,
-              width: 200,
+              height: 150,
+              width: 150,
               fit: BoxFit.contain,
             ),
             SizedBox(height: 20),
@@ -178,7 +182,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
 
                   TextFormField(
-                    controller: passwordController,
+                    controller: confirmPasswordController,
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
                       labelText: "Please enter your password",
@@ -187,6 +191,8 @@ class _SignUpPageState extends State<SignUpPage> {
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return "Please enter password";
+                      } else if (value != passwordController.text) {
+                        return "Passwords do not match";
                       }
                       return null;
                     },
@@ -224,38 +230,26 @@ class _SignUpPageState extends State<SignUpPage> {
                       }
                       return null;
                     },
-                    // Prevent deleting the +60
-                    onChanged: (value) {
-                      if (!value.startsWith("+60")) {
-                        phoneController.text = "+60 ";
-                        phoneController.selection = TextSelection.fromPosition(
-                          TextPosition(offset: phoneController.text.length),
-                        );
-                      }
-                    },
+                    
                   ),
 
-                  const SizedBox(height: 20.0),
+                  const SizedBox(height: 10.0),
 
                   ElevatedButton(
-                    onPressed: () async {
+                    onPressed: () {
                       if (formKey.currentState!.validate()) {
-                        await createUserWithEmailAndPassword();
+                        signUpUser();
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 50,
-                        vertical: 15,
-                      ),
                       backgroundColor: Color(0xFF388E3C),
-                      minimumSize: Size(250, 30),
+                      minimumSize: Size(250, 50),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
                     child: const Text(
-                      "Login",
+                      "Sign Up",
                       style: TextStyle(
                         fontFamily: 'Manrope',
                         fontSize: 20,
@@ -264,7 +258,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ),
 
-                  SizedBox(height: 20.0),
+                  SizedBox(height: 10.0),
 
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -374,7 +368,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               ),
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () {
-                                  Navigator.pushNamed(context, '/signup');
+                                  Navigator.pushNamed(context, '/signin');
                                 },
                             ),
                           ],
