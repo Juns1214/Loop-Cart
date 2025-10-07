@@ -1,12 +1,14 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart';
+import 'auth_method.dart';
 
-
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
   runApp(MyApp());
 }
@@ -42,18 +44,18 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  Future<void> loginWithEmailAndPassword() async {
+  Future<void> userLogin() async {
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
+      print("Attempting login...");
+      await AuthMethod(FirebaseAuth.instance).loginWithEmail(
+        email: emailController.text,
+        password: passwordController.text,
+        context: context,
       );
+      print("Login successful!"); 
+      Fluttertoast.showToast(msg: "Login successful");
     } on FirebaseAuthException catch (e) {
-      Fluttertoast.showToast(
-        msg: "Error signing in: ${e.message}",
-        toastLength: Toast.LENGTH_LONG,
-        gravity: ToastGravity.BOTTOM,
-      );
+      Fluttertoast.showToast(msg: e.message ?? "An error occurred");
     }
   }
 
@@ -68,7 +70,12 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           children: [
             SizedBox(height: 10),
-            Image.asset('assets/images/LogoIcon.png', height: 250, width: 250, fit: BoxFit.contain),
+            Image.asset(
+              'assets/images/LogoIcon.png',
+              height: 250,
+              width: 250,
+              fit: BoxFit.contain,
+            ),
             SizedBox(height: 20),
 
             Text(
@@ -158,7 +165,7 @@ class _LoginPageState extends State<LoginPage> {
                   ElevatedButton(
                     onPressed: () async {
                       if (formKey.currentState!.validate()) {
-                        await loginWithEmailAndPassword();
+                        await userLogin();
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -200,9 +207,13 @@ class _LoginPageState extends State<LoginPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           InkWell(
-                            onTap: () {
-                              // Handle Google sign-in
+                            onTap: () async {
+                              final userCredential = await AuthMethod(FirebaseAuth.instance).signInWithGoogle(context);
+                              if (userCredential != null) {
+                                Fluttertoast.showToast(msg: "Google sign-in successful");
+                              }
                             },
+
                             customBorder: const CircleBorder(),
                             child: Container(
                               height: 40,
@@ -214,52 +225,6 @@ class _LoginPageState extends State<LoginPage> {
                               child: Center(
                                 child: Image.asset(
                                   'assets/images/google_icon.png',
-                                  height: 30,
-                                  width: 30,
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          SizedBox(width: 20.0),
-
-                          InkWell(
-                            onTap: () {},
-                            customBorder: const CircleBorder(),
-                            child: Container(
-                              height: 40,
-                              width: 40,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                shape: BoxShape.circle,
-                              ),
-                              child: Center(
-                                child: Image.asset(
-                                  'assets/images/facebook_icon.png',
-                                  height: 30,
-                                  width: 30,
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          SizedBox(width: 20.0),
-
-                          InkWell(
-                            onTap: () {},
-                            customBorder: const CircleBorder(),
-                            child: Container(
-                              height: 40,
-                              width: 40,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                shape: BoxShape.circle,
-                              ),
-                              child: Center(
-                                child: Image.asset(
-                                  'assets/images/apple_icon.png',
                                   height: 30,
                                   width: 30,
                                   fit: BoxFit.contain,

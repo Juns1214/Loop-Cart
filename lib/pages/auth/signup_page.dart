@@ -6,7 +6,7 @@ import 'auth_method.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
@@ -38,7 +38,8 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
   final formKey = GlobalKey<FormState>();
 
   @override
@@ -61,7 +62,6 @@ class _SignUpPageState extends State<SignUpPage> {
       Fluttertoast.showToast(msg: "Sign up successfully");
     } on FirebaseAuthException catch (e) {
       Fluttertoast.showToast(msg: e.message ?? "An error occurred");
-
     }
   }
 
@@ -230,7 +230,6 @@ class _SignUpPageState extends State<SignUpPage> {
                       }
                       return null;
                     },
-                    
                   ),
 
                   const SizedBox(height: 10.0),
@@ -276,8 +275,15 @@ class _SignUpPageState extends State<SignUpPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           InkWell(
-                            onTap: () {
-                              // Handle Google sign-in
+                            onTap: () async {
+                              final userCredential = await AuthMethod(
+                                FirebaseAuth.instance,
+                              ).signInWithGoogle(context);
+                              if (userCredential != null) {
+                                Fluttertoast.showToast(
+                                  msg: "Google sign-up successful",
+                                );
+                              }
                             },
                             customBorder: const CircleBorder(),
                             child: Container(
@@ -290,52 +296,6 @@ class _SignUpPageState extends State<SignUpPage> {
                               child: Center(
                                 child: Image.asset(
                                   'assets/images/google_icon.png',
-                                  height: 24,
-                                  width: 24,
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          SizedBox(width: 10.0),
-
-                          InkWell(
-                            onTap: () {},
-                            customBorder: const CircleBorder(),
-                            child: Container(
-                              height: 36,
-                              width: 36,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                shape: BoxShape.circle,
-                              ),
-                              child: Center(
-                                child: Image.asset(
-                                  'assets/images/facebook_icon.png',
-                                  height: 24,
-                                  width: 24,
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          SizedBox(width: 10.0),
-
-                          InkWell(
-                            onTap: () {},
-                            customBorder: const CircleBorder(),
-                            child: Container(
-                              height: 36,
-                              width: 36,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                shape: BoxShape.circle,
-                              ),
-                              child: Center(
-                                child: Image.asset(
-                                  'assets/images/apple_icon.png',
                                   height: 24,
                                   width: 24,
                                   fit: BoxFit.contain,
