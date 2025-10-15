@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_1/utils/swiper.dart';
 import 'package:lottie/lottie.dart';
+import '../../utils/router.dart';
+
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,6 +18,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      initialRoute: "/onboarding",
+      onGenerateRoute: onGenerateRoute,
       home: const OnboardingPage(),
     );
   }
@@ -190,7 +194,7 @@ class _OnboardingPageState extends State<OnboardingPage> {
               )),
             ),
             onPressed: (){
-
+              Navigator.pushReplacementNamed(context, "/login");
             },
             child: Text("Next",
             style: TextStyle(

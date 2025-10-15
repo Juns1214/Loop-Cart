@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'preference_model.dart';
 import 'preference_tile.dart';
+import '../../utils/router.dart';
+
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,6 +18,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      initialRoute: "/setup-preference",
+      onGenerateRoute: onGenerateRoute,
       home: const SetupPreferencePage(),
     );
   }
@@ -56,7 +60,7 @@ class _SetupPreferencePageState extends State<SetupPreferencePage> {
           children: [
             Center(
               child: Image.asset(
-                'assets/images/LogoIcon.png',
+                'assets/images/icon/LogoIcon.png',
                 height: 80,
                 width: 80,
                 fit: BoxFit.fill,
@@ -92,7 +96,7 @@ class _SetupPreferencePageState extends State<SetupPreferencePage> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // TODO: Save preferences or navigate to next page
+                Navigator.pushNamedAndRemoveUntil(context, "/mainpage", (route) => false);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color(0xFF388E3C),
@@ -110,7 +114,7 @@ class _SetupPreferencePageState extends State<SetupPreferencePage> {
             Center(
               child: TextButton(
                 onPressed: () {
-                  // TODO: Implement skip functionality
+                  Navigator.pushNamedAndRemoveUntil(context, "/mainpage", (route) => false);
                 },
                 child: const Text(
                   'Skip',

@@ -4,11 +4,15 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/gestures.dart';
+import '../../utils/router.dart';
 import 'auth_method.dart';
+import 'package:flutter_application_1/utils/firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
   runApp(MyApp());
 }
@@ -20,6 +24,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      initialRoute: "/login",
+      onGenerateRoute: onGenerateRoute,
       home: const LoginPage(),
     );
   }
@@ -44,7 +50,7 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  Future<void> userLogin() async {
+  Future<bool> userLogin() async {
     try {
       print("Attempting login...");
       await AuthMethod(FirebaseAuth.instance).loginWithEmail(
@@ -54,9 +60,11 @@ class _LoginPageState extends State<LoginPage> {
       );
       print("Login successful!"); 
       Fluttertoast.showToast(msg: "Login successful");
+      return true;
     } on FirebaseAuthException catch (e) {
       Fluttertoast.showToast(msg: e.message ?? "An error occurred");
     }
+    return false;
   }
 
   @override
@@ -165,7 +173,10 @@ class _LoginPageState extends State<LoginPage> {
                   ElevatedButton(
                     onPressed: () async {
                       if (formKey.currentState!.validate()) {
-                        await userLogin();
+                        bool loginSuccess = await userLogin();
+                        if (loginSuccess) {
+                          Navigator.pushNamedAndRemoveUntil(context, "/mainpage", (route) => false);
+                        }
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -211,6 +222,8 @@ class _LoginPageState extends State<LoginPage> {
                               final userCredential = await AuthMethod(FirebaseAuth.instance).signInWithGoogle(context);
                               if (userCredential != null) {
                                 Fluttertoast.showToast(msg: "Google sign-in successful");
+                                Navigator.pushNamedAndRemoveUntil(context, "/mainpage", (route) => false);
+
                               }
                             },
 

@@ -5,6 +5,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'auth_method.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
+import '../../utils/router.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,6 +22,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      initialRoute: "/signup",
+      onGenerateRoute: onGenerateRoute,
       home: const SignUpPage(),
     );
   }
@@ -51,7 +55,7 @@ class _SignUpPageState extends State<SignUpPage> {
     super.dispose();
   }
 
-  void signUpUser() async {
+  Future<bool> signUpUser() async {
     try {
       await AuthMethod(FirebaseAuth.instance).signUpWithEmail(
         email: emailController.text,
@@ -60,9 +64,11 @@ class _SignUpPageState extends State<SignUpPage> {
         context: context,
       );
       Fluttertoast.showToast(msg: "Sign up successfully");
+      return true;
     } on FirebaseAuthException catch (e) {
       Fluttertoast.showToast(msg: e.message ?? "An error occurred");
     }
+    return false;
   }
 
   @override
@@ -235,9 +241,12 @@ class _SignUpPageState extends State<SignUpPage> {
                   const SizedBox(height: 10.0),
 
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async{
                       if (formKey.currentState!.validate()) {
-                        signUpUser();
+                        bool signUpSuccess = await signUpUser();
+                        if (signUpSuccess) {
+                          Navigator.pushNamedAndRemoveUntil(context, "/setup-preference", (route) => false);
+                        }
                       }
                     },
                     style: ElevatedButton.styleFrom(
@@ -283,6 +292,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 Fluttertoast.showToast(
                                   msg: "Google sign-up successful",
                                 );
+                                Navigator.pushNamedAndRemoveUntil(context, "/setup-preference", (route) => false);
                               }
                             },
                             customBorder: const CircleBorder(),
@@ -328,7 +338,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               ),
                               recognizer: TapGestureRecognizer()
                                 ..onTap = () {
-                                  Navigator.pushNamed(context, '/signin');
+                                  Navigator.pushNamed(context, '/login');
                                 },
                             ),
                           ],

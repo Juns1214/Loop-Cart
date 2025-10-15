@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_application_1/utils/swiper.dart';
 import 'product.dart';
 import 'package:flutter_application_1/utils/bottom_nav_bar.dart';
+import '../../utils/router.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +19,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      initialRoute: "/mainpage",
+      onGenerateRoute: onGenerateRoute,
       home: const MainPage(),
     );
   }

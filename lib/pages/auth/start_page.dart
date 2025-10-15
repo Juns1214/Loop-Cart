@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
+import '../../utils/router.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,6 +16,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      initialRoute: "/start",
+      onGenerateRoute: onGenerateRoute,
       home: const GetStartedPage(),
     );
   }
@@ -31,7 +34,7 @@ class GetStartedPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(  
+            Image.asset(
               'assets/images/icon/LogoIcon.png',
               width: 150,
               height: 200,
@@ -39,7 +42,7 @@ class GetStartedPage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            Text( 
+            Text(
               "Shop Smart,\nLoop Forever.",
               style: TextStyle(
                 fontFamily: 'AbhayaLibre',
@@ -64,12 +67,15 @@ class GetStartedPage extends StatelessWidget {
 
             ElevatedButton(
               onPressed: () {
-                
+                Navigator.pushReplacementNamed(context, "/onboarding");
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF7CB342),
                 minimumSize: Size(200, 50),
-                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 40,
+                  vertical: 15,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
@@ -78,12 +84,12 @@ class GetStartedPage extends StatelessWidget {
                 "Get Started",
                 style: TextStyle(
                   fontFamily: 'AbhayaLibre',
-                  fontSize: 30, 
-                  color: Color(0xFF1B5E20), 
-                  fontWeight: FontWeight.w500),
+                  fontSize: 30,
+                  color: Color(0xFF1B5E20),
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            )
-
+            ),
           ],
         ),
       ),
