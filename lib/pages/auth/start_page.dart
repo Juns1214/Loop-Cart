@@ -32,7 +32,7 @@ class GetStartedPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(  
-              'assets/images/LogoIcon.png',
+              'assets/images/icon/LogoIcon.png',
               width: 150,
               height: 200,
             ),

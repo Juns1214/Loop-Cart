@@ -77,7 +77,7 @@ class _SignUpPageState extends State<SignUpPage> {
           children: [
             SizedBox(height: 10),
             Image.asset(
-              'assets/images/LogoIcon.png',
+              'assets/images/icon/LogoIcon.png',
               height: 150,
               width: 150,
               fit: BoxFit.contain,
@@ -295,7 +295,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               ),
                               child: Center(
                                 child: Image.asset(
-                                  'assets/images/google_icon.png',
+                                  'assets/images/icon/google_icon.png',
                                   height: 24,
                                   width: 24,
                                   fit: BoxFit.contain,

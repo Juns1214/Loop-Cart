@@ -71,7 +71,7 @@ class _LoginPageState extends State<LoginPage> {
           children: [
             SizedBox(height: 10),
             Image.asset(
-              'assets/images/LogoIcon.png',
+              'assets/images/icon/LogoIcon.png',
               height: 250,
               width: 250,
               fit: BoxFit.contain,
@@ -224,7 +224,7 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               child: Center(
                                 child: Image.asset(
-                                  'assets/images/google_icon.png',
+                                  'assets/images/icon/google_icon.png',
                                   height: 30,
                                   width: 30,
                                   fit: BoxFit.contain,
