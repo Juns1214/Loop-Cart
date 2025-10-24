@@ -391,9 +391,9 @@ class _MainPageState extends State<MainPage> {
               _currentIndex = 2; // Sell tab
             });
           },
-          child: Icon(Icons.add, size: 32),
           backgroundColor: Colors.transparent,
           elevation: 0,
+          child: Icon(Icons.add, size: 32),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

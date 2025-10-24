@@ -1,23 +1,1874 @@
 [
     {
-        "id": 1,
-        "name": "Product 1",
-        "description": "This is the description for Product 1.",
-        "price": 19.99,
-        "image": "assets/images/product1.png"
+        "id": "CL001",
+        "name": "Adidas Women Clothes",
+        "price": 129.90,
+        "rating": 4.6,
+        "description": "Comfortable and stylish Adidas women's apparel made from breathable materials, perfect for casual and sportswear.",
+        "category": "Clothing",
+        "subCategory": "Women",
+        "tags": [
+            "Adidas",
+            "Sportswear",
+            "Women",
+            "Casual"
+        ],
+        "imageUrl": "assets/images/product/Cloth/Adidas Women Clothes.jpeg",
+        "seller": "DailyWear Co.",
+        "stockQuantity": 50
     },
     {
-        "id": 2,
-        "name": "Product 2",
-        "description": "This is the description for Product 2.",
-        "price": 29.99,
-        "image": "assets/images/product2.png"
+        "id": "CL002",
+        "name": "ADO Men Suit Set",
+        "price": 299.00,
+        "rating": 4.4,
+        "description": "Formal men's suit set designed for business and formal occasions, tailored for comfort and durability.",
+        "category": "Clothing",
+        "subCategory": "Men",
+        "tags": [
+            "Men",
+            "Suit",
+            "Formal",
+            "Business"
+        ],
+        "imageUrl": "assets/images/product/Cloth/ADO Men Suit Set.jpeg",
+        "seller": "DailyWear Co.",
+        "stockQuantity": 33
     },
     {
-        "id": 3,
-        "name": "Product 3",
-        "description": "This is the description for Product 3.",
-        "price": 39.99,
-        "image": "assets/images/product3.png"
+        "id": "CL003",
+        "name": "Ladies Wideleg Vintage Trouser",
+        "price": 89.50,
+        "rating": 4.5,
+        "description": "Elegant wide-leg trousers for women with a vintage-inspired design suitable for both work and casual outings.",
+        "category": "Clothing",
+        "subCategory": "Women",
+        "tags": [
+            "Women",
+            "Trousers",
+            "Vintage",
+            "Casual"
+        ],
+        "imageUrl": "assets/images/product/Cloth/Ladies Wideleg Vintage Trouser.jpeg",
+        "seller": "DailyWear Co.",
+        "stockQuantity": 34
+    },
+    {
+        "id": "CL004",
+        "name": "Men Cardigan Hooded Jacket",
+        "price": 119.00,
+        "rating": 4.7,
+        "description": "Stylish hooded cardigan jacket for men, made with soft cotton blend material ideal for cool weather.",
+        "category": "Clothing",
+        "subCategory": "Men",
+        "tags": [
+            "Men",
+            "Cardigan",
+            "Jacket",
+            "Casual"
+        ],
+        "imageUrl": "assets/images/product/Cloth/Men Cardigan Hooded Jacket.jpeg",
+        "seller": "DailyWear Co.",
+        "stockQuantity": 54
+    },
+    {
+        "id": "CL005",
+        "name": "Men Cotton Pant",
+        "price": 75.00,
+        "rating": 4.3,
+        "description": "Lightweight and breathable cotton pants for men, designed for all-day comfort.",
+        "category": "Clothing",
+        "subCategory": "Men",
+        "tags": [
+            "Men",
+            "Cotton",
+            "Pants",
+            "Casual"
+        ],
+        "imageUrl": "assets/images/products/men_cotton_pant.jpg",
+        "seller": "DailyWear Co.",
+        "stockQuantity": 67
+    },
+    {
+        "id": "CL006",
+        "name": "Men Plain T-shirt",
+        "price": 45.90,
+        "rating": 4.5,
+        "description": "Simple and comfortable plain T-shirt made from 100% cotton. Ideal for daily wear.",
+        "category": "Clothing",
+        "subCategory": "Men",
+        "tags": [
+            "Men",
+            "T-shirt",
+            "Casual",
+            "Cotton"
+        ],
+        "imageUrl": "assets/images/product/Cloth/Men Plain T-shirt.jpeg",
+        "seller": "DailyWear Co.",
+        "stockQuantity": 88
+    },
+    {
+        "id": "CL007",
+        "name": "Men Slim Fit Pants",
+        "price": 99.90,
+        "rating": 4.6,
+        "description": "Modern slim fit pants for men with stretchable fabric offering style and comfort.",
+        "category": "Clothing",
+        "subCategory": "Men",
+        "tags": [
+            "Men",
+            "Pants",
+            "Slim Fit",
+            "Fashion"
+        ],
+        "imageUrl": "assets/images/product/Cloth/Men Slim Fit Pants.jpeg",
+        "seller": "DailyWear Co.",
+        "stockQuantity": 34
+    },
+    {
+        "id": "CL008",
+        "name": "Men's Bomber Zipper Jacket",
+        "price": 159.00,
+        "rating": 4.8,
+        "description": "Trendy men's bomber jacket with front zipper closure and ribbed cuffs for a perfect streetwear look.",
+        "category": "Clothing",
+        "subCategory": "Men",
+        "tags": [
+            "Men",
+            "Jacket",
+            "Bomber",
+            "Streetwear"
+        ],
+        "imageUrl": "assets/images/product/Cloth/Men's Bomber Zipper Jacket.jpeg",
+        "seller": "DailyWear Co.",
+        "stockQuantity": 22
+    },
+    {
+        "id": "CL009",
+        "name": "Summer Dress for Women",
+        "price": 139.00,
+        "rating": 4.7,
+        "description": "Light and breathable summer dress for women, perfect for warm weather and casual outings.",
+        "category": "Clothing",
+        "subCategory": "Women",
+        "tags": [
+            "Women",
+            "Dress",
+            "Summer",
+            "Casual"
+        ],
+        "imageUrl": "assets/images/product/Cloth/Summer Dress for Women.jpeg",
+        "seller": "DailyWear Co.",
+        "stockQuantity": 46
+    },
+    {
+        "id": "CL010",
+        "name": "Unisex Candy Style Pants",
+        "price": 89.00,
+        "rating": 4.5,
+        "description": "Colorful unisex candy-style pants made with high-quality fabric, offering both comfort and uniqueness.",
+        "category": "Clothing",
+        "subCategory": "Unisex",
+        "tags": [
+            "Unisex",
+            "Pants",
+            "Colorful",
+            "Casual"
+        ],
+        "imageUrl": "assets/images/product/Cloth/Unisex Candy Style Pants.jpeg",
+        "seller": "DailyWear Co.",
+        "stockQuantity": 29
+    },
+    {
+        "id": "CL011",
+        "name": "Unisex Plain Polo T-shirt",
+        "price": 65.00,
+        "rating": 4.6,
+        "description": "Classic unisex polo T-shirt with a clean and minimal design suitable for casual and semi-formal wear.",
+        "category": "Clothing",
+        "subCategory": "Unisex",
+        "tags": [
+            "Unisex",
+            "Polo",
+            "T-shirt",
+            "Casual"
+        ],
+        "imageUrl": "assets/images/product/Cloth/Unisex Plain Polo T-shirt.jpeg",
+        "seller": "DailyWear Co.",
+        "stockQuantity": 73
+    },
+    {
+        "id": "CL012",
+        "name": "Women Blazer",
+        "price": 169.90,
+        "rating": 4.6,
+        "description": "Professional women's blazer made with high-quality fabric for a sleek, confident look.",
+        "category": "Clothing",
+        "subCategory": "Women",
+        "tags": [
+            "Women",
+            "Blazer",
+            "Formal",
+            "Office"
+        ],
+        "imageUrl": "assets/images/product/Cloth/Women Blazer.jpeg",
+        "seller": "DailyWear Co.",
+        "stockQuantity": 38
+    },
+    {
+        "id": "CL013",
+        "name": "Women Blouse",
+        "price": 79.90,
+        "rating": 4.5,
+        "description": "Elegant women's blouse with a soft fabric, suitable for both work and casual settings.",
+        "category": "Clothing",
+        "subCategory": "Women",
+        "tags": [
+            "Women",
+            "Blouse",
+            "Casual",
+            "Fashion"
+        ],
+        "imageUrl": "assets/images/product/Cloth/Women Blouse.jpeg",
+        "seller": "DailyWear Co.",
+        "stockQuantity": 57
+    },
+    {
+        "id": "DF001",
+        "name": "Arrowroot Biscuits",
+        "price": 14.90,
+        "rating": 4.5,
+        "description": "Crispy and light arrowroot biscuits made with natural ingredients, perfect for a dairy-free and gluten-conscious diet.",
+        "category": "Dairy-Free",
+        "subCategory": "Biscuits",
+        "tags": [
+            "Snack",
+            "Dairy-Free",
+            "Arrowroot",
+            "Healthy"
+        ],
+        "imageUrl": "assets/images/product/Dairy Free/Arrowroot Biscuits.jpg",
+        "seller": "Green Harvest Store",
+        "stockQuantity": 50
+    },
+    {
+        "id": "DF002",
+        "name": "Dairy Free Butter",
+        "price": 19.50,
+        "rating": 4.6,
+        "description": "Smooth and creamy dairy-free butter made from plant-based oils, ideal for cooking, baking, and spreading.",
+        "category": "Dairy-Free",
+        "subCategory": "Butter",
+        "tags": [
+            "Butter",
+            "Vegan",
+            "Plant-Based",
+            "Dairy-Free"
+        ],
+        "imageUrl": "assets/images/product/Dairy Free/Dairy Free Butter.jpg",
+        "seller": "Green Harvest Store",
+        "stockQuantity": 40
+    },
+    {
+        "id": "DF003",
+        "name": "Dairy Free Cheese",
+        "price": 25.90,
+        "rating": 4.7,
+        "description": "Delicious dairy-free cheese alternative made from cashews and coconut oil, great for sandwiches and pizzas.",
+        "category": "Dairy-Free",
+        "subCategory": "Cheese",
+        "tags": [
+            "Cheese",
+            "Vegan",
+            "Plant-Based",
+            "Dairy-Free"
+        ],
+        "imageUrl": "assets/images/product/Dairy Free/Dairy Free Cheese.jpg",
+        "seller": "Green Harvest Store",
+        "stockQuantity": 35
+    },
+    {
+        "id": "DF004",
+        "name": "Dairy Free Ice Cream",
+        "price": 29.90,
+        "rating": 4.8,
+        "description": "Creamy and indulgent dairy-free ice cream made with coconut milk, available in a variety of natural flavors.",
+        "category": "Dairy-Free",
+        "subCategory": "Ice Cream",
+        "tags": [
+            "Dessert",
+            "Vegan",
+            "Coconut Milk",
+            "Dairy-Free"
+        ],
+        "imageUrl": "assets/images/product/Dairy Free/Dairy Free Ice Cream.jpg",
+        "seller": "Green Harvest Store",
+        "stockQuantity": 60
+    },
+    {
+        "id": "DF005",
+        "name": "Dairy Free Yogurt",
+        "price": 18.90,
+        "rating": 4.6,
+        "description": "Rich and smooth plant-based yogurt made from almond and soy blends, packed with probiotics and nutrients.",
+        "category": "Dairy-Free",
+        "subCategory": "Yogurt",
+        "tags": [
+            "Yogurt",
+            "Vegan",
+            "Healthy",
+            "Dairy-Free"
+        ],
+        "imageUrl": "assets/images/product/Dairy Free/Dairy Free Yogurt.jpg",
+        "seller": "Green Harvest Store",
+        "stockQuantity": 45
+    },
+    {
+        "id": "DF006",
+        "name": "Whip Cream (Dairy-Free)",
+        "price": 16.90,
+        "rating": 4.7,
+        "description": "Light and fluffy dairy-free whipped cream made from coconut cream, perfect for desserts and beverages.",
+        "category": "Dairy-Free",
+        "subCategory": "Whip Cream",
+        "tags": [
+            "Whip Cream",
+            "Dessert",
+            "Vegan",
+            "Dairy-Free"
+        ],
+        "imageUrl": "assets/images/product/Dairy Free/Whip Cream.png",
+        "seller": "Green Harvest Store",
+        "stockQuantity": 30
+    },
+    {
+        "id": "EF001",
+        "name": "Biodegradable Bowl",
+        "price": 12.90,
+        "rating": 4.6,
+        "description": "Eco-friendly biodegradable bowl made from natural plant fibers, perfect for daily use and reducing waste.",
+        "category": "Eco-Friendly",
+        "subCategory": "Bowl",
+        "tags": [
+            "Biodegradable",
+            "Eco-Friendly",
+            "Sustainable",
+            "Kitchenware"
+        ],
+        "imageUrl": "assets/images/product/Eco Friendly/Biodegradable Bowl.jpg",
+        "seller": "Green Planet Store",
+        "stockQuantity": 50
+    },
+    {
+        "id": "EF002",
+        "name": "Dishwashing Liquid Soap",
+        "price": 8.90,
+        "rating": 4.5,
+        "description": "Natural and gentle dishwashing liquid soap made from plant-based ingredients, safe for the environment.",
+        "category": "Eco-Friendly",
+        "subCategory": "Soap",
+        "tags": [
+            "Eco-Friendly",
+            "Soap",
+            "Dishwashing",
+            "Plant-Based"
+        ],
+        "imageUrl": "assets/images/product/Eco Friendly/Dishwashing Liquid Soap.jpg",
+        "seller": "Green Planet Store",
+        "stockQuantity": 60
+    },
+    {
+        "id": "EF003",
+        "name": "Drawstring Bag",
+        "price": 15.00,
+        "rating": 4.7,
+        "description": "Reusable drawstring bag made from sustainable materials, perfect for shopping or daily carry.",
+        "category": "Eco-Friendly",
+        "subCategory": "Bag",
+        "tags": [
+            "Eco-Friendly",
+            "Reusable",
+            "Bag",
+            "Sustainable"
+        ],
+        "imageUrl": "assets/images/product/Eco Friendly/Drawstring Bag.jpg",
+        "seller": "Green Planet Store",
+        "stockQuantity": 40
+    },
+    {
+        "id": "EF004",
+        "name": "Eco Friendly Multipurpose Soap",
+        "price": 10.50,
+        "rating": 4.6,
+        "description": "All-purpose eco-friendly soap for cleaning, made from natural ingredients safe for home and environment.",
+        "category": "Eco-Friendly",
+        "subCategory": "Soap",
+        "tags": [
+            "Eco-Friendly",
+            "Multipurpose",
+            "Natural",
+            "Sustainable"
+        ],
+        "imageUrl": "assets/images/product/Eco Friendly/Eco Friendly Multipurpose Soap.jpg",
+        "seller": "Green Planet Store",
+        "stockQuantity": 55
+    },
+    {
+        "id": "EF005",
+        "name": "Liquid Detergent",
+        "price": 18.00,
+        "rating": 4.7,
+        "description": "Plant-based liquid detergent that cleans effectively while being gentle on the environment.",
+        "category": "Eco-Friendly",
+        "subCategory": "Detergent",
+        "tags": [
+            "Eco-Friendly",
+            "Detergent",
+            "Plant-Based",
+            "Sustainable"
+        ],
+        "imageUrl": "assets/images/product/Eco Friendly/Liquid Detergent.jpg",
+        "seller": "Green Planet Store",
+        "stockQuantity": 45
+    },
+    {
+        "id": "EF006",
+        "name": "Loofah Pad",
+        "price": 6.90,
+        "rating": 4.4,
+        "description": "Natural loofah pad for scrubbing and exfoliating, biodegradable and eco-friendly.",
+        "category": "Eco-Friendly",
+        "subCategory": "Loofah",
+        "tags": [
+            "Loofah",
+            "Eco-Friendly",
+            "Natural",
+            "Sustainable"
+        ],
+        "imageUrl": "assets/images/product/Eco Friendly/Loofah Pad.avif",
+        "seller": "Green Planet Store",
+        "stockQuantity": 70
+    },
+    {
+        "id": "EF007",
+        "name": "Sealant Weatherproof",
+        "price": 22.50,
+        "rating": 4.6,
+        "description": "Eco-friendly weatherproof sealant made from non-toxic materials, safe for home and environment.",
+        "category": "Eco-Friendly",
+        "subCategory": "Sealant",
+        "tags": [
+            "Sealant",
+            "Eco-Friendly",
+            "Weatherproof",
+            "Sustainable"
+        ],
+        "imageUrl": "assets/images/product/Eco Friendly/Sealant Weatherproof.jpg",
+        "seller": "Green Planet Store",
+        "stockQuantity": 35
+    },
+    {
+        "id": "EF008",
+        "name": "Wheat Straw Chopping Board",
+        "price": 19.90,
+        "rating": 4.7,
+        "description": "Durable and eco-friendly chopping board made from wheat straw fiber, ideal for sustainable kitchen use.",
+        "category": "Eco-Friendly",
+        "subCategory": "Chopping Board",
+        "tags": [
+            "Chopping Board",
+            "Eco-Friendly",
+            "Wheat Straw",
+            "Sustainable"
+        ],
+        "imageUrl": "assets/images/product/Eco Friendly/Wheat Straw Chopping Board.jpg",
+        "seller": "Green Planet Store",
+        "stockQuantity": 40
+    },
+    {
+        "id": "EF009",
+        "name": "Wheat Straw Cutlery Set",
+        "price": 24.90,
+        "rating": 4.8,
+        "description": "Complete eco-friendly cutlery set made from wheat straw fiber, perfect for sustainable dining.",
+        "category": "Eco-Friendly",
+        "subCategory": "Cutlery",
+        "tags": [
+            "Cutlery",
+            "Eco-Friendly",
+            "Wheat Straw",
+            "Sustainable"
+        ],
+        "imageUrl": "assets/images/product/Eco Friendly/Wheat Straw Cutlery Set.jpg",
+        "seller": "Green Planet Store",
+        "stockQuantity": 50
+    },
+    {
+        "id": "FT001",
+        "name": "Dumbbell",
+        "price": 35.00,
+        "rating": 4.7,
+        "description": "Durable dumbbells for strength training, available in various weights to suit all fitness levels.",
+        "category": "Fitness",
+        "subCategory": "Strength",
+        "tags": [
+            "Dumbbell",
+            "Strength",
+            "Workout",
+            "Fitness"
+        ],
+        "imageUrl": "assets/images/product/Fitness/Dumbbell.jpg",
+        "seller": "FitGear Store",
+        "stockQuantity": 60
+    },
+    {
+        "id": "FT002",
+        "name": "Electric Treadmill",
+        "price": 1200.00,
+        "rating": 4.8,
+        "description": "High-quality electric treadmill with multiple speed settings, ideal for home cardio workouts.",
+        "category": "Fitness",
+        "subCategory": "Cardio",
+        "tags": [
+            "Treadmill",
+            "Cardio",
+            "Workout",
+            "Home Gym"
+        ],
+        "imageUrl": "assets/images/product/Fitness/Electric Treadmill.jpg",
+        "seller": "FitGear Store",
+        "stockQuantity": 15
+    },
+    {
+        "id": "FT003",
+        "name": "Power Twister",
+        "price": 55.00,
+        "rating": 4.5,
+        "description": "Portable power twister for upper body strength training, compact and easy to use at home.",
+        "category": "Fitness",
+        "subCategory": "Strength",
+        "tags": [
+            "Power Twister",
+            "Strength",
+            "Workout",
+            "Fitness"
+        ],
+        "imageUrl": "assets/images/product/Fitness/Power Twister.jpg",
+        "seller": "FitGear Store",
+        "stockQuantity": 40
+    },
+    {
+        "id": "FT004",
+        "name": "Pull Up Bar",
+        "price": 89.00,
+        "rating": 4.7,
+        "description": "Sturdy pull-up bar for home use, perfect for building upper body strength and toning muscles.",
+        "category": "Fitness",
+        "subCategory": "Strength",
+        "tags": [
+            "Pull Up Bar",
+            "Strength",
+            "Workout",
+            "Fitness"
+        ],
+        "imageUrl": "assets/images/product/Fitness/Pull Up Bar.jpg",
+        "seller": "FitGear Store",
+        "stockQuantity": 30
+    },
+    {
+        "id": "FT005",
+        "name": "Push Up Board",
+        "price": 45.00,
+        "rating": 4.6,
+        "description": "Multi-position push-up board for a full upper body workout, with color-coded positions for muscle targeting.",
+        "category": "Fitness",
+        "subCategory": "Strength",
+        "tags": [
+            "Push Up Board",
+            "Strength",
+            "Workout",
+            "Fitness"
+        ],
+        "imageUrl": "assets/images/product/Fitness/Push Up Board.jpg",
+        "seller": "FitGear Store",
+        "stockQuantity": 35
+    },
+    {
+        "id": "FT006",
+        "name": "Skipping Jump Rope",
+        "price": 12.90,
+        "rating": 4.5,
+        "description": "Durable skipping rope suitable for cardio, endurance, and agility training.",
+        "category": "Fitness",
+        "subCategory": "Cardio",
+        "tags": [
+            "Jump Rope",
+            "Cardio",
+            "Fitness",
+            "Workout"
+        ],
+        "imageUrl": "assets/images/product/Fitness/Skipping Jump Rope.jpg",
+        "seller": "FitGear Store",
+        "stockQuantity": 70
+    },
+    {
+        "id": "FT007",
+        "name": "Resistance Band",
+        "price": 20.00,
+        "rating": 4.6,
+        "description": "High-quality resistance band for strength training, stretching, and rehabilitation exercises.",
+        "category": "Fitness",
+        "subCategory": "Resistance",
+        "tags": [
+            "Resistance Band",
+            "Strength",
+            "Workout",
+            "Fitness"
+        ],
+        "imageUrl": "assets/images/product/Fitness/Resistance Band.jpg",
+        "seller": "FitGear Store",
+        "stockQuantity": 50
+    },
+    {
+        "id": "FT008",
+        "name": "Sit-up Assistant",
+        "price": 39.90,
+        "rating": 4.6,
+        "description": "Sit-up assistant device to help maintain proper form and target abdominal muscles effectively.",
+        "category": "Fitness",
+        "subCategory": "Strength",
+        "tags": [
+            "Sit-up",
+            "Abdominal",
+            "Strength",
+            "Workout"
+        ],
+        "imageUrl": "assets/images/product/Fitness/Sit-up Assistant.jpg",
+        "seller": "FitGear Store",
+        "stockQuantity": 40
+    },
+    {
+        "id": "GF001",
+        "name": "Brownies Chips",
+        "price": 12.90,
+        "rating": 4.6,
+        "description": "Delicious gluten-free brownie chips made from natural ingredients, perfect for baking or snacking.",
+        "category": "Gluten-Free",
+        "subCategory": "Snacks",
+        "tags": [
+            "Gluten-Free",
+            "Brownies",
+            "Snack",
+            "Baking"
+        ],
+        "imageUrl": "assets/images/product/Gluten Free/Brownies Chips.jpg",
+        "seller": "GlutenGood Store",
+        "stockQuantity": 50
+    },
+    {
+        "id": "GF002",
+        "name": "Cassava Flour",
+        "price": 15.50,
+        "rating": 4.7,
+        "description": "Premium gluten-free cassava flour, perfect for baking, cooking, and creating healthy recipes.",
+        "category": "Gluten-Free",
+        "subCategory": "Flour",
+        "tags": [
+            "Gluten-Free",
+            "Cassava",
+            "Flour",
+            "Baking"
+        ],
+        "imageUrl": "assets/images/product/Gluten Free/Cassava Flour.jpg",
+        "seller": "GlutenGood Store",
+        "stockQuantity": 60
+    },
+    {
+        "id": "GF003",
+        "name": "Cookies with Chocolate Chips",
+        "price": 18.00,
+        "rating": 4.8,
+        "description": "Crunchy gluten-free cookies loaded with chocolate chips, ideal for snacks and dessert lovers.",
+        "category": "Gluten-Free",
+        "subCategory": "Cookies",
+        "tags": [
+            "Gluten-Free",
+            "Cookies",
+            "Chocolate Chips",
+            "Snack"
+        ],
+        "imageUrl": "assets/images/product/Gluten Free/Cookies with Chocolate Chips.jpg",
+        "seller": "GlutenGood Store",
+        "stockQuantity": 45
+    },
+    {
+        "id": "GF004",
+        "name": "Gluten-Free Instant Noodle",
+        "price": 9.90,
+        "rating": 4.5,
+        "description": "Quick and tasty gluten-free instant noodles, perfect for a healthy and convenient meal.",
+        "category": "Gluten-Free",
+        "subCategory": "Noodle",
+        "tags": [
+            "Gluten-Free",
+            "Instant Noodle",
+            "Quick Meal",
+            "Healthy"
+        ],
+        "imageUrl": "assets/images/product/Gluten Free/Gluten Free Instant Noodle.jpg",
+        "seller": "GlutenGood Store",
+        "stockQuantity": 70
+    },
+    {
+        "id": "GF005",
+        "name": "Gluten-Free Multipurpose Flour",
+        "price": 20.50,
+        "rating": 4.6,
+        "description": "Versatile gluten-free flour suitable for baking cakes, bread, and other recipes.",
+        "category": "Gluten-Free",
+        "subCategory": "Flour",
+        "tags": [
+            "Gluten-Free",
+            "Flour",
+            "Baking",
+            "Multipurpose"
+        ],
+        "imageUrl": "assets/images/product/Gluten Free/Gluten Free Multipurpose Flour.jpg",
+        "seller": "GlutenGood Store",
+        "stockQuantity": 55
+    },
+    {
+        "id": "GF006",
+        "name": "Pizza Flavoured Crackers",
+        "price": 14.90,
+        "rating": 4.7,
+        "description": "Tasty gluten-free crackers with pizza flavor, perfect for snacks or appetizers.",
+        "category": "Gluten-Free",
+        "subCategory": "Crackers",
+        "tags": [
+            "Gluten-Free",
+            "Crackers",
+            "Snack",
+            "Pizza Flavor"
+        ],
+        "imageUrl": "assets/images/product/Gluten Free/Pizza Flavoured Crackers.jpg",
+        "seller": "GlutenGood Store",
+        "stockQuantity": 60
+    },
+    {
+        "id": "GF007",
+        "name": "Rolled Oats",
+        "price": 12.50,
+        "rating": 4.6,
+        "description": "High-quality gluten-free rolled oats, perfect for healthy breakfasts and baking.",
+        "category": "Gluten-Free",
+        "subCategory": "Oats",
+        "tags": [
+            "Gluten-Free",
+            "Oats",
+            "Breakfast",
+            "Healthy"
+        ],
+        "imageUrl": "assets/images/product/Gluten Free/Rolled Oats.jpg",
+        "seller": "GlutenGood Store",
+        "stockQuantity": 80
+    },
+    {
+        "id": "GF008",
+        "name": "Soy Sauce",
+        "price": 10.90,
+        "rating": 4.5,
+        "description": "Gluten-free soy sauce made from premium soybeans, perfect for cooking and seasoning.",
+        "category": "Gluten-Free",
+        "subCategory": "Sauce",
+        "tags": [
+            "Gluten-Free",
+            "Soy Sauce",
+            "Cooking",
+            "Seasoning"
+        ],
+        "imageUrl": "assets/images/product/Gluten Free/Soy Sauce.jpg",
+        "seller": "GlutenGood Store",
+        "stockQuantity": 50
+    },
+    {
+        "id": "GF009",
+        "name": "Kale Noodle",
+        "price": 13.90,
+        "rating": 4.6,
+        "description": "Healthy gluten-free kale noodles, rich in nutrients and perfect for a balanced diet.",
+        "category": "Gluten-Free",
+        "subCategory": "Noodle",
+        "tags": [
+            "Gluten-Free",
+            "Noodle",
+            "Healthy",
+            "Kale"
+        ],
+        "imageUrl": "assets/images/product/Gluten Free/Kale Noodle.jpg",
+        "seller": "GlutenGood Store",
+        "stockQuantity": 45
+    },
+    {
+        "id": "GF010",
+        "name": "Original Cracker",
+        "price": 11.50,
+        "rating": 4.5,
+        "description": "Classic gluten-free crackers, perfect for snacking or pairing with spreads.",
+        "category": "Gluten-Free",
+        "subCategory": "Crackers",
+        "tags": [
+            "Gluten-Free",
+            "Crackers",
+            "Snack",
+            "Original Flavor"
+        ],
+        "imageUrl": "assets/images/product/Gluten Free/Original Cracker.jpg",
+        "seller": "GlutenGood Store",
+        "stockQuantity": 60
+    },
+    {
+        "id": "GL001",
+        "name": "Dr.Oetker Pizza Ristorante 345g",
+        "price": 18.90,
+        "rating": 4.6,
+        "description": "Authentic Dr.Oetker pizza ristorante, 345g, classic flavor for a quick and delicious meal.",
+        "category": "Gluten",
+        "subCategory": "Pizza",
+        "tags": [
+            "Gluten",
+            "Pizza",
+            "Frozen Food",
+            "Ready-to-Eat"
+        ],
+        "imageUrl": "assets/images/product/Gluten Product/Dr.Oetker Pizza Ristorante 345g.jpg",
+        "seller": "BakeHouse Store",
+        "stockQuantity": 50
+    },
+    {
+        "id": "GL002",
+        "name": "Hand Rolled Bagel 110g",
+        "price": 5.90,
+        "rating": 4.5,
+        "description": "Freshly hand-rolled bagel, 110g, soft inside with a perfect crust, great for breakfast or sandwiches.",
+        "category": "Gluten",
+        "subCategory": "Bread",
+        "tags": [
+            "Gluten",
+            "Bagel",
+            "Bread",
+            "Bakery"
+        ],
+        "imageUrl": "assets/images/product/Gluten Product/Hand Rolled Bagel 110g.jpeg",
+        "seller": "BakeHouse Store",
+        "stockQuantity": 60
+    },
+    {
+        "id": "GL003",
+        "name": "Puff Pastry Sheet",
+        "price": 12.50,
+        "rating": 4.6,
+        "description": "Flaky puff pastry sheet, perfect for baking pastries, pies, and desserts.",
+        "category": "Gluten",
+        "subCategory": "Pastry",
+        "tags": [
+            "Gluten",
+            "Pastry",
+            "Baking",
+            "Sheet"
+        ],
+        "imageUrl": "assets/images/product/Gluten Product/Puff Pastry Sheet.jpeg",
+        "seller": "BakeHouse Store",
+        "stockQuantity": 40
+    },
+    {
+        "id": "GL004",
+        "name": "Sandwich Bread Loaf",
+        "price": 8.90,
+        "rating": 4.5,
+        "description": "Soft and fresh sandwich bread loaf, ideal for daily sandwiches and toast.",
+        "category": "Gluten",
+        "subCategory": "Bread",
+        "tags": [
+            "Gluten",
+            "Bread",
+            "Sandwich",
+            "Bakery"
+        ],
+        "imageUrl": "assets/images/product/Gluten Product/Sandwich Bread Loaf.jpeg",
+        "seller": "BakeHouse Store",
+        "stockQuantity": 70
+    },
+    {
+        "id": "HL001",
+        "name": "Alzara Ghee Blend",
+        "price": 22.90,
+        "rating": 4.7,
+        "description": "Premium Alzara ghee blend, ideal for cooking and frying, fully Halal certified.",
+        "category": "Halal Products",
+        "subCategory": "Cooking Oil",
+        "tags": [
+            "Halal",
+            "Ghee",
+            "Cooking",
+            "Oil"
+        ],
+        "imageUrl": "assets/images/product/halal product/Alzara ghee blend.jpeg",
+        "seller": "HalalMart",
+        "stockQuantity": 40
+    },
+    {
+        "id": "HL002",
+        "name": "Canned Food",
+        "price": 8.90,
+        "rating": 4.5,
+        "description": "Variety of Halal canned food for convenient cooking and meal prep.",
+        "category": "Halal Products",
+        "subCategory": "Canned Food",
+        "tags": [
+            "Halal",
+            "Canned Food",
+            "Convenient",
+            "Ready-to-Eat"
+        ],
+        "imageUrl": "assets/images/product/halal product/canned_food.jpg",
+        "seller": "HalalMart",
+        "stockQuantity": 60
+    },
+    {
+        "id": "HL003",
+        "name": "Chicken Kurma",
+        "price": 15.90,
+        "rating": 4.6,
+        "description": "Halal ready-to-cook Chicken Kurma with authentic spices, perfect for a flavorful meal.",
+        "category": "Halal Products",
+        "subCategory": "Ready-to-Cook",
+        "tags": [
+            "Halal",
+            "Chicken",
+            "Kurma",
+            "Spices"
+        ],
+        "imageUrl": "assets/images/product/halal product/Chicken Kurma.jpg",
+        "seller": "HalalMart",
+        "stockQuantity": 50
+    },
+    {
+        "id": "HL004",
+        "name": "Chicken Porridge",
+        "price": 12.90,
+        "rating": 4.5,
+        "description": "Delicious Halal chicken porridge, easy to cook and perfect for a healthy meal.",
+        "category": "Halal Products",
+        "subCategory": "Ready-to-Cook",
+        "tags": [
+            "Halal",
+            "Chicken",
+            "Porridge",
+            "Healthy"
+        ],
+        "imageUrl": "assets/images/product/halal product/Chicken Porridge.jpg",
+        "seller": "HalalMart",
+        "stockQuantity": 60
+    },
+    {
+        "id": "HL005",
+        "name": "Chinese Goreng Cina",
+        "price": 14.50,
+        "rating": 4.6,
+        "description": "Authentic Halal Chinese Goreng Cina dish, ready to cook for a quick meal.",
+        "category": "Halal Products",
+        "subCategory": "Ready-to-Cook",
+        "tags": [
+            "Halal",
+            "Chinese",
+            "Goreng",
+            "Ready-to-Cook"
+        ],
+        "imageUrl": "assets/images/product/halal product/Chinese Goreng Cina.jpg",
+        "seller": "HalalMart",
+        "stockQuantity": 50
+    },
+    {
+        "id": "HL006",
+        "name": "Halal Beef",
+        "price": 25.90,
+        "rating": 4.7,
+        "description": "High-quality Halal-certified beef, perfect for grilling, stewing, or cooking traditional dishes.",
+        "category": "Halal Products",
+        "subCategory": "Meat",
+        "tags": [
+            "Halal",
+            "Beef",
+            "Meat",
+            "Protein"
+        ],
+        "imageUrl": "assets/images/product/halal product/Halal Beef.jpg",
+        "seller": "HalalMart",
+        "stockQuantity": 40
+    },
+    {
+        "id": "HL007",
+        "name": "Halal Lamb",
+        "price": 28.50,
+        "rating": 4.7,
+        "description": "Premium Halal-certified lamb, ideal for traditional dishes, roasting, or stewing.",
+        "category": "Halal Products",
+        "subCategory": "Meat",
+        "tags": [
+            "Halal",
+            "Lamb",
+            "Meat",
+            "Protein"
+        ],
+        "imageUrl": "assets/images/product/halal product/Halal Lamb.jpg",
+        "seller": "HalalMart",
+        "stockQuantity": 35
+    },
+    {
+        "id": "HL008",
+        "name": "Ikan Bilis",
+        "price": 10.90,
+        "rating": 4.5,
+        "description": "Halal dried anchovies (Ikan Bilis), perfect for cooking Malaysian-style dishes.",
+        "category": "Halal Products",
+        "subCategory": "Seafood",
+        "tags": [
+            "Halal",
+            "Ikan Bilis",
+            "Seafood",
+            "Cooking"
+        ],
+        "imageUrl": "assets/images/product/halal product/Ikan Bilis.jpg",
+        "seller": "HalalMart",
+        "stockQuantity": 60
+    },
+    {
+        "id": "HL009",
+        "name": "Instant Mashed Potatoes",
+        "price": 9.90,
+        "rating": 4.5,
+        "description": "Quick and easy Halal instant mashed potatoes, ideal for side dishes or meals.",
+        "category": "Halal Products",
+        "subCategory": "Ready-to-Eat",
+        "tags": [
+            "Halal",
+            "Mashed Potato",
+            "Instant",
+            "Side Dish"
+        ],
+        "imageUrl": "assets/images/product/halal product/Instant Mashed Potatoes.jpg",
+        "seller": "HalalMart",
+        "stockQuantity": 55
+    },
+    {
+        "id": "HL010",
+        "name": "Sambal Belacan",
+        "price": 8.50,
+        "rating": 4.6,
+        "description": "Traditional Halal sambal belacan, perfect for adding authentic flavor to meals.",
+        "category": "Halal Products",
+        "subCategory": "Condiment & Spices",
+        "tags": [
+            "Halal",
+            "Sambal Belacan",
+            "Spices",
+            "Condiment"
+        ],
+        "imageUrl": "assets/images/product/halal product/Sambal Belacan.jpg",
+        "seller": "HalalMart",
+        "stockQuantity": 70
+    },
+    {
+        "id": "HL011",
+        "name": "Gulai Curry Spice",
+        "price": 7.90,
+        "rating": 4.5,
+        "description": "Halal-certified gulai curry spice mix for authentic Malaysian flavors.",
+        "category": "Halal Products",
+        "subCategory": "Condiment & Spices",
+        "tags": [
+            "Halal",
+            "Curry",
+            "Spices",
+            "Condiment"
+        ],
+        "imageUrl": "assets/images/product/halal product/Gulai Curry Spice.jpg",
+        "seller": "HalalMart",
+        "stockQuantity": 60
+    },
+    {
+        "id": "NH001",
+        "name": "Braised Pork Belly",
+        "price": 28.90,
+        "rating": 4.7,
+        "description": "Tender and flavorful braised pork belly, perfect for main courses and traditional recipes.",
+        "category": "Non-Halal Products",
+        "subCategory": "Pork",
+        "tags": [
+            "Pork",
+            "Braised",
+            "Non-Halal",
+            "Meat"
+        ],
+        "imageUrl": "assets/images/product/Non Halal/Braised Pork Belly.jpg",
+        "seller": "PorkyDelights",
+        "stockQuantity": 40
+    },
+    {
+        "id": "NH002",
+        "name": "Crispy Pork Stick",
+        "price": 15.50,
+        "rating": 4.6,
+        "description": "Crispy pork sticks, perfect as a snack or appetizer, non-halal certified.",
+        "category": "Non-Halal Products",
+        "subCategory": "Pork",
+        "tags": [
+            "Pork",
+            "Crispy",
+            "Snack",
+            "Non-Halal"
+        ],
+        "imageUrl": "assets/images/product/Non Halal/Crispy Pork Stick.jpg",
+        "seller": "PorkyDelights",
+        "stockQuantity": 50
+    },
+    {
+        "id": "NH003",
+        "name": "Minced Pork Noodle",
+        "price": 12.90,
+        "rating": 4.5,
+        "description": "Delicious minced pork noodle dish, perfect for a quick meal or lunch.",
+        "category": "Non-Halal Products",
+        "subCategory": "Noodle",
+        "tags": [
+            "Pork",
+            "Noodle",
+            "Non-Halal",
+            "Meal"
+        ],
+        "imageUrl": "assets/images/product/Non Halal/Minced Pork Noodle.jpg",
+        "seller": "PorkyDelights",
+        "stockQuantity": 60
+    },
+    {
+        "id": "NH004",
+        "name": "Pork Bak Kwa",
+        "price": 35.00,
+        "rating": 4.8,
+        "description": "Sweet and savory pork bak kwa, a popular snack for festive occasions.",
+        "category": "Non-Halal Products",
+        "subCategory": "Jerky",
+        "tags": [
+            "Pork",
+            "Bak Kwa",
+            "Snack",
+            "Non-Halal"
+        ],
+        "imageUrl": "assets/images/product/Non Halal/Pork Bak Kwa.jpg",
+        "seller": "PorkyDelights",
+        "stockQuantity": 45
+    },
+    {
+        "id": "NH005",
+        "name": "Pork Jerky",
+        "price": 20.50,
+        "rating": 4.7,
+        "description": "High-quality pork jerky, tender and flavorful, non-halal certified.",
+        "category": "Non-Halal Products",
+        "subCategory": "Jerky",
+        "tags": [
+            "Pork",
+            "Jerky",
+            "Snack",
+            "Non-Halal"
+        ],
+        "imageUrl": "assets/images/product/Non Halal/Pork Jerky.jpg",
+        "seller": "PorkyDelights",
+        "stockQuantity": 50
+    },
+    {
+        "id": "NH006",
+        "name": "Pork Luncheon Meat",
+        "price": 18.90,
+        "rating": 4.6,
+        "description": "Classic canned pork luncheon meat, perfect for breakfast or quick meals.",
+        "category": "Non-Halal Products",
+        "subCategory": "Meat",
+        "tags": [
+            "Pork",
+            "Luncheon Meat",
+            "Non-Halal",
+            "Canned Food"
+        ],
+        "imageUrl": "assets/images/product/Non Halal/Pork Luncheon Meat.jpg",
+        "seller": "PorkyDelights",
+        "stockQuantity": 60
+    },
+    {
+        "id": "NH007",
+        "name": "Pork Minced",
+        "price": 22.00,
+        "rating": 4.5,
+        "description": "Fresh minced pork, ideal for cooking a variety of dishes.",
+        "category": "Non-Halal Products",
+        "subCategory": "Pork",
+        "tags": [
+            "Pork",
+            "Minced",
+            "Non-Halal",
+            "Meat"
+        ],
+        "imageUrl": "assets/images/product/Non Halal/Pork Minced.jpg",
+        "seller": "PorkyDelights",
+        "stockQuantity": 50
+    },
+    {
+        "id": "NH008",
+        "name": "Pork Rib Cube",
+        "price": 30.50,
+        "rating": 4.7,
+        "description": "Tender pork rib cubes, perfect for stews, soups, and stir-fries.",
+        "category": "Non-Halal Products",
+        "subCategory": "Pork",
+        "tags": [
+            "Pork",
+            "Rib",
+            "Non-Halal",
+            "Meat"
+        ],
+        "imageUrl": "assets/images/product/Non Halal/Pork Rib Cube.jpg",
+        "seller": "PorkyDelights",
+        "stockQuantity": 35
+    },
+    {
+        "id": "NH009",
+        "name": "Stewed Pork Chops",
+        "price": 28.90,
+        "rating": 4.6,
+        "description": "Flavorful stewed pork chops, ideal for hearty meals and traditional recipes.",
+        "category": "Non-Halal Products",
+        "subCategory": "Pork",
+        "tags": [
+            "Pork",
+            "Stewed",
+            "Chops",
+            "Non-Halal"
+        ],
+        "imageUrl": "assets/images/product/Non Halal/Stewed Pork Chops.jpg",
+        "seller": "PorkyDelights",
+        "stockQuantity": 40
+    },
+    {
+        "id": "NT001",
+        "name": "Cashew Nut",
+        "price": 18.50,
+        "rating": 4.7,
+        "description": "Premium quality cashew nuts, perfect for snacking or baking.",
+        "category": "Nut",
+        "subCategory": "Single Nut",
+        "tags": [
+            "Nut",
+            "Cashew",
+            "Snack",
+            "Healthy"
+        ],
+        "imageUrl": "assets/images/product/Nut/Cashew Nut.jpg",
+        "seller": "NuttyDelights",
+        "stockQuantity": 60
+    },
+    {
+        "id": "NT002",
+        "name": "Mix Nut",
+        "price": 22.90,
+        "rating": 4.8,
+        "description": "Healthy mix of premium nuts, including almonds, cashews, and walnuts.",
+        "category": "Nut",
+        "subCategory": "Mixed Nut",
+        "tags": [
+            "Nut",
+            "Mix Nut",
+            "Snack",
+            "Healthy"
+        ],
+        "imageUrl": "assets/images/product/Nut/Mix Nut.jpg",
+        "seller": "NuttyDelights",
+        "stockQuantity": 50
+    },
+    {
+        "id": "NT003",
+        "name": "Nut Crisp",
+        "price": 15.90,
+        "rating": 4.6,
+        "description": "Crispy nut bars made from premium nuts, a perfect healthy snack.",
+        "category": "Nut",
+        "subCategory": "Snack",
+        "tags": [
+            "Nut",
+            "Crisp",
+            "Snack",
+            "Healthy"
+        ],
+        "imageUrl": "assets/images/product/Nut/Nut Crisp.jpg",
+        "seller": "NuttyDelights",
+        "stockQuantity": 70
+    },
+    {
+        "id": "NT004",
+        "name": "Salted Peanut",
+        "price": 12.50,
+        "rating": 4.5,
+        "description": "Crunchy salted peanuts, perfect for snacking or cooking.",
+        "category": "Nut",
+        "subCategory": "Single Nut",
+        "tags": [
+            "Nut",
+            "Peanut",
+            "Salted",
+            "Snack"
+        ],
+        "imageUrl": "assets/images/product/Nut/Salted Peanut.jpg",
+        "seller": "NuttyDelights",
+        "stockQuantity": 80
+    },
+    {
+        "id": "NT005",
+        "name": "Walnut",
+        "price": 20.90,
+        "rating": 4.7,
+        "description": "Premium walnuts, perfect for baking, cooking, or snacking.",
+        "category": "Nut",
+        "subCategory": "Single Nut",
+        "tags": [
+            "Nut",
+            "Walnut",
+            "Healthy",
+            "Snack"
+        ],
+        "imageUrl": "assets/images/product/Nut/Walnut.jpg",
+        "seller": "NuttyDelights",
+        "stockQuantity": 50
+    },
+    {
+        "id": "EG001",
+        "name": "3 in 1 Cable 100W 6A",
+        "price": 29.90,
+        "rating": 4.6,
+        "description": "High-quality 3-in-1 cable supporting 100W power delivery and 6A current for fast charging multiple devices.",
+        "category": "Electronic & Gadget",
+        "subCategory": "Accessories",
+        "tags": [
+            "Cable",
+            "Fast Charging",
+            "Accessories",
+            "Electronics"
+        ],
+        "imageUrl": "assets/images/product/Tech/3 in 1 Cable 100W 6A.jpeg",
+        "seller": "TechHub",
+        "stockQuantity": 50
+    },
+    {
+        "id": "EG002",
+        "name": "EYD Wireless Charger Pad 15W",
+        "price": 35.50,
+        "rating": 4.7,
+        "description": "15W wireless charger pad compatible with Qi-enabled devices for convenient cable-free charging.",
+        "category": "Electronic & Gadget",
+        "subCategory": "Accessories",
+        "tags": [
+            "Wireless Charger",
+            "Accessories",
+            "Electronics",
+            "Fast Charging"
+        ],
+        "imageUrl": "assets/images/product/Tech/EYD Wireless Charger Pad 15W.jpeg",
+        "seller": "TechHub",
+        "stockQuantity": 40
+    },
+    {
+        "id": "EG003",
+        "name": "iPad Air",
+        "price": 1599.00,
+        "rating": 4.8,
+        "description": "Apple iPad Air with powerful performance and high-resolution display, perfect for work and entertainment.",
+        "category": "Electronic & Gadget",
+        "subCategory": "Mobile Devices",
+        "tags": [
+            "iPad",
+            "Tablet",
+            "Apple",
+            "Electronics"
+        ],
+        "imageUrl": "assets/images/product/Tech/Ipad Air.jpeg",
+        "seller": "TechHub",
+        "stockQuantity": 30
+    },
+    {
+        "id": "EG004",
+        "name": "iPhone 14 Pro Max",
+        "price": 4999.00,
+        "rating": 4.9,
+        "description": "Apple iPhone 14 Pro Max with advanced camera system and high performance for daily tasks and photography.",
+        "category": "Electronic & Gadget",
+        "subCategory": "Mobile Devices",
+        "tags": [
+            "iPhone",
+            "Mobile Phone",
+            "Apple",
+            "Electronics"
+        ],
+        "imageUrl": "assets/images/product/Tech/Iphone 14 Pro Max.jpeg",
+        "seller": "TechHub",
+        "stockQuantity": 25
+    },
+    {
+        "id": "EG005",
+        "name": "Luxury PU Leather Phone Casing",
+        "price": 49.90,
+        "rating": 4.6,
+        "description": "Premium PU leather phone casing that offers protection and a luxurious look for your device.",
+        "category": "Electronic & Gadget",
+        "subCategory": "Accessories",
+        "tags": [
+            "Phone Case",
+            "Leather",
+            "Accessories",
+            "Electronics"
+        ],
+        "imageUrl": "assets/images/product/Tech/Luxury PU Leather Phone Casing.jpeg",
+        "seller": "TechHub",
+        "stockQuantity": 60
+    },
+    {
+        "id": "EG006",
+        "name": "MSI GF63",
+        "price": 3999.00,
+        "rating": 4.8,
+        "description": "MSI GF63 gaming laptop with high performance for gaming and productivity tasks.",
+        "category": "Electronic & Gadget",
+        "subCategory": "Computers & Laptops",
+        "tags": [
+            "Laptop",
+            "Gaming",
+            "MSI",
+            "Electronics"
+        ],
+        "imageUrl": "assets/images/product/Tech/MSI GF63.jpeg",
+        "seller": "TechHub",
+        "stockQuantity": 15
+    },
+    {
+        "id": "EG007",
+        "name": "PD Fast Charger Set",
+        "price": 69.90,
+        "rating": 4.7,
+        "description": "Power Delivery fast charger set with multiple connectors for fast charging various devices.",
+        "category": "Electronic & Gadget",
+        "subCategory": "Accessories",
+        "tags": [
+            "Fast Charger",
+            "PD",
+            "Accessories",
+            "Electronics"
+        ],
+        "imageUrl": "assets/images/product/Tech/PD Fast Charger Set.jpeg",
+        "seller": "TechHub",
+        "stockQuantity": 50
+    },
+    {
+        "id": "EG008",
+        "name": "TWS Bluetooth Earphones",
+        "price": 129.90,
+        "rating": 4.6,
+        "description": "True Wireless Stereo Bluetooth earphones with high-quality sound and long battery life.",
+        "category": "Electronic & Gadget",
+        "subCategory": "Audio",
+        "tags": [
+            "Earphones",
+            "Bluetooth",
+            "Audio",
+            "Electronics"
+        ],
+        "imageUrl": "assets/images/product/Tech/TWS BlueTooth Earphones.jpeg",
+        "seller": "TechHub",
+        "stockQuantity": 45
+    },
+    {
+        "id": "EG009",
+        "name": "Xiaomi Type-C Earphone",
+        "price": 79.90,
+        "rating": 4.5,
+        "description": "Xiaomi Type-C earphones for clear audio and comfortable fit, perfect for everyday use.",
+        "category": "Electronic & Gadget",
+        "subCategory": "Audio",
+        "tags": [
+            "Earphones",
+            "Type-C",
+            "Xiaomi",
+            "Electronics"
+        ],
+        "imageUrl": "assets/images/product/Tech/Xiaomi Type-C Earphone.jpeg",
+        "seller": "TechHub",
+        "stockQuantity": 50
+    },
+    {
+        "id": "VG001",
+        "name": "Plant Based Chocolate Morsels",
+        "price": 18.90,
+        "rating": 4.7,
+        "description": "Delicious plant-based chocolate morsels, perfect for baking and snacking.",
+        "category": "Vegan Products",
+        "subCategory": "Snacks & Chocolate",
+        "tags": [
+            "Vegan",
+            "Chocolate",
+            "Snack",
+            "Plant-Based"
+        ],
+        "imageUrl": "assets/images/products/plant_chocolate_morsels.jpg",
+        "seller": "VeganDelights",
+        "stockQuantity": 60
+    },
+    {
+        "id": "VG002",
+        "name": "Plant Based Creamy Tomato Soup",
+        "price": 12.50,
+        "rating": 4.6,
+        "description": "Creamy vegan tomato soup, perfect for a healthy and comforting meal.",
+        "category": "Vegan Products",
+        "subCategory": "Beverages & Soups",
+        "tags": [
+            "Vegan",
+            "Soup",
+            "Plant-Based",
+            "Tomato"
+        ],
+        "imageUrl": "assets/images/products/plant_tomato_soup.jpg",
+        "seller": "VeganDelights",
+        "stockQuantity": 50
+    },
+    {
+        "id": "VG003",
+        "name": "Plant Protein Powder",
+        "price": 89.90,
+        "rating": 4.8,
+        "description": "High-quality plant protein powder, perfect for vegan shakes and smoothies.",
+        "category": "Vegan Products",
+        "subCategory": "Protein & Supplements",
+        "tags": [
+            "Vegan",
+            "Protein",
+            "Plant-Based",
+            "Supplement"
+        ],
+        "imageUrl": "assets/images/products/plant_protein_powder.jpg",
+        "seller": "VeganDelights",
+        "stockQuantity": 40
+    },
+    {
+        "id": "VG004",
+        "name": "Vegan Chicken Essence",
+        "price": 25.90,
+        "rating": 4.6,
+        "description": "Vegan chicken essence for soups and cooking, completely plant-based and Halal-friendly.",
+        "category": "Vegan Products",
+        "subCategory": "Beverages & Soups",
+        "tags": [
+            "Vegan",
+            "Chicken Essence",
+            "Plant-Based",
+            "Cooking"
+        ],
+        "imageUrl": "assets/images/products/vegan_chicken_essence.jpg",
+        "seller": "VeganDelights",
+        "stockQuantity": 50
+    },
+    {
+        "id": "VG005",
+        "name": "Vegan Chocolate",
+        "price": 15.90,
+        "rating": 4.7,
+        "description": "Premium vegan chocolate, perfect for snacking or baking.",
+        "category": "Vegan Products",
+        "subCategory": "Snacks & Chocolate",
+        "tags": [
+            "Vegan",
+            "Chocolate",
+            "Snack",
+            "Plant-Based"
+        ],
+        "imageUrl": "assets/images/products/vegan_chocolate.jpg",
+        "seller": "VeganDelights",
+        "stockQuantity": 60
+    },
+    {
+        "id": "VG006",
+        "name": "Vegan Kaya",
+        "price": 14.90,
+        "rating": 4.5,
+        "description": "Delicious plant-based vegan kaya, perfect for toast and spreads.",
+        "category": "Vegan Products",
+        "subCategory": "Condiments & Seasonings",
+        "tags": [
+            "Vegan",
+            "Kaya",
+            "Plant-Based",
+            "Spread"
+        ],
+        "imageUrl": "assets/images/products/vegan_kaya.jpg",
+        "seller": "VeganDelights",
+        "stockQuantity": 50
+    },
+    {
+        "id": "VG007",
+        "name": "Vegan Lipstick",
+        "price": 35.90,
+        "rating": 4.6,
+        "description": "Cruelty-free and vegan lipstick with long-lasting color and smooth application.",
+        "category": "Vegan Products",
+        "subCategory": "Personal Care",
+        "tags": [
+            "Vegan",
+            "Lipstick",
+            "Makeup",
+            "Plant-Based"
+        ],
+        "imageUrl": "assets/images/products/vegan_lipstick.jpg",
+        "seller": "VeganDelights",
+        "stockQuantity": 40
+    },
+    {
+        "id": "VG008",
+        "name": "Vegan Luncheon Meat",
+        "price": 19.90,
+        "rating": 4.5,
+        "description": "Plant-based vegan luncheon meat, perfect for sandwiches and cooking.",
+        "category": "Vegan Products",
+        "subCategory": "Protein & Supplements",
+        "tags": [
+            "Vegan",
+            "Luncheon Meat",
+            "Plant-Based",
+            "Protein"
+        ],
+        "imageUrl": "assets/images/products/vegan_luncheon_meat.jpg",
+        "seller": "VeganDelights",
+        "stockQuantity": 50
+    },
+    {
+        "id": "VG009",
+        "name": "Vegan Protein Bar",
+        "price": 12.90,
+        "rating": 4.6,
+        "description": "Nutritious vegan protein bar, perfect for on-the-go snacking.",
+        "category": "Vegan Products",
+        "subCategory": "Protein & Supplements",
+        "tags": [
+            "Vegan",
+            "Protein Bar",
+            "Snack",
+            "Plant-Based"
+        ],
+        "imageUrl": "assets/images/products/vegan_protein_bar.jpg",
+        "seller": "VeganDelights",
+        "stockQuantity": 60
+    },
+    {
+        "id": "VG010",
+        "name": "Vegetarian Seasoning",
+        "price": 9.90,
+        "rating": 4.5,
+        "description": "Plant-based vegetarian seasoning, perfect for enhancing the flavor of dishes.",
+        "category": "Vegan Products",
+        "subCategory": "Condiments & Seasonings",
+        "tags": [
+            "Vegan",
+            "Seasoning",
+            "Plant-Based",
+            "Condiment"
+        ],
+        "imageUrl": "assets/images/products/vegetarian_seasoning.jpg",
+        "seller": "VeganDelights",
+        "stockQuantity": 50
+    },
+    {
+        "id": "VG001",
+        "name": "Plant Based Chocolate Morsels",
+        "price": 18.90,
+        "rating": 4.7,
+        "description": "Delicious plant-based chocolate morsels, perfect for baking and snacking.",
+        "category": "Vegan Products",
+        "subCategory": "Snacks & Chocolate",
+        "tags": [
+            "Vegan",
+            "Chocolate",
+            "Snack",
+            "Plant-Based"
+        ],
+        "imageUrl": "assets/images/product/Vegan/Plant Based Chocolate Morsels.jpg",
+        "seller": "VeganDelights",
+        "stockQuantity": 60
+    },
+    {
+        "id": "VG002",
+        "name": "Plant Based Creamy Tomato Soup",
+        "price": 12.50,
+        "rating": 4.6,
+        "description": "Creamy vegan tomato soup, perfect for a healthy and comforting meal.",
+        "category": "Vegan Products",
+        "subCategory": "Beverages & Soups",
+        "tags": [
+            "Vegan",
+            "Soup",
+            "Plant-Based",
+            "Tomato"
+        ],
+        "imageUrl": "assets/images/product/Vegan/Plant Based Creamy Tomato Soup.jpg",
+        "seller": "VeganDelights",
+        "stockQuantity": 50
+    },
+    {
+        "id": "VG003",
+        "name": "Plant Protein Powder",
+        "price": 89.90,
+        "rating": 4.8,
+        "description": "High-quality plant protein powder, perfect for vegan shakes and smoothies.",
+        "category": "Vegan Products",
+        "subCategory": "Protein & Supplements",
+        "tags": [
+            "Vegan",
+            "Protein",
+            "Plant-Based",
+            "Supplement"
+        ],
+        "imageUrl": "assets/images/product/Vegan/Plant Protein Powder.jpg",
+        "seller": "VeganDelights",
+        "stockQuantity": 40
+    },
+    {
+        "id": "VG004",
+        "name": "Vegan Chicken Essence",
+        "price": 25.90,
+        "rating": 4.6,
+        "description": "Vegan chicken essence for soups and cooking, completely plant-based and Halal-friendly.",
+        "category": "Vegan Products",
+        "subCategory": "Beverages & Soups",
+        "tags": [
+            "Vegan",
+            "Chicken Essence",
+            "Plant-Based",
+            "Cooking"
+        ],
+        "imageUrl": "assets/images/product/Vegan/Vegan Chicken Essence.jpg",
+        "seller": "VeganDelights",
+        "stockQuantity": 50
+    },
+    {
+        "id": "VG005",
+        "name": "Vegan Chocolate",
+        "price": 15.90,
+        "rating": 4.7,
+        "description": "Premium vegan chocolate, perfect for snacking or baking.",
+        "category": "Vegan Products",
+        "subCategory": "Snacks & Chocolate",
+        "tags": [
+            "Vegan",
+            "Chocolate",
+            "Snack",
+            "Plant-Based"
+        ],
+        "imageUrl": "assets/images/product/Vegan/Vegan Chocolate.jpg",
+        "seller": "VeganDelights",
+        "stockQuantity": 60
+    },
+    {
+        "id": "VG006",
+        "name": "Vegan Kaya",
+        "price": 14.90,
+        "rating": 4.5,
+        "description": "Delicious plant-based vegan kaya, perfect for toast and spreads.",
+        "category": "Vegan Products",
+        "subCategory": "Condiments & Seasonings",
+        "tags": [
+            "Vegan",
+            "Kaya",
+            "Plant-Based",
+            "Spread"
+        ],
+        "imageUrl": "assets/images/product/Vegan/Vegan Kaya.jpg",
+        "seller": "VeganDelights",
+        "stockQuantity": 50
+    },
+    {
+        "id": "VG007",
+        "name": "Vegan Lipstick",
+        "price": 35.90,
+        "rating": 4.6,
+        "description": "Cruelty-free and vegan lipstick with long-lasting color and smooth application.",
+        "category": "Vegan Products",
+        "subCategory": "Personal Care",
+        "tags": [
+            "Vegan",
+            "Lipstick",
+            "Makeup",
+            "Plant-Based"
+        ],
+        "imageUrl": "assets/images/product/Vegan/Vegan Lipstick.jpg",
+        "seller": "VeganDelights",
+        "stockQuantity": 40
+    },
+    {
+        "id": "VG008",
+        "name": "Vegan Luncheon Meat",
+        "price": 19.90,
+        "rating": 4.5,
+        "description": "Plant-based vegan luncheon meat, perfect for sandwiches and cooking.",
+        "category": "Vegan Products",
+        "subCategory": "Protein & Supplements",
+        "tags": [
+            "Vegan",
+            "Luncheon Meat",
+            "Plant-Based",
+            "Protein"
+        ],
+        "imageUrl": "assets/images/product/Vegan/Vegan Luncheon Meat.jpg",
+        "seller": "VeganDelights",
+        "stockQuantity": 50
+    },
+    {
+        "id": "VG009",
+        "name": "Vegan Protein Bar",
+        "price": 12.90,
+        "rating": 4.6,
+        "description": "Nutritious vegan protein bar, perfect for on-the-go snacking.",
+        "category": "Vegan Products",
+        "subCategory": "Protein & Supplements",
+        "tags": [
+            "Vegan",
+            "Protein Bar",
+            "Snack",
+            "Plant-Based"
+        ],
+        "imageUrl": "assets/images/product/Vegan/Vegan Protein Bar.jpg",
+        "seller": "VeganDelights",
+        "stockQuantity": 60
+    },
+    {
+        "id": "VG010",
+        "name": "Vegetarian Seasoning",
+        "price": 9.90,
+        "rating": 4.5,
+        "description": "Plant-based vegetarian seasoning, perfect for enhancing the flavor of dishes.",
+        "category": "Vegan Products",
+        "subCategory": "Condiments & Seasonings",
+        "tags": [
+            "Vegan",
+            "Seasoning",
+            "Plant-Based",
+            "Condiment"
+        ],
+        "imageUrl": "assets/images/product/Vegan/Vegetarian Seasoning.jpg",
+        "seller": "VeganDelights",
+        "stockQuantity": 50
     }
 ]

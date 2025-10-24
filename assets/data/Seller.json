@@ -1,0 +1,233 @@
+[
+  {
+    "sellerId": "SELL001",
+    "name": "DailyWear Co.",
+    "email": "contact@dailywear.com",
+    "phoneNumber": "+60123456701",
+    "profileImage": "assets/images/sellers/DailyWear Co..png",
+    "address": {
+      "street": "123 Jalan PJS 11/7",
+      "city": "Subang Jaya",
+      "state": "Selangor",
+      "postcode": "47500",
+      "country": "Malaysia"
+    },
+    "businessType": "Clothing",
+    "isVerified": true,
+    "ratings": 4.7,
+    "accountCreated": "2025-01-01T10:00:00Z",
+    "lastActive": "2025-10-23T08:00:00Z",
+    "status": "active",
+    "categories": ["Cloth"]
+  },
+  {
+    "sellerId": "SELL002",
+    "name": "Green Harvest Store",
+    "email": "contact@greenharvest.com",
+    "phoneNumber": "+60123456702",
+    "profileImage": "assets/images/sellers/Green Harvest Store.png",
+    "address": {
+      "street": "45 Jalan SS15/4",
+      "city": "Subang Jaya",
+      "state": "Selangor",
+      "postcode": "47500",
+      "country": "Malaysia"
+    },
+    "businessType": "Dairy-Free Products",
+    "isVerified": true,
+    "ratings": 4.6,
+    "accountCreated": "2025-01-15T09:00:00Z",
+    "lastActive": "2025-10-22T12:00:00Z",
+    "status": "active",
+    "categories": ["Dairy-Free"]
+  },
+  {
+    "sellerId": "SELL003",
+    "name": "Green Planet Store",
+    "email": "contact@greenplanet.com",
+    "phoneNumber": "+60123456703",
+    "profileImage": "assets/images/sellers/Green Planet Store.png",
+    "address": {
+      "street": "78 Jalan Eco Park",
+      "city": "Petaling Jaya",
+      "state": "Selangor",
+      "postcode": "47301",
+      "country": "Malaysia"
+    },
+    "businessType": "Eco-Friendly Products",
+    "isVerified": true,
+    "ratings": 4.6,
+    "accountCreated": "2025-02-01T10:00:00Z",
+    "lastActive": "2025-10-21T11:00:00Z",
+    "status": "active",
+    "categories": ["Eco-Friendly"]
+  },
+  {
+    "sellerId": "SELL004",
+    "name": "FitGear Store",
+    "email": "contact@fitgear.com",
+    "phoneNumber": "+60123456704",
+    "profileImage": "assets/images/sellers/FitGear Store.png",
+    "address": {
+      "street": "12 Jalan Fitness",
+      "city": "Kuala Lumpur",
+      "state": "KL",
+      "postcode": "50000",
+      "country": "Malaysia"
+    },
+    "businessType": "Fitness Equipment",
+    "isVerified": true,
+    "ratings": 4.7,
+    "accountCreated": "2025-02-15T10:00:00Z",
+    "lastActive": "2025-10-22T09:00:00Z",
+    "status": "active",
+    "categories": ["Fitness"]
+  },
+  {
+    "sellerId": "SELL005",
+    "name": "GlutenGood Store",
+    "email": "contact@glutengood.com",
+    "phoneNumber": "+60123456705",
+    "profileImage": "assets/images/sellers/Gluten Good.png",
+    "address": {
+      "street": "34 Jalan Healthy",
+      "city": "Petaling Jaya",
+      "state": "Selangor",
+      "postcode": "47301",
+      "country": "Malaysia"
+    },
+    "businessType": "Gluten-Free Products",
+    "isVerified": true,
+    "ratings": 4.6,
+    "accountCreated": "2025-03-01T10:00:00Z",
+    "lastActive": "2025-10-20T10:00:00Z",
+    "status": "active",
+    "categories": ["Gluten-Free"]
+  },
+  {
+    "sellerId": "SELL006",
+    "name": "BakeHouse Store",
+    "email": "contact@bakehouse.com",
+    "phoneNumber": "+60123456706",
+    "profileImage": "assets/images/sellers/BakeHouse Store.png",
+    "address": {
+      "street": "56 Jalan Baker",
+      "city": "Kuala Lumpur",
+      "state": "KL",
+      "postcode": "50000",
+      "country": "Malaysia"
+    },
+    "businessType": "Gluten Products",
+    "isVerified": true,
+    "ratings": 4.5,
+    "accountCreated": "2025-03-15T10:00:00Z",
+    "lastActive": "2025-10-19T09:00:00Z",
+    "status": "active",
+    "categories": ["Gluten"]
+  },
+  {
+    "sellerId": "SELL007",
+    "name": "HalalMart",
+    "email": "contact@halalmart.com",
+    "phoneNumber": "+60123456707",
+    "profileImage": "assets/images/sellers/Halal Mart.png",
+    "address": {
+      "street": "78 Jalan Halal",
+      "city": "Kuala Lumpur",
+      "state": "KL",
+      "postcode": "50000",
+      "country": "Malaysia"
+    },
+    "businessType": "Halal Food",
+    "isVerified": true,
+    "ratings": 4.7,
+    "accountCreated": "2025-04-01T10:00:00Z",
+    "lastActive": "2025-10-21T12:00:00Z",
+    "status": "active",
+    "categories": ["Halal"]
+  },
+  {
+    "sellerId": "SELL008",
+    "name": "PorkyDelights",
+    "email": "contact@porkydelights.com",
+    "phoneNumber": "+60123456708",
+    "profileImage": "assets/images/sellers/PorkyDelights.png",
+    "address": {
+      "street": "90 Jalan Pork",
+      "city": "Petaling Jaya",
+      "state": "Selangor",
+      "postcode": "47301",
+      "country": "Malaysia"
+    },
+    "businessType": "Non-Halal Food",
+    "isVerified": true,
+    "ratings": 4.5,
+    "accountCreated": "2025-04-15T10:00:00Z",
+    "lastActive": "2025-10-20T11:00:00Z",
+    "status": "active",
+    "categories": ["Non-Halal"]
+  },
+  {
+    "sellerId": "SELL009",
+    "name": "NuttyDelights",
+    "email": "contact@nuttydelights.com",
+    "phoneNumber": "+60123456709",
+    "profileImage": "assets/images/sellers/NuttyDelights.png",
+    "address": {
+      "street": "12 Jalan Nut",
+      "city": "Kuala Lumpur",
+      "state": "KL",
+      "postcode": "50000",
+      "country": "Malaysia"
+    },
+    "businessType": "Nuts & Snacks",
+    "isVerified": true,
+    "ratings": 4.6,
+    "accountCreated": "2025-05-01T10:00:00Z",
+    "lastActive": "2025-10-22T09:00:00Z",
+    "status": "active",
+    "categories": ["Nut"]
+  },
+  {
+    "sellerId": "SELL010",
+    "name": "TechHub",
+    "email": "contact@techhub.com",
+    "phoneNumber": "+60123456710",
+    "profileImage": "assets/images/sellers/TechHub.png",
+    "address": {
+      "street": "34 Jalan Tech",
+      "city": "Kuala Lumpur",
+      "state": "KL",
+      "postcode": "50000",
+      "country": "Malaysia"
+    },
+    "businessType": "Electronics & Gadgets",
+    "isVerified": true,
+    "ratings": 4.8,
+    "accountCreated": "2025-05-15T10:00:00Z",
+    "lastActive": "2025-10-23T08:00:00Z",
+    "status": "active",
+    "categories": ["Electronic & Gadget"]
+  },
+  {
+    "sellerId": "SELL011",
+    "name": "VeganDelights",
+    "email": "contact@vegandelights.com",
+    "phoneNumber": "+60123456711",
+    "profileImage": "assets/images/sellers/VeganDelights.png",
+    "address": {
+      "street": "45 Jalan SS15/4",
+      "city": "Subang Jaya",
+      "state": "Selangor",
+      "postcode": "47500",
+      "country": "Malaysia"
+    },
+    "businessType": "Vegan Products",
+    "isVerified": true,
+    "ratings": 4.7,
+    "accountCreated": "2025-05-20T10:00:00Z",
+    "lastActive": "2025-10-22T10:00:00Z",
+    "status": "active",
+    "categories": ["Vegan Products"]
+  }
+]
