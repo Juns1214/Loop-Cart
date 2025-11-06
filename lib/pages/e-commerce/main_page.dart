@@ -552,6 +552,7 @@ class _MainPageState extends State<MainPage> {
                                       productName: product['name'] ?? 'Unknown',
                                       productPrice: (product['price'] ?? 0).toDouble(),
                                       rating: (product['rating'] ?? 0).toDouble(),
+                                      productData: product,
                                     );
                                   },
                                 ),
@@ -599,6 +600,7 @@ class _MainPageState extends State<MainPage> {
                                     productPrice: (product['price'] ?? 0).toDouble(),
                                     rating: (product['rating'] ?? 0).toDouble(),
                                     category: product['category'] ?? '',
+                                    productData: product,
                                   );
                                 },
                               ),
