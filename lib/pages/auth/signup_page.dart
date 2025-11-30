@@ -85,10 +85,11 @@ class _SignUpPageState extends State<SignUpPage> {
             'email': user.email,
             'phoneNumber': phoneController.text,
             'createdAt': FieldValue.serverTimestamp(),
-            'profileImageURL': '', // Default empty
-            'name': '', // To be filled in edit profile
-            'address': '', // To be filled in edit profile
-            'dateOfBirth': '', // To be filled in edit profile
+            'profileImageURL': '', 
+            'name': '',
+            'address': '',
+            'dateOfBirth': '', 
+            'greenCoins': 0,
           });
     }
   }

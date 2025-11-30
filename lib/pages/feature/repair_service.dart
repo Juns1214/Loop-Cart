@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -11,7 +12,6 @@ import '../../utils/address_form.dart';
 import '../../utils/repair_option.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../utils/router.dart';
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,6 +47,7 @@ class _RepairServicePageState extends State<RepairServicePage> {
   final _addressFormKey = GlobalKey<AddressFormState>();
   final User? user = FirebaseAuth.instance.currentUser;
 
+  bool _isPickerActive = false;
   File? _image;
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = const TimeOfDay(hour: 14, minute: 0);
@@ -60,12 +61,33 @@ class _RepairServicePageState extends State<RepairServicePage> {
   }
 
   Future<void> pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
+    if (_isPickerActive) return;
+
+    setState(() {
+      _isPickerActive = true;
+    });
+
+    try {
+      final picker = ImagePicker();
+
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+      if (pickedFile != null) {
+        setState(() {
+          _image = File(pickedFile.path);
+        });
+      }
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Error loading image: $e",
+        toastLength: Toast.LENGTH_SHORT,
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isPickerActive = false;
+        });
+      }
     }
   }
 
@@ -133,9 +155,9 @@ class _RepairServicePageState extends State<RepairServicePage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
       }
     }
   }

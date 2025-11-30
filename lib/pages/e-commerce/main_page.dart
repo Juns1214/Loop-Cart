@@ -247,7 +247,10 @@ class _MainPageState extends State<MainPage> {
       case 3: // Analytics Dashboard
         Navigator.pushNamed(context, '/sustainability-dashboard');
         break;
-      case 4: // User Profile
+      case 4: // ChatBot
+        Navigator.pushNamed(context, '/chatbot');
+        break;
+      case 5: // User Profile
         Navigator.pushNamed(context, '/user-profile');
         break;
     }
@@ -393,7 +396,7 @@ class _MainPageState extends State<MainPage> {
                 ListTile(
                   contentPadding: EdgeInsets.symmetric(horizontal: 32),
                   title: Text('Basket of Hope'),
-                  onTap: () => Navigator.pop(context),
+                  onTap: () => Navigator.pushNamed(context, '/donation'),
                 ),
               ],
             ),
@@ -429,6 +432,20 @@ class _MainPageState extends State<MainPage> {
 
             ListTile(
               leading: Image.asset(
+                'assets/images/icon/ChatBotIcon.png',
+                fit: BoxFit.fill,
+                width: 50,
+                height: 50,
+              ),
+              title: Text('ChatBot'),
+              onTap: () {
+                Navigator.pop(context);
+                _handleNavigation(4);
+              },
+            ),
+
+            ListTile(
+              leading: Image.asset(
                 'assets/images/icon/UserProfileIcon.png',
                 fit: BoxFit.fill,
                 width: 50,
@@ -437,7 +454,7 @@ class _MainPageState extends State<MainPage> {
               title: Text('User Profile'),
               onTap: () {
                 Navigator.pop(context);
-                _handleNavigation(4);
+                _handleNavigation(5);
               },
             ),
           ],

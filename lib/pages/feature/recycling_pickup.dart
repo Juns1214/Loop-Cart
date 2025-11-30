@@ -9,7 +9,8 @@ import 'dart:convert';
 import '../../utils/date_time_picker.dart';
 import '../../utils/address_form.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../utils/router.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,8 +26,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: "/recycling-pickup",
-      onGenerateRoute: onGenerateRoute,
+      home: const RecyclingPickUpPage(),
     );
   }
 }
@@ -36,11 +36,13 @@ class RecyclingCategory {
   final String name;
   final IconData icon;
   final Color color;
+  final List<String> keywords;
 
   const RecyclingCategory({
     required this.name,
     required this.icon,
     required this.color,
+    required this.keywords,
   });
 }
 
@@ -58,42 +60,49 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
   final _addressFormKey = GlobalKey<AddressFormState>();
   final User? user = FirebaseAuth.instance.currentUser;
 
+  bool _isPickerActive = false;
   File? _image;
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = const TimeOfDay(hour: 14, minute: 0);
   String? _selectedCategory;
 
-  // Define recycling categories
+  // Define recycling categories with keyword mappings
   static const List<RecyclingCategory> categories = [
     RecyclingCategory(
       name: 'Plastic',
       icon: Icons.water_drop_outlined,
       color: Color(0xFF4CAF50),
+      keywords: ['plastic', 'bottle', 'container', 'packaging', 'bag', 'cup', 'straw', 'wrapper'],
     ),
     RecyclingCategory(
       name: 'Paper',
       icon: Icons.description_outlined,
       color: Color(0xFF8D6E63),
+      keywords: ['paper', 'cardboard', 'box', 'newspaper', 'magazine', 'book', 'document', 'envelope'],
     ),
     RecyclingCategory(
       name: 'Glass',
       icon: Icons.wine_bar_outlined,
       color: Color(0xFF00BCD4),
+      keywords: ['glass', 'jar', 'wine', 'beer', 'mirror', 'window'],
     ),
     RecyclingCategory(
       name: 'Metal',
       icon: Icons.recycling,
       color: Color(0xFF9E9E9E),
+      keywords: ['metal', 'can', 'aluminum', 'tin', 'steel', 'copper', 'wire'],
     ),
     RecyclingCategory(
       name: 'Electronics',
       icon: Icons.devices_outlined,
       color: Color(0xFFFF9800),
+      keywords: ['phone', 'computer', 'laptop', 'tablet', 'electronic', 'battery', 'charger', 'cable', 'monitor', 'keyboard'],
     ),
     RecyclingCategory(
       name: 'Cardboard',
       icon: Icons.inventory_2_outlined,
       color: Color(0xFF795548),
+      keywords: ['cardboard', 'box', 'carton', 'packaging'],
     ),
   ];
 
@@ -105,13 +114,33 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
   }
 
   Future<void> pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    
-    if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
+    if (_isPickerActive) return;
+
+    setState(() {
+      _isPickerActive = true;
+    });
+
+    try {
+      final picker = ImagePicker();
+
+      final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+      if (pickedFile != null) {
+        setState(() {
+          _image = File(pickedFile.path);
+        });
+      }
+    } catch (e) {
+      Fluttertoast.showToast(
+        msg: "Error loading image: $e",
+        toastLength: Toast.LENGTH_SHORT,
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isPickerActive = false;
+        });
+      }
     }
   }
 
@@ -228,7 +257,7 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // Product Image
+                // Product Image (moved to top for better UX)
                 const Text(
                   "Product Image",
                   style: TextStyle(
@@ -258,7 +287,7 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
                               ),
                               const SizedBox(height: 8),
                               const Text(
-                                "📸 Tap to upload image",
+                                "📸 Tap to upload & auto-detect",
                                 style: TextStyle(
                                   color: Colors.grey,
                                   fontWeight: FontWeight.w500,
@@ -296,7 +325,7 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // Recycling Category
+                // Recycling Category (NEW)
                 const Text(
                   "Recycling Category",
                   style: TextStyle(
@@ -366,7 +395,7 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    hintText: "Enter item name",
+                    hintText: "Auto-filled or enter manually",
                     hintStyle: const TextStyle(
                       fontSize: 15,
                       color: Colors.grey,
@@ -403,7 +432,7 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    hintText: "Describe the recyclable item",
+                    hintText: "Auto-filled with detection results or enter manually",
                     hintStyle: const TextStyle(
                       color: Colors.grey,
                       fontSize: 14,

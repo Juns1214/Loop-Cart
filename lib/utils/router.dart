@@ -31,8 +31,14 @@ final Map routes = {
   "/category-filter": (context) => const CategoryFilterPage(),
   "/cart-items": (context) => CartItems(),
   "/checkout": (context) => Checkout(selectedItems: [], userAddress: null),
-  "/payment": (context, {arguments}) => Payment(orderData: {}),
-  "/payment-confirmation": (context) => PaymentConfirmation(orderData: {}, orderId: '', transactionId: '', paymentMethod: '',),
+  "/payment": (context, {arguments}) =>
+      Payment(orderData: arguments as Map<String, dynamic>? ?? {}),
+  "/payment-confirmation": (context) => PaymentConfirmation(
+    orderData: {},
+    orderId: '',
+    transactionId: '',
+    paymentMethod: '',
+  ),
   "/purchase-history": (context) => const PurchaseHistory(),
   "/chatbot": (context) => const ChatBotScreen(),
   "/donation": (context) => const DonationPage(),

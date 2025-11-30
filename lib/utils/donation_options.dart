@@ -6,7 +6,7 @@ final List<Map<String, dynamic>> donationOptions = [
     'description': 'Support families in need with daily necessities.',
     'imageURL': 'assets/images/donation category/Low Income Families.jpg',
     'percentage': 20,
-    'color': Colors.orange[100]!,  // Non-nullable with !
+    'color': Colors.orange[100]!, 
   },
   {
     'title': 'Orphanage',

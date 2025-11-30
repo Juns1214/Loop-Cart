@@ -48,7 +48,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 
   Future<String> loadSystemPrompt() async {
-    return await rootBundle.loadString('assets/data/Context_Prompt.txt');
+    return await rootBundle.loadString('assets/data/System_Prompt.txt');
   }
 
   // 🌿 System Context

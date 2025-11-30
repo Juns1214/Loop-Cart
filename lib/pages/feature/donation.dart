@@ -69,31 +69,37 @@ class DonationOptionWidget extends StatelessWidget {
         child: Row(
           children: [
             // Circular image on the left
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                image: DecorationImage(
-                  image: AssetImage(imageURL),
-                  fit: BoxFit.cover,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
-                  ),
-                ],
+            ClipOval(
+              child: Image.asset(
+                imageURL,
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.grey[300],
+                    ),
+                    child: Icon(
+                      Icons.image_not_supported,
+                      color: Colors.grey[600],
+                      size: 24,
+                    ),
+                  );
+                },
               ),
             ),
             
             SizedBox(width: 12),
             
-            // Title and progress bar in the middle
+            // Title and description in the middle
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     title,
@@ -103,18 +109,17 @@ class DonationOptionWidget extends StatelessWidget {
                       color: Colors.black87,
                     ),
                   ),
-                  SizedBox(height: 8),
-                  // Progress bar
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: LinearProgressIndicator(
-                      value: percentage / 100,
-                      backgroundColor: Colors.white.withOpacity(0.5),
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        _getProgressColor(),
-                      ),
-                      minHeight: 8,
+                  SizedBox(height: 4),
+                  // Description with text wrapping
+                  Text(
+                    description,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.black54,
+                      height: 1.3,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
@@ -122,50 +127,26 @@ class DonationOptionWidget extends StatelessWidget {
             
             SizedBox(width: 12),
             
-            // Percentage and checkbox on the right
-            Column(
-              children: [
-                Text(
-                  "$percentage%",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                    color: Colors.black87,
-                  ),
+            // Checkbox on the right
+            Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isSelected ? Color(0xFF2E5BFF) : Colors.white,
+                border: Border.all(
+                  color: isSelected ? Color(0xFF2E5BFF) : Colors.grey[400]!,
+                  width: 2,
                 ),
-                SizedBox(height: 8),
-                Container(
-                  width: 24,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: isSelected ? Color(0xFF2E5BFF) : Colors.white,
-                    border: Border.all(
-                      color: isSelected ? Color(0xFF2E5BFF) : Colors.grey[400]!,
-                      width: 2,
-                    ),
-                  ),
-                  child: isSelected
-                      ? Icon(Icons.check, color: Colors.white, size: 16)
-                      : null,
-                ),
-              ],
+              ),
+              child: isSelected
+                  ? Icon(Icons.check, color: Colors.white, size: 16)
+                  : null,
             ),
           ],
         ),
       ),
     );
-  }
-
-  Color _getProgressColor() {
-    // Return a darker shade based on the background color
-    if (color == Colors.orange[100]) return Colors.orange;
-    if (color == Colors.pink[100]) return Colors.pink;
-    if (color == Colors.blue[100]) return Colors.blue;
-    if (color == Colors.red[100]) return Colors.red;
-    if (color == Colors.green[100]) return Colors.green;
-    if (color == Colors.teal[100]) return Colors.teal;
-    return Color(0xFF2E5BFF);
   }
 }
 
@@ -180,7 +161,7 @@ class _DonationPageState extends State<DonationPage> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
   
-  Set<int> selectedCategories = {};
+  int? selectedCategory;
   int? selectedAmount;
   List<int> donationAmount = [10, 25, 50, 100, 150, 200];
 
@@ -198,7 +179,7 @@ class _DonationPageState extends State<DonationPage> {
   }
 
   bool _canProceed() {
-    return selectedCategories.isNotEmpty && 
+    return selectedCategory != null && 
            _amountController.text.isNotEmpty &&
            (double.tryParse(_amountController.text) ?? 0) >= 1;
   }
@@ -290,14 +271,10 @@ class _DonationPageState extends State<DonationPage> {
                       imageURL: option['imageURL'],
                       percentage: option['percentage'],
                       color: option['color'],
-                      isSelected: selectedCategories.contains(index),
+                      isSelected: selectedCategory == index,
                       onTap: () {
                         setState(() {
-                          if (selectedCategories.contains(index)) {
-                            selectedCategories.remove(index);
-                          } else {
-                            selectedCategories.add(index);
-                          }
+                          selectedCategory = index;
                         });
                       },
                     );
@@ -460,7 +437,7 @@ class _DonationPageState extends State<DonationPage> {
                       child: OutlinedButton.icon(
                         onPressed: () {
                           setState(() {
-                            selectedCategories.clear();
+                            selectedCategory = null;
                             selectedAmount = null;
                             _amountController.clear();
                           });
@@ -485,17 +462,23 @@ class _DonationPageState extends State<DonationPage> {
                             ? () {
                                 if (_formKey.currentState!.validate()) {
                                   // Handle payment navigation
-                                  final selectedTitles = selectedCategories
-                                      .map((i) => donationOptions[i]['title'])
-                                      .toList();
+                                  final selectedTitle = donationOptions[selectedCategory!]['title'];
                                   
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(
-                                        'Proceeding with RM${_amountController.text} for: ${selectedTitles.join(", ")}',
+                                        'Proceeding with RM${_amountController.text} for: $selectedTitle',
                                       ),
                                       backgroundColor: Colors.green,
                                     ),
+                                  );
+                                  Navigator.pushNamed(
+                                    context,
+                                    '/payment',
+                                    arguments: {
+                                      'amount': double.parse(_amountController.text),
+                                      'category': selectedTitle,
+                                    },
                                   );
                                 }
                               }
@@ -509,7 +492,6 @@ class _DonationPageState extends State<DonationPage> {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
-
                         ),
                       ),
                     ),

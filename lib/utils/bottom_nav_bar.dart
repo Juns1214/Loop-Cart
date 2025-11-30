@@ -57,9 +57,9 @@ class BottomNavBar extends StatelessWidget {
                     index: 3,
                   ),
                   _buildNavItem(
-                    icon: Icons.person_outline,
-                    selectedIcon: Icons.person,
-                    label: 'Profile',
+                    icon: Icons.support_agent_outlined,
+                    selectedIcon: Icons.support_agent_rounded,
+                    label: 'ChatBot',
                     index: 4,
                   ),
                 ],
