@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ProductPage extends StatefulWidget {
   final Map<String, dynamic> product;
@@ -16,6 +17,9 @@ class _ProductPageState extends State<ProductPage> {
   int sellerItemCount = 0;
   bool isLoading = true;
   bool showAllReviews = false;
+  bool isAddingToCart = false;
+
+  final User? currentUser = FirebaseAuth.instance.currentUser;
 
   @override
   void initState() {
@@ -70,6 +74,90 @@ class _ProductPageState extends State<ProductPage> {
       print('Error loading product details: $e');
       setState(() {
         isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _addToCart() async {
+    if (currentUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please login to add items to cart'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      isAddingToCart = true;
+    });
+
+    try {
+      String productId = widget.product['id'] ?? '';
+      String userId = currentUser!.uid;
+
+      // Check if product already exists in cart
+      QuerySnapshot existingCart = await FirebaseFirestore.instance
+          .collection('shopping_cart')
+          .where('userId', isEqualTo: userId)
+          .where('productId', isEqualTo: productId)
+          .limit(1)
+          .get();
+
+      if (existingCart.docs.isNotEmpty) {
+        // Product exists, increase quantity
+        DocumentSnapshot cartItem = existingCart.docs.first;
+        int currentQuantity = cartItem['quantity'] ?? 1;
+
+        await FirebaseFirestore.instance
+            .collection('shopping_cart')
+            .doc(cartItem.id)
+            .update({
+          'quantity': currentQuantity + 1,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Quantity updated in cart!'),
+            backgroundColor: Color(0xFF388E3C),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      } else {
+        // Add new item to cart
+        await FirebaseFirestore.instance.collection('shopping_cart').add({
+          'userId': userId,
+          'productId': productId,
+          'productName': widget.product['name'] ?? 'Unknown',
+          'productPrice': widget.product['price'] ?? 0,
+          'quantity': 1,
+          'imageUrl': widget.product['imageUrl'] ?? widget.product['image_url'] ?? '',
+          'sellerName': widget.product['seller'] ?? '',
+          'sellerProfileImage': sellerData?['profileImage'] ?? '',
+          'dateAdded': FieldValue.serverTimestamp(),
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Added to cart!'),
+            backgroundColor: Color(0xFF388E3C),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error adding to cart: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to add to cart. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } finally {
+      setState(() {
+        isAddingToCart = false;
       });
     }
   }
@@ -505,20 +593,20 @@ class _ProductPageState extends State<ProductPage> {
                   bottom: 20,
                   right: 20,
                   child: FloatingActionButton.extended(
-                    onPressed: () {
-                      // Add to cart functionality
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Added to cart!'),
-                          backgroundColor: Color(0xFF388E3C),
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
-                    },
+                    onPressed: isAddingToCart ? null : _addToCart,
                     backgroundColor: Color(0xFF388E3C),
-                    icon: Icon(Icons.shopping_cart),
+                    icon: isAddingToCart
+                        ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : Icon(Icons.shopping_cart),
                     label: Text(
-                      'Add to Cart',
+                      isAddingToCart ? 'Adding...' : 'Add to Cart',
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 15,

@@ -1,16 +1,19 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/utils/firebase_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'auth_method.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import '../../utils/router.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
   runApp(MyApp());
 }
@@ -24,7 +27,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: "/signup",
       onGenerateRoute: onGenerateRoute,
-      home: const SignUpPage(),
     );
   }
 }
@@ -63,12 +65,32 @@ class _SignUpPageState extends State<SignUpPage> {
         phoneNumber: phoneController.text,
         context: context,
       );
+      await createUserProfile();
+
       Fluttertoast.showToast(msg: "Sign up successfully");
       return true;
     } on FirebaseAuthException catch (e) {
       Fluttertoast.showToast(msg: e.message ?? "An error occurred");
     }
     return false;
+  }
+
+  Future<void> createUserProfile() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await FirebaseFirestore.instance
+          .collection('user_profile')
+          .doc(user.uid)
+          .set({
+            'email': user.email,
+            'phoneNumber': phoneController.text,
+            'createdAt': FieldValue.serverTimestamp(),
+            'profileImageURL': '', // Default empty
+            'name': '', // To be filled in edit profile
+            'address': '', // To be filled in edit profile
+            'dateOfBirth': '', // To be filled in edit profile
+          });
+    }
   }
 
   @override
@@ -241,11 +263,15 @@ class _SignUpPageState extends State<SignUpPage> {
                   const SizedBox(height: 10.0),
 
                   ElevatedButton(
-                    onPressed: () async{
+                    onPressed: () async {
                       if (formKey.currentState!.validate()) {
                         bool signUpSuccess = await signUpUser();
                         if (signUpSuccess) {
-                          Navigator.pushNamedAndRemoveUntil(context, "/setup-preference", (route) => false);
+                          Navigator.pushNamedAndRemoveUntil(
+                            context,
+                            "/setup-preference",
+                            (route) => false,
+                          );
                         }
                       }
                     },
@@ -292,7 +318,11 @@ class _SignUpPageState extends State<SignUpPage> {
                                 Fluttertoast.showToast(
                                   msg: "Google sign-up successful",
                                 );
-                                Navigator.pushNamedAndRemoveUntil(context, "/setup-preference", (route) => false);
+                                Navigator.pushNamedAndRemoveUntil(
+                                  context,
+                                  "/setup-preference",
+                                  (route) => false,
+                                );
                               }
                             },
                             customBorder: const CircleBorder(),

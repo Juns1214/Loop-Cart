@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../utils/bar_chart.dart';
+import '../../utils/router.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,7 +13,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const DashboardPage(),
+      initialRoute: "/sustainability-dashboard",
+      onGenerateRoute: onGenerateRoute,
     );
   }
 }

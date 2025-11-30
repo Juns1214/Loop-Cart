@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../utils/router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,7 +22,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const SellItemPage(),
+      initialRoute: "/sell-second-hand-product",
+      onGenerateRoute: onGenerateRoute,
     );
   }
 }

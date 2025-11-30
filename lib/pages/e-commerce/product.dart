@@ -63,7 +63,7 @@ class ProductCard extends StatelessWidget {
                         return Container(
                           width: double.infinity,
                           height: 120,
-                          color: Colors.grey.shade200,
+                          color: Colors.white,
                           child: Icon(
                             Icons.image_not_supported,
                             color: Colors.grey,
@@ -74,7 +74,7 @@ class ProductCard extends StatelessWidget {
                   : Container(
                       width: double.infinity,
                       height: 120,
-                      color: Colors.grey.shade200,
+                      color: Colors.white,
                       child: Icon(Icons.image, color: Colors.grey),
                     ),
             ),
@@ -100,7 +100,7 @@ class ProductCard extends StatelessWidget {
                         rating.toStringAsFixed(1),
                         style: TextStyle(
                           fontSize: 11,
-                          color: Colors.grey.shade600,
+                          color: Colors.black,
                         ),
                       ),
                     ],
@@ -158,7 +158,7 @@ class ProductGrid extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Colors.grey[200],
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
@@ -263,7 +263,7 @@ class ProductGrid extends StatelessWidget {
                           rating.toStringAsFixed(1),
                           style: TextStyle(
                             fontSize: 11,
-                            color: Colors.grey.shade600,
+                            color: Colors.black,
                           ),
                         ),
                       ],

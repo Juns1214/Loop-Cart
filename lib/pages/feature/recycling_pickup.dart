@@ -8,9 +8,8 @@ import 'package:intl/intl.dart';
 import 'dart:convert';
 import '../../utils/date_time_picker.dart';
 import '../../utils/address_form.dart';
-import '../../utils/repair_option.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import '../../utils/router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,19 +25,33 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const RepairServicePage(),
+      initialRoute: "/recycling-pickup",
+      onGenerateRoute: onGenerateRoute,
     );
   }
 }
 
-class RepairServicePage extends StatefulWidget {
-  const RepairServicePage({super.key});
+// Recycling category model
+class RecyclingCategory {
+  final String name;
+  final IconData icon;
+  final Color color;
 
-  @override
-  State<RepairServicePage> createState() => _RepairServicePageState();
+  const RecyclingCategory({
+    required this.name,
+    required this.icon,
+    required this.color,
+  });
 }
 
-class _RepairServicePageState extends State<RepairServicePage> {
+class RecyclingPickUpPage extends StatefulWidget {
+  const RecyclingPickUpPage({super.key});
+
+  @override
+  State<RecyclingPickUpPage> createState() => _RecyclingPickUpPageState();
+}
+
+class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
   final _formKey = GlobalKey<FormState>();
   final _itemNameController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -48,7 +61,41 @@ class _RepairServicePageState extends State<RepairServicePage> {
   File? _image;
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = const TimeOfDay(hour: 14, minute: 0);
-  Map<String, String>? selectedRepair;
+  String? _selectedCategory;
+
+  // Define recycling categories
+  static const List<RecyclingCategory> categories = [
+    RecyclingCategory(
+      name: 'Plastic',
+      icon: Icons.water_drop_outlined,
+      color: Color(0xFF4CAF50),
+    ),
+    RecyclingCategory(
+      name: 'Paper',
+      icon: Icons.description_outlined,
+      color: Color(0xFF8D6E63),
+    ),
+    RecyclingCategory(
+      name: 'Glass',
+      icon: Icons.wine_bar_outlined,
+      color: Color(0xFF00BCD4),
+    ),
+    RecyclingCategory(
+      name: 'Metal',
+      icon: Icons.recycling,
+      color: Color(0xFF9E9E9E),
+    ),
+    RecyclingCategory(
+      name: 'Electronics',
+      icon: Icons.devices_outlined,
+      color: Color(0xFFFF9800),
+    ),
+    RecyclingCategory(
+      name: 'Cardboard',
+      icon: Icons.inventory_2_outlined,
+      color: Color(0xFF795548),
+    ),
+  ];
 
   @override
   void dispose() {
@@ -60,6 +107,7 @@ class _RepairServicePageState extends State<RepairServicePage> {
   Future<void> pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    
     if (pickedFile != null) {
       setState(() {
         _image = File(pickedFile.path);
@@ -73,7 +121,6 @@ class _RepairServicePageState extends State<RepairServicePage> {
   }
 
   Future<void> uploadTaskToDb() async {
-    // Validate main form
     if (!_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill in all required fields')),
@@ -81,7 +128,6 @@ class _RepairServicePageState extends State<RepairServicePage> {
       return;
     }
 
-    // Validate address form
     if (!_addressFormKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please complete the address')),
@@ -89,15 +135,6 @@ class _RepairServicePageState extends State<RepairServicePage> {
       return;
     }
 
-    // Validate repair option
-    if (selectedRepair == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select a repair option')),
-      );
-      return;
-    }
-
-    // Validate image
     if (_image == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please upload a product image')),
@@ -105,17 +142,24 @@ class _RepairServicePageState extends State<RepairServicePage> {
       return;
     }
 
+    if (_selectedCategory == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a recycling category')),
+      );
+      return;
+    }
+
     try {
       final imageBase64 = await convertImageToBase64(_image!);
 
-      await FirebaseFirestore.instance.collection("repair_record").add({
+      await FirebaseFirestore.instance.collection("recycling_record").add({
         "user_id": user?.uid,
         "name": _itemNameController.text,
         "description": _descriptionController.text,
+        "category": _selectedCategory,
         "image": imageBase64,
         "scheduled_date": DateFormat('yyyy-MM-dd').format(selectedDate),
         "scheduled_time": selectedTime.format(context),
-        "repair_option": selectedRepair,
         "address": _addressFormKey.currentState!.getAddressData(),
         "created_at": FieldValue.serverTimestamp(),
       });
@@ -123,7 +167,7 @@ class _RepairServicePageState extends State<RepairServicePage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Repair service scheduled successfully!'),
+            content: Text('Recycling pickup scheduled successfully!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -150,7 +194,7 @@ class _RepairServicePageState extends State<RepairServicePage> {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Repair Service',
+          'Recycling Pickup Service',
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
         ),
         centerTitle: true,
@@ -164,7 +208,7 @@ class _RepairServicePageState extends State<RepairServicePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  "Schedule a repair and extend the life of your item.",
+                  "Arrange a pickup for recyclable items and help protect the environment.",
                   style: TextStyle(
                     fontSize: 20,
                     color: Colors.black,
@@ -184,41 +228,9 @@ class _RepairServicePageState extends State<RepairServicePage> {
                 ),
                 const SizedBox(height: 16),
 
-                // Product Name
-                const Text(
-                  "Product Name",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _itemNameController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    hintText: "Enter product name",
-                    hintStyle: const TextStyle(
-                      fontSize: 15,
-                      color: Colors.grey,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Please enter item name";
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-
                 // Product Image
                 const Text(
-                  "Product Images",
+                  "Product Image",
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
@@ -246,19 +258,130 @@ class _RepairServicePageState extends State<RepairServicePage> {
                               ),
                               const SizedBox(height: 8),
                               const Text(
-                                "Browse from Gallery",
+                                "📸 Tap to upload image",
                                 style: TextStyle(
                                   color: Colors.grey,
                                   fontWeight: FontWeight.w500,
+                                  fontSize: 16,
                                 ),
                               ),
                             ],
                           )
-                        : ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.file(_image!, fit: BoxFit.cover),
+                        : Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.file(
+                                  _image!,
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                  height: 200,
+                                ),
+                              ),
+                              Positioned(
+                                top: 8,
+                                right: 8,
+                                child: CircleAvatar(
+                                  backgroundColor: Colors.white,
+                                  child: IconButton(
+                                    icon: const Icon(Icons.edit, size: 20),
+                                    onPressed: pickImage,
+                                    color: Color(0xFF2E5BFF),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                   ),
+                ),
+                const SizedBox(height: 16),
+
+                // Recycling Category
+                const Text(
+                  "Recycling Category",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: categories.map((category) {
+                    final isSelected = _selectedCategory == category.name;
+                    return ChoiceChip(
+                      label: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            category.icon,
+                            size: 18,
+                            color: isSelected ? Colors.white : category.color,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(category.name),
+                        ],
+                      ),
+                      selected: isSelected,
+                      onSelected: (selected) {
+                        setState(() {
+                          _selectedCategory = selected ? category.name : null;
+                        });
+                      },
+                      selectedColor: category.color,
+                      backgroundColor: category.color.withOpacity(0.1),
+                      labelStyle: TextStyle(
+                        color: isSelected ? Colors.white : Colors.black87,
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    );
+                  }).toList(),
+                ),
+                if (_selectedCategory == null)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 8),
+                    child: Text(
+                      'Please select a category',
+                      style: TextStyle(color: Colors.red, fontSize: 12),
+                    ),
+                  ),
+                const SizedBox(height: 16),
+
+                // Product Name
+                const Text(
+                  "Product Name",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: _itemNameController,
+                  onChanged: (value) => setState(() {}),
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    hintText: "Enter item name",
+                    hintStyle: const TextStyle(
+                      fontSize: 15,
+                      color: Colors.grey,
+                      fontWeight: FontWeight.normal,
+                    ),
+                    suffixIcon: _itemNameController.text.isNotEmpty
+                        ? const Icon(Icons.check_circle, color: Colors.green)
+                        : null,
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter item name";
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
 
@@ -275,18 +398,17 @@ class _RepairServicePageState extends State<RepairServicePage> {
                 TextFormField(
                   controller: _descriptionController,
                   maxLines: 4,
-                  maxLength: 100,
+                  maxLength: 200,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    hintText:
-                        "A detailed description of the product helps understand what needs repair.",
+                    hintText: "Describe the recyclable item",
                     hintStyle: const TextStyle(
                       color: Colors.grey,
                       fontSize: 14,
                     ),
-                    counterText: "${_descriptionController.text.length}/100",
+                    counterText: "${_descriptionController.text.length}/200",
                   ),
                   onChanged: (value) => setState(() {}),
                   validator: (value) {
@@ -331,26 +453,6 @@ class _RepairServicePageState extends State<RepairServicePage> {
                 AddressForm(key: _addressFormKey),
                 const SizedBox(height: 24),
 
-                // Repair Option Selector
-                const Text(
-                  "Repair Options",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2E5BFF),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                RepairOptionSelector(
-                  initialSelection: selectedRepair,
-                  onSelectionChanged: (repair) {
-                    setState(() {
-                      selectedRepair = repair;
-                    });
-                  },
-                ),
-                const SizedBox(height: 20),
-
                 // Action Buttons
                 Row(
                   children: [
@@ -374,7 +476,7 @@ class _RepairServicePageState extends State<RepairServicePage> {
                       child: ElevatedButton.icon(
                         onPressed: uploadTaskToDb,
                         icon: const Icon(Icons.check_circle_outline),
-                        label: const Text("Confirm"),
+                        label: const Text("Confirm Pickup"),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF2E5BFF),
                           foregroundColor: Colors.white,

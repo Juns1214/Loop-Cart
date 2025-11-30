@@ -8,7 +8,10 @@ import 'package:intl/intl.dart';
 import 'dart:convert';
 import '../../utils/date_time_picker.dart';
 import '../../utils/address_form.dart';
+import '../../utils/repair_option.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../utils/router.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +27,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const RepairServicePage(),
+      initialRoute: "/repair-service",
+      onGenerateRoute: onGenerateRoute,
     );
   }
 }
@@ -46,6 +50,7 @@ class _RepairServicePageState extends State<RepairServicePage> {
   File? _image;
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = const TimeOfDay(hour: 14, minute: 0);
+  Map<String, String>? selectedRepair;
 
   @override
   void dispose() {
@@ -86,6 +91,14 @@ class _RepairServicePageState extends State<RepairServicePage> {
       return;
     }
 
+    // Validate repair option
+    if (selectedRepair == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a repair option')),
+      );
+      return;
+    }
+
     // Validate image
     if (_image == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -97,13 +110,14 @@ class _RepairServicePageState extends State<RepairServicePage> {
     try {
       final imageBase64 = await convertImageToBase64(_image!);
 
-      await FirebaseFirestore.instance.collection("recycling_record").add({
+      await FirebaseFirestore.instance.collection("repair_record").add({
         "user_id": user?.uid,
         "name": _itemNameController.text,
         "description": _descriptionController.text,
         "image": imageBase64,
         "scheduled_date": DateFormat('yyyy-MM-dd').format(selectedDate),
         "scheduled_time": selectedTime.format(context),
+        "repair_option": selectedRepair,
         "address": _addressFormKey.currentState!.getAddressData(),
         "created_at": FieldValue.serverTimestamp(),
       });
@@ -138,7 +152,7 @@ class _RepairServicePageState extends State<RepairServicePage> {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Reccycling Pickup Service',
+          'Repair Service',
           style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
         ),
         centerTitle: true,
@@ -152,7 +166,7 @@ class _RepairServicePageState extends State<RepairServicePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  "Arrange a pickup for recycleable items and help protect the environment.",
+                  "Schedule a repair and extend the life of your item.",
                   style: TextStyle(
                     fontSize: 20,
                     color: Colors.black,
@@ -269,7 +283,7 @@ class _RepairServicePageState extends State<RepairServicePage> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     hintText:
-                        "Provide details about your item to help identify its category and condition.",
+                        "A detailed description of the product helps understand what needs repair.",
                     hintStyle: const TextStyle(
                       color: Colors.grey,
                       fontSize: 14,
@@ -318,6 +332,26 @@ class _RepairServicePageState extends State<RepairServicePage> {
                 const SizedBox(height: 8),
                 AddressForm(key: _addressFormKey),
                 const SizedBox(height: 24),
+
+                // Repair Option Selector
+                const Text(
+                  "Repair Options",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF2E5BFF),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                RepairOptionSelector(
+                  initialSelection: selectedRepair,
+                  onSelectionChanged: (repair) {
+                    setState(() {
+                      selectedRepair = repair;
+                    });
+                  },
+                ),
+                const SizedBox(height: 20),
 
                 // Action Buttons
                 Row(

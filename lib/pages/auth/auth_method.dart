@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/utils/showSnackBar.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AuthMethod {
   final FirebaseAuth _auth;
@@ -43,7 +44,6 @@ class AuthMethod {
       await googleSignIn.signOut();
 
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-
       if (googleUser == null) {
         showSnackBar(context, "Google sign-in cancelled");
         return null;
@@ -51,7 +51,6 @@ class AuthMethod {
 
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
-
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
@@ -61,9 +60,26 @@ class AuthMethod {
         credential,
       );
 
+      // Create/update Firestore profile for Google sign-in
+      if (userCredential.user != null) {
+        await FirebaseFirestore.instance
+            .collection('user_profile')
+            .doc(userCredential.user!.uid)
+            .set(
+              {
+                'email': userCredential.user!.email,
+                'name': userCredential.user!.displayName ?? '',
+                'profileImageURL': userCredential.user!.photoURL ?? '',
+                'phoneNumber': userCredential.user!.phoneNumber ?? '',
+                'createdAt': FieldValue.serverTimestamp(),
+              },
+              SetOptions(merge: true),
+            ); // merge: true to not overwrite existing data
+      }
+
       return userCredential;
-    } on FirebaseAuthException catch (e) {
-      showSnackBar(context, e.message ?? "Google sign-in failed");
+    } catch (e) {
+      showSnackBar(context, e.toString());
       return null;
     }
   }
@@ -72,9 +88,8 @@ class AuthMethod {
     try {
       await _auth.signOut();
       await GoogleSignIn().signOut();
-
     } on FirebaseAuthException catch (e) {
-      showSnackBar(context, e.message!); 
+      showSnackBar(context, e.message!);
     }
   }
 
