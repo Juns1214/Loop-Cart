@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -12,6 +13,7 @@ import '../../utils/router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
   runApp(MyApp());
 }
@@ -100,11 +102,20 @@ class _EditProfileState extends State<EditProfile> {
         setState(() {
           _nameController.text = data['name'] ?? '';
           _emailController.text = data['email'] ?? user!.email ?? '';
-          _phoneController.text = data['phoneNumber'] ?? '';
+          
+          // Remove +60 prefix if it exists in the database
+          String phone = data['phoneNumber'] ?? '';
+          if (phone.startsWith('+60')) {
+            phone = phone.substring(3).trim();
+          } else if (phone.startsWith('60')) {
+            phone = phone.substring(2).trim();
+          }
+          _phoneController.text = phone;
+          
           _dobController.text = data['dateOfBirth'] ?? '';
           
-          // Load address data
-          if (data['address'] != null) {
+          // Load address data as map
+          if (data['address'] != null && data['address'] is Map) {
             final address = data['address'] as Map<String, dynamic>;
             _line1Controller.text = address['line1'] ?? '';
             _line2Controller.text = address['line2'] ?? '';
@@ -128,7 +139,10 @@ class _EditProfileState extends State<EditProfile> {
       setState(() {
         _isLoading = false;
       });
-      Fluttertoast.showToast(msg: "Error loading profile: ${e.toString()}");
+      Fluttertoast.showToast(
+        msg: "Error loading profile: ${e.toString()}",
+        backgroundColor: Colors.red,
+      );
     }
   }
 
@@ -193,8 +207,14 @@ class _EditProfileState extends State<EditProfile> {
       return;
     }
 
-    if (!_addressFormKey.currentState!.validate()) {
-      Fluttertoast.showToast(msg: "Please complete the address");
+    // Validate address form only if user has filled any address field
+    bool hasAddressData = _line1Controller.text.isNotEmpty ||
+        _cityController.text.isNotEmpty ||
+        _postalController.text.isNotEmpty ||
+        _stateController.text.isNotEmpty;
+
+    if (hasAddressData && !_addressFormKey.currentState!.validate()) {
+      Fluttertoast.showToast(msg: "Please complete the address information");
       return;
     }
 
@@ -209,31 +229,61 @@ class _EditProfileState extends State<EditProfile> {
       if (_image != null) {
         imageBase64 = await _convertImageToBase64(_image!);
       } else {
-        imageBase64 = _existingImageBase64;
+        imageBase64 = _existingImageBase64 ?? '';
       }
 
-      final addressData = _addressFormKey.currentState!.getAddressData();
+      // Prepare phone number with +60 prefix
+      String phoneWithPrefix = _phoneController.text.trim().isNotEmpty 
+          ? '+60${_phoneController.text.trim()}'
+          : '';
+
+      // Get address data
+      Map<String, dynamic>? addressData;
+      if (hasAddressData) {
+        addressData = _addressFormKey.currentState!.getAddressData();
+      }
+
+      // Build update data - only include fields that are not empty
+      Map<String, dynamic> updateData = {
+        'updatedAt': FieldValue.serverTimestamp(),
+      };
+
+      if (_nameController.text.trim().isNotEmpty) {
+        updateData['name'] = _nameController.text.trim();
+      }
+      if (_emailController.text.trim().isNotEmpty) {
+        updateData['email'] = _emailController.text.trim();
+      }
+      if (phoneWithPrefix.isNotEmpty) {
+        updateData['phoneNumber'] = phoneWithPrefix;
+      }
+      if (_dobController.text.trim().isNotEmpty) {
+        updateData['dateOfBirth'] = _dobController.text.trim();
+      }
+      if (addressData != null) {
+        updateData['address'] = addressData;
+      }
+      if (imageBase64 != null && imageBase64.isNotEmpty) {
+        updateData['profileImageURL'] = imageBase64;
+      }
 
       await FirebaseFirestore.instance
           .collection('user_profile')
           .doc(user!.uid)
-          .set({
-        'name': _nameController.text.trim(),
-        'email': _emailController.text.trim(),
-        'phoneNumber': _phoneController.text.trim(),
-        'dateOfBirth': _dobController.text.trim(),
-        'address': addressData,
-        'profileImageURL': imageBase64,
-        'updatedAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
+          .set(updateData, SetOptions(merge: true));
 
       Fluttertoast.showToast(
-        msg: "Profile updated successfully",
-        backgroundColor: Colors.green,
+        msg: "✓ Profile updated successfully!",
+        backgroundColor: Color(0xFF388E3C),
+        textColor: Colors.white,
+        fontSize: 16,
       );
-      Navigator.pop(context, true); // Return true to indicate success
+      Navigator.pop(context, true);
     } catch (e) {
-      Fluttertoast.showToast(msg: "Error updating profile: ${e.toString()}");
+      Fluttertoast.showToast(
+        msg: "Error updating profile: ${e.toString()}",
+        backgroundColor: Colors.red,
+      );
     } finally {
       setState(() {
         _isSaving = false;
@@ -241,33 +291,46 @@ class _EditProfileState extends State<EditProfile> {
     }
   }
 
-  InputDecoration _inputDecoration(String label, {bool readOnly = false}) {
+  InputDecoration _inputDecoration(String label, {bool readOnly = false, Widget? suffixIcon, String? prefixText}) {
     return InputDecoration(
       labelText: label,
       labelStyle: TextStyle(
         fontFamily: 'Manrope',
         color: Colors.grey[600],
         fontSize: 14,
+        fontWeight: FontWeight.w500,
       ),
-      filled: readOnly,
+      filled: true,
       fillColor: readOnly ? Colors.grey[100] : Colors.white,
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.grey[300]!),
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: Colors.grey[300]!, width: 1.5),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.grey[300]!),
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: Colors.grey[300]!, width: 1.5),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Color(0xFF388E3C), width: 2),
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: Color(0xFF388E3C), width: 2.5),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: BorderSide(color: Colors.red[300]!),
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: Colors.red[400]!, width: 1.5),
       ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      focusedErrorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: BorderSide(color: Colors.red[400]!, width: 2.5),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+      suffixIcon: suffixIcon,
+      prefixText: prefixText,
+      prefixStyle: TextStyle(
+        fontFamily: 'Manrope',
+        color: Colors.black87,
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+      ),
     );
   }
 
@@ -279,7 +342,7 @@ class _EditProfileState extends State<EditProfile> {
         elevation: 0,
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black87),
+          icon: Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 22),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
@@ -288,167 +351,217 @@ class _EditProfileState extends State<EditProfile> {
             fontWeight: FontWeight.bold,
             color: Colors.black87,
             fontFamily: 'Manrope',
+            fontSize: 20,
           ),
         ),
         centerTitle: true,
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
       body: _isLoading
           ? Center(
-              child: CircularProgressIndicator(color: Color(0xFF388E3C)),
+              child: CircularProgressIndicator(
+                color: Color(0xFF388E3C),
+                strokeWidth: 3,
+              ),
             )
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(20.0),
               child: Form(
                 key: _formKey,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Profile Image Section
-                    Stack(
-                      children: [
-                        CircleAvatar(
-                          radius: 70,
-                          backgroundColor: Colors.grey[200],
-                          backgroundImage: _image != null
-                              ? FileImage(_image!)
-                              : (_existingImageBase64 != null && _existingImageBase64!.isNotEmpty
-                                  ? MemoryImage(base64Decode(_existingImageBase64!))
-                                  : AssetImage('assets/images/icon/LogoIcon.png')) as ImageProvider,
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: InkWell(
-                            onTap: _pickImageFromGallery,
-                            child: Container(
-                              padding: EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: Color(0xFF388E3C),
-                                shape: BoxShape.circle,
-                                border: Border.all(color: Colors.white, width: 3),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.2),
-                                    blurRadius: 5,
-                                    offset: Offset(0, 2),
-                                  ),
-                                ],
+                    // Profile Image Section with Enhanced Design
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Color(0xFF388E3C).withOpacity(0.3),
+                            blurRadius: 20,
+                            offset: Offset(0, 8),
+                          ),
+                        ],
+                      ),
+                      child: Stack(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Color(0xFF388E3C).withOpacity(0.3),
+                                width: 4,
                               ),
-                              child: Icon(
-                                Icons.camera_alt,
-                                color: Colors.white,
-                                size: 20,
+                            ),
+                            child: CircleAvatar(
+                              radius: 70,
+                              backgroundColor: Colors.grey[200],
+                              backgroundImage: _image != null
+                                  ? FileImage(_image!)
+                                  : (_existingImageBase64 != null && _existingImageBase64!.isNotEmpty
+                                      ? MemoryImage(base64Decode(_existingImageBase64!))
+                                      : AssetImage('assets/images/icon/LogoIcon.png')) as ImageProvider,
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: InkWell(
+                              onTap: _pickImageFromGallery,
+                              child: Container(
+                                padding: EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [Color(0xFF4CAF50), Color(0xFF388E3C)],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: Colors.white, width: 4),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Color(0xFF388E3C).withOpacity(0.4),
+                                      blurRadius: 8,
+                                      offset: Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Icon(
+                                  Icons.camera_alt_rounded,
+                                  color: Colors.white,
+                                  size: 22,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
 
-                    SizedBox(height: 8),
+                    SizedBox(height: 12),
 
                     Text(
                       'Tap to change profile picture',
                       style: TextStyle(
                         fontFamily: 'Manrope',
-                        fontSize: 12,
+                        fontSize: 13,
                         color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
 
-                    SizedBox(height: 30),
+                    SizedBox(height: 32),
 
-                    // Form Fields
+                    // Form Fields with Enhanced Container
                     Container(
-                      padding: EdgeInsets.all(20),
+                      padding: EdgeInsets.all(24),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 10,
-                            offset: Offset(0, 2),
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 20,
+                            offset: Offset(0, 4),
                           ),
                         ],
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Personal Information',
-                            style: TextStyle(
-                              fontFamily: 'Manrope',
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
+                          Row(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Color(0xFF388E3C).withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Icon(
+                                  Icons.person_rounded,
+                                  color: Color(0xFF388E3C),
+                                  size: 20,
+                                ),
+                              ),
+                              SizedBox(width: 12),
+                              Text(
+                                'Personal Information',
+                                style: TextStyle(
+                                  fontFamily: 'Manrope',
+                                  fontSize: 19,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ],
                           ),
-                          SizedBox(height: 20),
+                          SizedBox(height: 24),
 
                           // Name Field
                           TextFormField(
                             controller: _nameController,
-                            decoration: _inputDecoration('Full Name *'),
-                            style: TextStyle(fontFamily: 'Manrope'),
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Please enter your name';
-                              }
-                              return null;
-                            },
+                            decoration: _inputDecoration('Full Name'),
+                            style: TextStyle(
+                              fontFamily: 'Manrope',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                          SizedBox(height: 16),
+                          SizedBox(height: 18),
 
                           // Email Field (Read-only)
                           TextFormField(
                             controller: _emailController,
                             decoration: _inputDecoration('Email', readOnly: true),
-                            style: TextStyle(fontFamily: 'Manrope'),
+                            style: TextStyle(
+                              fontFamily: 'Manrope',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey[600],
+                            ),
                             readOnly: true,
                             enabled: false,
                           ),
-                          SizedBox(height: 16),
+                          SizedBox(height: 18),
 
-                          // Phone Field
+                          // Phone Field with +60 prefix
                           TextFormField(
                             controller: _phoneController,
-                            decoration: _inputDecoration('Phone Number *').copyWith(
+                            decoration: _inputDecoration(
+                              'Phone Number',
                               prefixText: '+60 ',
-                              prefixStyle: TextStyle(
-                                fontFamily: 'Manrope',
-                                color: Colors.black87,
-                              ),
                             ),
-                            style: TextStyle(fontFamily: 'Manrope'),
+                            style: TextStyle(
+                              fontFamily: 'Manrope',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
                             keyboardType: TextInputType.phone,
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Please enter your phone number';
-                              }
-                              if (value.trim().length < 9) {
-                                return 'Enter a valid phone number';
-                              }
-                              return null;
-                            },
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(11),
+                            ],
                           ),
-                          SizedBox(height: 16),
+                          SizedBox(height: 18),
 
                           // Date of Birth Field
                           TextFormField(
                             controller: _dobController,
-                            decoration: _inputDecoration('Date of Birth *').copyWith(
-                              suffixIcon: Icon(Icons.calendar_today, color: Color(0xFF388E3C)),
+                            decoration: _inputDecoration(
+                              'Date of Birth',
+                              suffixIcon: Icon(
+                                Icons.calendar_today_rounded,
+                                color: Color(0xFF388E3C),
+                                size: 22,
+                              ),
                             ),
-                            style: TextStyle(fontFamily: 'Manrope'),
+                            style: TextStyle(
+                              fontFamily: 'Manrope',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
                             readOnly: true,
                             onTap: _selectDateOfBirth,
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Please select your date of birth';
-                              }
-                              return null;
-                            },
                           ),
                         ],
                       ),
@@ -458,31 +571,48 @@ class _EditProfileState extends State<EditProfile> {
 
                     // Address Section
                     Container(
-                      padding: EdgeInsets.all(20),
+                      padding: EdgeInsets.all(24),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(24),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 10,
-                            offset: Offset(0, 2),
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 20,
+                            offset: Offset(0, 4),
                           ),
                         ],
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            'Address Information',
-                            style: TextStyle(
-                              fontFamily: 'Manrope',
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
+                          Row(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Icon(
+                                  Icons.location_on_rounded,
+                                  color: Colors.blue[700],
+                                  size: 20,
+                                ),
+                              ),
+                              SizedBox(width: 12),
+                              Text(
+                                'Address Information',
+                                style: TextStyle(
+                                  fontFamily: 'Manrope',
+                                  fontSize: 19,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                            ],
                           ),
-                          SizedBox(height: 20),
+                          SizedBox(height: 24),
                           AddressForm(
                             key: _addressFormKey,
                             line1Controller: _line1Controller,
@@ -495,44 +625,62 @@ class _EditProfileState extends State<EditProfile> {
                       ),
                     ),
 
-                    SizedBox(height: 30),
+                    SizedBox(height: 32),
 
-                    // Save Button
+                    // Save Button with Gradient
                     SizedBox(
                       width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: _isSaving ? null : _uploadProfileChanges,
-                        icon: _isSaving
-                            ? SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Icon(Icons.check_circle_outline),
-                        label: Text(
-                          _isSaving ? 'Saving...' : 'Save Changes',
-                          style: TextStyle(
-                            fontFamily: 'Manrope',
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(16),
+                          gradient: LinearGradient(
+                            colors: [Color(0xFF4CAF50), Color(0xFF388E3C)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
                           ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(0xFF388E3C).withOpacity(0.4),
+                              blurRadius: 12,
+                              offset: Offset(0, 6),
+                            ),
+                          ],
                         ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF388E3C),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                        child: ElevatedButton.icon(
+                          onPressed: _isSaving ? null : _uploadProfileChanges,
+                          icon: _isSaving
+                              ? SizedBox(
+                                  width: 22,
+                                  height: 22,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2.5,
+                                  ),
+                                )
+                              : Icon(Icons.check_circle_rounded, size: 24),
+                          label: Text(
+                            _isSaving ? 'Saving Changes...' : 'Save Changes',
+                            style: TextStyle(
+                              fontFamily: 'Manrope',
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5,
+                            ),
                           ),
-                          elevation: 2,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.transparent,
+                            foregroundColor: Colors.white,
+                            shadowColor: Colors.transparent,
+                            padding: const EdgeInsets.symmetric(vertical: 18),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                          ),
                         ),
                       ),
                     ),
 
-                    SizedBox(height: 20),
+                    SizedBox(height: 24),
                   ],
                 ),
               ),
