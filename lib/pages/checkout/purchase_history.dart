@@ -1,28 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import '../checkout/order_status.dart';
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: const PurchaseHistory(),
-    );
-  }
-}
-
+import '../../utils/review_dialog.dart';
 class PurchaseHistory extends StatefulWidget {
   const PurchaseHistory({super.key});
 
@@ -116,12 +97,30 @@ class _PurchaseHistoryState extends State<PurchaseHistory> {
     }
   }
 
+  Future<void> _showReviewDialog(Map<String, dynamic> item, String orderId) async {
+    final result = await showDialog(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.transparent,
+      builder: (context) => ReviewDialog(
+        product: item,
+        orderId: orderId,
+      ),
+    );
+
+    // Reload orders if review was submitted
+    if (result == true) {
+      _loadOrders();
+    }
+  }
+
   Widget _buildOrderCard(Map<String, dynamic> order) {
     String orderId = order['orderId'] ?? '';
     String status = order['status'] ?? 'Unknown';
     Timestamp? orderDate = order['orderDate'];
     double grandTotal = (order['grandTotal'] ?? 0).toDouble();
     List<dynamic> items = order['items'] ?? [];
+    bool isDelivered = status == 'Delivered';
     
     int totalItems = 0;
     for (var item in items) {
@@ -254,64 +253,41 @@ class _PurchaseHistoryState extends State<PurchaseHistory> {
                     ),
                   ),
                   
-                  // Items from this seller
-                  ...sellerItems.map((item) => _buildProductRow(item)),
+                  // Items from this seller with individual review buttons
+                  ...sellerItems.map((item) => _buildProductRow(
+                    item, 
+                    orderId, 
+                    isDelivered,
+                  )),
                 ],
               );
             }),
             
-            // Action Buttons
+            // Order Status Button
             Padding(
               padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => OrderStatus(orderId: orderId),
-                          ),
-                        );
-                      },
-                      icon: Icon(Icons.local_shipping_outlined, size: 18),
-                      label: Text('Order Status'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Color(0xFF388E3C),
-                        side: BorderSide(color: Color(0xFF388E3C)),
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
+              child: SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => OrderStatus(orderId: orderId),
                       ),
+                    );
+                  },
+                  icon: Icon(Icons.local_shipping_outlined, size: 20),
+                  label: Text('Track Order Status'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Color(0xFF388E3C),
+                    side: BorderSide(color: Color(0xFF388E3C), width: 2),
+                    padding: EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        // Placeholder for review functionality
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Review feature coming soon!'),
-                            backgroundColor: Color(0xFF388E3C),
-                          ),
-                        );
-                      },
-                      icon: Icon(Icons.rate_review_outlined, size: 18),
-                      label: Text('Leave Review'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.grey[700],
-                        side: BorderSide(color: Colors.grey[300]!),
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ],
@@ -320,11 +296,16 @@ class _PurchaseHistoryState extends State<PurchaseHistory> {
     );
   }
 
-  Widget _buildProductRow(Map<String, dynamic> item) {
+  Widget _buildProductRow(
+    Map<String, dynamic> item,
+    String orderId,
+    bool isDelivered,
+  ) {
     String productName = item['productName'] ?? 'Unknown Product';
     double productPrice = (item['productPrice'] ?? 0).toDouble();
     int quantity = item['quantity'] ?? 1;
     String imageUrl = item['imageUrl'] ?? '';
+    bool isReviewed = item['isReviewed'] ?? false;
 
     return Container(
       padding: EdgeInsets.all(16),
@@ -333,79 +314,116 @@ class _PurchaseHistoryState extends State<PurchaseHistory> {
           bottom: BorderSide(color: Colors.grey[200]!, width: 1),
         ),
       ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Column(
         children: [
-          // Product Image
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: imageUrl.isNotEmpty
-                ? Image.asset(
-                    imageUrl,
-                    width: 70,
-                    height: 70,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Product Image
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: imageUrl.isNotEmpty
+                    ? Image.asset(
+                        imageUrl,
+                        width: 70,
+                        height: 70,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            width: 70,
+                            height: 70,
+                            color: Colors.grey[300],
+                            child: Icon(Icons.image, size: 30, color: Colors.grey),
+                          );
+                        },
+                      )
+                    : Container(
                         width: 70,
                         height: 70,
                         color: Colors.grey[300],
                         child: Icon(Icons.image, size: 30, color: Colors.grey),
-                      );
-                    },
-                  )
-                : Container(
-                    width: 70,
-                    height: 70,
-                    color: Colors.grey[300],
-                    child: Icon(Icons.image, size: 30, color: Colors.grey),
-                  ),
-          ),
-          SizedBox(width: 16),
+                      ),
+              ),
+              SizedBox(width: 16),
 
-          // Product Details
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  productName,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+              // Product Details
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      productName,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    SizedBox(height: 6),
+                    Text(
+                      'RM ${productPrice.toStringAsFixed(2)}',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey[700],
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Qty: $quantity',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(height: 6),
-                Text(
-                  'RM ${productPrice.toStringAsFixed(2)}',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[700],
-                  ),
+              ),
+
+              // Item Total
+              Text(
+                'RM ${(productPrice * quantity).toStringAsFixed(2)}',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF388E3C),
                 ),
-                SizedBox(height: 4),
-                Text(
-                  'Qty: $quantity',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
 
-          // Item Total
-          Text(
-            'RM ${(productPrice * quantity).toStringAsFixed(2)}',
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF388E3C),
+          // Review Button for this specific item (only if delivered)
+          if (isDelivered)
+            Padding(
+              padding: const EdgeInsets.only(top: 12),
+              child: SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: isReviewed
+                      ? null
+                      : () => _showReviewDialog(item, orderId),
+                  icon: Icon(
+                    isReviewed ? Icons.check_circle : Icons.rate_review_outlined,
+                    size: 18,
+                  ),
+                  label: Text(isReviewed ? 'Reviewed' : 'Write Review'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: isReviewed
+                        ? Colors.grey[500]
+                        : Color(0xFF388E3C),
+                    side: BorderSide(
+                      color: isReviewed
+                          ? Colors.grey[300]!
+                          : Color(0xFF388E3C),
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+              ),
             ),
-          ),
         ],
       ),
     );

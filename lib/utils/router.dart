@@ -5,7 +5,7 @@ import '../pages/auth/login_page.dart';
 import '../pages/auth/signup_page.dart';
 import '../pages/e-commerce/main_page.dart';
 import '../pages/preference/setup_preference.dart';
-import '../pages/checkout/cart_items.dart';
+import '../pages/checkout/shopping_cart.dart';
 import '../pages/checkout/checkout.dart';
 import '../pages/checkout/payment.dart';
 import '../pages/checkout/payment_confirmation.dart';
@@ -19,6 +19,7 @@ import '../pages/feature/sustainability_dashboard.dart';
 import '../pages/user_profile/user_profile.dart';
 import '../pages/user_profile/edit_profile.dart';
 import '../pages/e-commerce/category_filter.dart';
+import '../pages/checkout/order_status.dart';
 
 //1. Set up routes
 final Map routes = {
@@ -29,8 +30,11 @@ final Map routes = {
   "/mainpage": (context) => const MainPage(),
   "/setup-preference": (context) => const SetupPreferencePage(),
   "/category-filter": (context) => const CategoryFilterPage(),
-  "/cart-items": (context) => CartItems(),
-  "/checkout": (context) => Checkout(selectedItems: [], userAddress: null),
+  "/shopping-cart": (context) => ShoppingCart(),
+  "/checkout": (context, {arguments}) => Checkout(
+    selectedItems: arguments['selectedItems'] as List<Map<String, dynamic>>,
+    userAddress: arguments['userAddress'] as Map<String, dynamic>?,
+  ),
   "/payment": (context, {arguments}) =>
       Payment(orderData: arguments as Map<String, dynamic>? ?? {}),
   "/payment-confirmation": (context) => PaymentConfirmation(
@@ -48,6 +52,8 @@ final Map routes = {
   "/sustainability-dashboard": (context) => const DashboardPage(),
   "/user-profile": (context) => const UserProfile(),
   "/edit-profile": (context) => const EditProfile(),
+  "/order-status": (context, {arguments}) =>
+      OrderStatus(orderId: arguments['orderId'] as String),
 };
 
 //2. Set up Route Generator (FIXED)

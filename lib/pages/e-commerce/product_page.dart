@@ -99,66 +99,134 @@ class _ProductPageState extends State<ProductPage> {
 
       // Check if product already exists in cart
       QuerySnapshot existingCart = await FirebaseFirestore.instance
-          .collection('shopping_cart')
+          .collection('cart_items')
           .where('userId', isEqualTo: userId)
           .where('productId', isEqualTo: productId)
           .limit(1)
           .get();
 
+      Map<String, dynamic> itemToCheckout;
+      String itemDocId;
+
       if (existingCart.docs.isNotEmpty) {
         // Product exists, increase quantity
         DocumentSnapshot cartItem = existingCart.docs.first;
         int currentQuantity = cartItem['quantity'] ?? 1;
+        int newQuantity = currentQuantity + 1;
 
         await FirebaseFirestore.instance
-            .collection('shopping_cart')
+            .collection('cart_items')
             .doc(cartItem.id)
             .update({
-          'quantity': currentQuantity + 1,
-          'updatedAt': FieldValue.serverTimestamp(),
-        });
+              'quantity': newQuantity,
+              'updatedAt': FieldValue.serverTimestamp(),
+            });
+
+        itemDocId = cartItem.id;
+
+        // Get the updated item data
+        Map<String, dynamic> itemData = cartItem.data() as Map<String, dynamic>;
+        itemData['quantity'] = newQuantity; // Update with new quantity
+        itemData['docId'] = itemDocId;
+        itemToCheckout = itemData;
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Quantity updated in cart!'),
             backgroundColor: Color(0xFF388E3C),
-            duration: Duration(seconds: 2),
+            duration: Duration(seconds: 1),
           ),
         );
       } else {
         // Add new item to cart
-        await FirebaseFirestore.instance.collection('shopping_cart').add({
+        Map<String, dynamic> newItem = {
           'userId': userId,
           'productId': productId,
           'productName': widget.product['name'] ?? 'Unknown',
-          'productPrice': widget.product['price'] ?? 0,
+          'productPrice': (widget.product['price'] ?? 0).toDouble(),
           'quantity': 1,
-          'imageUrl': widget.product['imageUrl'] ?? widget.product['image_url'] ?? '',
-          'sellerName': widget.product['seller'] ?? '',
+          'imageUrl':
+              widget.product['imageUrl'] ?? widget.product['image_url'] ?? '',
+          'seller': widget.product['seller'] ?? '',
           'sellerProfileImage': sellerData?['profileImage'] ?? '',
+          'category': widget.product['category'] ?? '',
           'dateAdded': FieldValue.serverTimestamp(),
-        });
+        };
+
+        DocumentReference docRef = await FirebaseFirestore.instance
+            .collection('cart_items')
+            .add(newItem);
+
+        itemDocId = docRef.id;
+        newItem['docId'] = itemDocId;
+        itemToCheckout = newItem;
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Added to cart!'),
             backgroundColor: Color(0xFF388E3C),
-            duration: Duration(seconds: 2),
+            duration: Duration(seconds: 1),
           ),
         );
       }
+
+      setState(() {
+        isAddingToCart = false;
+      });
+
+      // Wait a moment for the snackbar to show
+      await Future.delayed(Duration(milliseconds: 500));
+
+      // Navigate to checkout with ONLY this item
+      await _navigateToCheckout(itemToCheckout);
     } catch (e) {
       print('Error adding to cart: $e');
+      setState(() {
+        isAddingToCart = false;
+      });
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to add to cart. Please try again.'),
           backgroundColor: Colors.red,
         ),
       );
-    } finally {
-      setState(() {
-        isAddingToCart = false;
-      });
+    }
+  }
+
+  Future<void> _navigateToCheckout(Map<String, dynamic> singleItem) async {
+    if (currentUser == null) return;
+
+    try {
+      // Load user address
+      Map<String, dynamic>? userAddress;
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('user_profile')
+          .doc(currentUser!.uid)
+          .get();
+
+      if (userDoc.exists) {
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+        userAddress = userData['address'] as Map<String, dynamic>?;
+      }
+
+      // Navigate to checkout with only the single item
+      Navigator.pushNamed(
+        context,
+        '/checkout',
+        arguments: {
+          'selectedItems': [singleItem], // Only pass the single item as a list
+          'userAddress': userAddress,
+        },
+      );
+    } catch (e) {
+      print('Error navigating to checkout: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to load checkout. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -198,7 +266,6 @@ class _ProductPageState extends State<ProductPage> {
         children: [
           Row(
             children: [
-              // User profile picture
               CircleAvatar(
                 radius: 20,
                 backgroundImage:
@@ -439,7 +506,6 @@ class _ProductPageState extends State<ProductPage> {
                               SizedBox(height: 16),
                               Row(
                                 children: [
-                                  // Seller profile image
                                   CircleAvatar(
                                     radius: 30,
                                     backgroundImage:
@@ -523,7 +589,6 @@ class _ProductPageState extends State<ProductPage> {
                             ),
                             SizedBox(height: 16),
 
-                            // Display reviews
                             if (reviews.isEmpty)
                               Center(
                                 child: Padding(
@@ -538,17 +603,14 @@ class _ProductPageState extends State<ProductPage> {
                                 ),
                               )
                             else if (showAllReviews)
-                              // Show all reviews
                               Column(
                                 children: reviews
                                     .map((review) => _buildReviewCard(review))
                                     .toList(),
                               )
                             else
-                              // Show only first review
                               _buildReviewCard(reviews[0]),
 
-                            // View All Reviews button
                             if (reviews.length > 1 && !showAllReviews)
                               Center(
                                 child: TextButton(
@@ -582,13 +644,12 @@ class _ProductPageState extends State<ProductPage> {
                         ),
                       ),
 
-                      // Bottom padding for floating button
                       SizedBox(height: 100),
                     ],
                   ),
                 ),
 
-                // Floating Add to Cart Button (Bottom Right)
+                // Floating Add to Cart Button
                 Positioned(
                   bottom: 20,
                   right: 20,

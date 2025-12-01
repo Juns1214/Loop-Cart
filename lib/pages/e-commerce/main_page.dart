@@ -6,6 +6,7 @@ import 'product.dart';
 import 'package:flutter_application_1/utils/bottom_nav_bar.dart';
 import '../../utils/router.dart';
 import '../preference/preference_service.dart';
+import '../../utils/cart_icon_with_badge.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -499,15 +500,7 @@ class _MainPageState extends State<MainPage> {
                                     size: 28,
                                   ),
                                 ),
-                                IconButton(
-                                  onPressed: () {
-                                    Navigator.pushNamed(context, '/cart-items');
-                                  },
-                                  icon: Icon(
-                                    Icons.shopping_cart_outlined,
-                                    size: 28,
-                                  ),
-                                ),
+                                CartIconWithBadge(),
                               ],
                             ),
                           ],

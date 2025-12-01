@@ -15,32 +15,32 @@ class _OrderStatusState extends State<OrderStatus> {
   Map<String, dynamic>? orderData;
   bool isLoading = true;
   
-  // Status progression config (in days)
+  // Status progression config (in SECONDS for testing - change to days in production)
   final Map<int, Map<String, dynamic>> statusConfig = {
     0: {
       'status': 'Order Placed',
       'description': 'Your order has been placed successfully.',
-      'daysToNext': 1,
+      'secondsToNext': 15, // 15 seconds for testing (change to days * 86400)
     },
     1: {
       'status': 'Processing',
       'description': 'Your order is being processed.',
-      'daysToNext': 2,
+      'secondsToNext': 30, // 30 seconds for testing
     },
     2: {
       'status': 'Shipped',
       'description': 'Your order has been shipped.',
-      'daysToNext': 2,
+      'secondsToNext': 30, // 30 seconds for testing
     },
     3: {
       'status': 'Out for Delivery',
       'description': 'Your order is out for delivery.',
-      'daysToNext': 1,
+      'secondsToNext': 15, // 15 seconds for testing
     },
     4: {
       'status': 'Delivered',
       'description': 'Your order has been delivered.',
-      'daysToNext': 0,
+      'secondsToNext': 0,
     },
   };
 
@@ -98,18 +98,18 @@ class _OrderStatusState extends State<OrderStatus> {
     DateTime lastUpdateDate = lastUpdate.toDate();
     DateTime now = DateTime.now();
     
-    int daysPassed = now.difference(lastUpdateDate).inDays;
+    int secondsPassed = now.difference(lastUpdateDate).inSeconds;
     
     // Check if we need to progress to next status
     var currentConfig = statusConfig[currentStatusIndex];
-    int daysNeeded = currentConfig?['daysToNext'] ?? 0;
+    int secondsNeeded = currentConfig?['secondsToNext'] ?? 0;
     
-    if (daysPassed >= daysNeeded && daysNeeded > 0) {
+    if (secondsPassed >= secondsNeeded && secondsNeeded > 0) {
       // Progress to next status
       int newStatusIndex = currentStatusIndex + 1;
       
       // Calculate the exact time when status should have changed
-      DateTime newStatusTime = lastUpdateDate.add(Duration(days: daysNeeded));
+      DateTime newStatusTime = lastUpdateDate.add(Duration(seconds: secondsNeeded));
       
       // Update status history
       List<dynamic> statusHistory = List.from(data['statusHistory'] ?? []);
@@ -134,10 +134,10 @@ class _OrderStatusState extends State<OrderStatus> {
 
       // Check if we can progress further (recursive)
       if (newStatusIndex < 4) {
-        int additionalDays = now.difference(newStatusTime).inDays;
-        int nextDaysNeeded = statusConfig[newStatusIndex]?['daysToNext'] ?? 0;
+        int additionalSeconds = now.difference(newStatusTime).inSeconds;
+        int nextSecondsNeeded = statusConfig[newStatusIndex]?['secondsToNext'] ?? 0;
         
-        if (additionalDays >= nextDaysNeeded && nextDaysNeeded > 0) {
+        if (additionalSeconds >= nextSecondsNeeded && nextSecondsNeeded > 0) {
           // Reload and check again
           DocumentSnapshot updatedDoc = await FirebaseFirestore.instance
               .collection('orders')
