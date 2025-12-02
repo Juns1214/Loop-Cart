@@ -199,29 +199,38 @@ class _RepairServicePageState extends State<RepairServicePage> {
     }
 
     try {
-      // Save repair request first (without payment status)
       final imageBase64 = await convertImageToBase64(_image!);
 
-      await FirebaseFirestore.instance.collection("repair_record").add({
-        "user_id": user?.uid,
-        "name": _itemNameController.text,
-        "description": _descriptionController.text,
-        "image": imageBase64,
-        "scheduled_date": DateFormat('yyyy-MM-dd').format(selectedDate),
-        "scheduled_time": selectedTime.format(context),
-        "repair_option": selectedRepair,
-        "address": _addressFormKey.currentState!.getAddressData(),
-        "created_at": FieldValue.serverTimestamp(),
-        "status": "Pending Payment",
-      });
+      // Create the repair document
+      DocumentReference repairRef = await FirebaseFirestore.instance
+          .collection("repair_record")
+          .add({
+            "user_id": user?.uid,
+            "name": _itemNameController.text,
+            "description": _descriptionController.text,
+            "image": imageBase64,
+            "scheduled_date": DateFormat('yyyy-MM-dd').format(selectedDate),
+            "scheduled_time": selectedTime.format(context),
+            "repair_option": selectedRepair,
+            "address": _addressFormKey.currentState!.getAddressData(),
+            "created_at": FieldValue.serverTimestamp(),
+            "status": "Pending Payment",
+          });
 
-      // Navigate to payment
+      // Get the document ID
+      String repairRecordId = repairRef.id;
+
+      // Navigate to payment with repair record ID
       if (mounted) {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                Payment(orderData: {'repair_option': selectedRepair!}),
+            builder: (context) => Payment(
+              orderData: {
+                'repair_option': selectedRepair!,
+                'repairRecordId': repairRecordId, // Pass the ID
+              },
+            ),
           ),
         );
       }

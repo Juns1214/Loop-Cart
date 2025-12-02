@@ -195,7 +195,6 @@ class _PaymentState extends State<Payment> {
     }
   }
 
-  // Process repair service payment
   Future<void> _processRepairPayment() async {
     if (currentUser == null) {
       if (!mounted) return;
@@ -216,38 +215,35 @@ class _PaymentState extends State<Payment> {
       final transactionId = _generateTransactionId();
       final now = DateTime.now();
 
-      final Map<String, String> repairOption =
-          widget.orderData['repair_option'];
+      final Map<String, String> repairOption = Map<String, String>.from(
+        widget.orderData['repair_option'],
+      );
       final String repairType = repairOption['Repair'] ?? 'Custom Repair';
       final String priceStr = repairOption['Price'] ?? 'RM0';
 
-      // Extract price from string (e.g., "RM150" -> 150)
+      // Extract price
       final matches = RegExp(r'\d+').allMatches(priceStr);
       final numbers = matches.map((m) => int.parse(m.group(0)!)).toList();
       final int repairPrice = numbers.isNotEmpty
           ? numbers.reduce((a, b) => a > b ? a : b)
           : 0;
 
-      // Calculate green coins: RM1 = 1 coin
       final int greenCoinsEarned = repairPrice;
 
-      // Update repair record with payment info
-      QuerySnapshot repairQuery = await FirebaseFirestore.instance
-          .collection('repair_record')
-          .where('user_id', isEqualTo: currentUser!.uid)
-          .orderBy('created_at', descending: true)
-          .limit(1)
-          .get();
+      // Get repair record ID from orderData
+      String repairRecordId = widget.orderData['repairRecordId'];
 
-      if (repairQuery.docs.isNotEmpty) {
-        await repairQuery.docs.first.reference.update({
-          'paymentStatus': 'Completed',
-          'paymentMethod': selectedPayment,
-          'transactionId': transactionId,
-          'paymentMadeAt': Timestamp.fromDate(now),
-          'greenCoinsEarned': greenCoinsEarned,
-        });
-      }
+      // Update specific repair record
+      await FirebaseFirestore.instance
+          .collection('repair_record')
+          .doc(repairRecordId)
+          .update({
+            'paymentStatus': 'Completed',
+            'paymentMethod': selectedPayment,
+            'transactionId': transactionId,
+            'paymentMadeAt': Timestamp.fromDate(now),
+            'greenCoinsEarned': greenCoinsEarned,
+          });
 
       // Update user's green coins
       await FirebaseFirestore.instance
@@ -290,6 +286,7 @@ class _PaymentState extends State<Payment> {
       );
     } catch (e) {
       print('Error processing repair payment: $e');
+      print('Stack trace: ${StackTrace.current}'); // Add stack trace
 
       if (!mounted) return;
 
@@ -298,8 +295,8 @@ class _PaymentState extends State<Payment> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to process payment. Please try again.'),
+        SnackBar(
+          content: Text('Payment failed: ${e.toString()}'), // Show actual error
           backgroundColor: Colors.red,
         ),
       );

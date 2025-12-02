@@ -94,11 +94,11 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
         // Success Animation
         Center(
           child: Lottie.asset(
-            'assets/lottie/success.json',
+            'assets/lottie/Success.json',
             width: 200,
             height: 200,
             fit: BoxFit.fill,
-            repeat: false,
+            repeat: true,
             animate: true,
           ),
         ),
@@ -285,11 +285,11 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
       children: [
         Center(
           child: Lottie.asset(
-            'assets/lottie/success.json',
+            'assets/lottie/Success.json',
             width: 200,
             height: 200,
             fit: BoxFit.fill,
-            repeat: false,
+            repeat: true,
             animate: true,
           ),
         ),
@@ -439,11 +439,11 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
       children: [
         Center(
           child: Lottie.asset(
-            'assets/lottie/success.json',
+            'assets/lottie/Success.json',
             width: 200,
             height: 200,
             fit: BoxFit.fill,
-            repeat: false,
+            repeat: true,
             animate: true,
           ),
         ),

@@ -116,7 +116,7 @@ class _SellItemPageState extends State<SellItemPage> {
   Future<void> loadDraft() async {
     try {
       QuerySnapshot draftSnapshot = await FirebaseFirestore.instance
-          .collection('repair_record')
+          .collection('sell_items')
           .where('isDraft', isEqualTo: true)
           .orderBy('posted_at', descending: true)
           .limit(1)

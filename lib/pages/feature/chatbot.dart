@@ -96,28 +96,37 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
       // Add bot response to conversation history
       _conversationHistory.add({"role": "bot", "text": botReply});
 
-      setState(() {
-        _messages.add({
-          "role": "bot",
-          "text": botReply,
-          "time": _getCurrentTime(),
+      // Check if widget is still mounted before calling setState
+      if (mounted) {
+        setState(() {
+          _messages.add({
+            "role": "bot",
+            "text": botReply,
+            "time": _getCurrentTime(),
+          });
         });
-      });
 
-      _scrollToBottom();
+        _scrollToBottom();
+      }
     } catch (e) {
-      setState(() {
-        _messages.add({
-          "role": "bot",
-          "text": "Sorry, I couldn't process your request. Please try again.",
-          "time": _getCurrentTime(),
+      // Check if widget is still mounted before calling setState
+      if (mounted) {
+        setState(() {
+          _messages.add({
+            "role": "bot",
+            "text": "Sorry, I couldn't process your request. Please try again.",
+            "time": _getCurrentTime(),
+          });
         });
-      });
-      _showErrorSnackBar(e.toString());
+        _showErrorSnackBar(e.toString());
+      }
     } finally {
-      setState(() {
-        _isTyping = false;
-      });
+      // Check if widget is still mounted before calling setState
+      if (mounted) {
+        setState(() {
+          _isTyping = false;
+        });
+      }
     }
   }
 
@@ -190,8 +199,11 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
 
   // 📜 Scroll to bottom of chat
   void _scrollToBottom() {
+    if (!mounted) return; // Add this check
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
+      if (_scrollController.hasClients && mounted) {
+        // Add mounted check here too
         _scrollController.animateTo(
           _scrollController.position.maxScrollExtent,
           duration: const Duration(milliseconds: 300),

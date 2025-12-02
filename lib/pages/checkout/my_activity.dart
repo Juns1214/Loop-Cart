@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
+import 'dart:convert';
 
 class MyActivityPage extends StatefulWidget {
   const MyActivityPage({super.key});
@@ -21,7 +22,6 @@ class _MyActivityPageState extends State<MyActivityPage>
   List<Map<String, dynamic>> recyclingRecords = [];
   List<Map<String, dynamic>> donationRecords = [];
   List<Map<String, dynamic>> sellItems = [];
-  // NEW: List for Green Coins
   List<Map<String, dynamic>> greenCoinRecords = [];
 
   @override
@@ -259,7 +259,7 @@ class _MyActivityPageState extends State<MyActivityPage>
     Map<String, dynamic>? repairOption = record['repair_option'];
     String? image = record['image'];
     // NEW: Get Status
-    String status = record['status'] ?? 'Pending'; 
+    String status = record['status'] ?? 'Pending';
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
@@ -276,7 +276,7 @@ class _MyActivityPageState extends State<MyActivityPage>
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.memory(
-                      Uri.parse(image).data!.contentAsBytes(),
+                      base64Decode(image),
                       width: 80,
                       height: 80,
                       fit: BoxFit.cover,
@@ -311,9 +311,14 @@ class _MyActivityPageState extends State<MyActivityPage>
                           ),
                           // NEW: Status Chip
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
                             decoration: BoxDecoration(
-                              color: status == 'Pending Review' ? Colors.orange[100] : Colors.blue[50],
+                              color: status == 'Pending Review'
+                                  ? Colors.orange[100]
+                                  : Colors.blue[50],
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -321,17 +326,22 @@ class _MyActivityPageState extends State<MyActivityPage>
                               style: TextStyle(
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
-                                color: status == 'Pending Review' ? Colors.orange[800] : Colors.blue,
+                                color: status == 'Pending Review'
+                                    ? Colors.orange[800]
+                                    : Colors.blue,
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                       if (description.isNotEmpty) ...[
                         const SizedBox(height: 4),
                         Text(
                           description,
-                          style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.grey[600],
+                          ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -368,7 +378,10 @@ class _MyActivityPageState extends State<MyActivityPage>
                           const SizedBox(width: 4),
                           Text(
                             scheduledDate,
-                            style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[700],
+                            ),
                           ),
                           const SizedBox(width: 12),
                           const Icon(
@@ -379,7 +392,10 @@ class _MyActivityPageState extends State<MyActivityPage>
                           const SizedBox(width: 4),
                           Text(
                             scheduledTime,
-                            style: TextStyle(fontSize: 12, color: Colors.grey[700]),
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[700],
+                            ),
                           ),
                         ],
                       ),
@@ -452,10 +468,7 @@ class _MyActivityPageState extends State<MyActivityPage>
                     ),
                     Text(
                       'Track your earnings and spendings',
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 12,
-                      ),
+                      style: TextStyle(color: Colors.white70, fontSize: 12),
                     ),
                   ],
                 ),
@@ -495,10 +508,7 @@ class _MyActivityPageState extends State<MyActivityPage>
         ),
         title: Text(
           description,
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 14,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 4),
@@ -533,7 +543,7 @@ class _MyActivityPageState extends State<MyActivityPage>
   }
 
   // -------------------- EXISTING TABS (KEEP AS IS) --------------------
-  
+
   Widget _buildPurchaseHistoryTab() {
     if (purchaseHistory.isEmpty) {
       return _buildEmptyState(
@@ -548,7 +558,7 @@ class _MyActivityPageState extends State<MyActivityPage>
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-           Padding(
+          Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: Text(
               '${purchaseHistory.length} ${purchaseHistory.length == 1 ? 'Order' : 'Orders'}',
@@ -661,7 +671,7 @@ class _MyActivityPageState extends State<MyActivityPage>
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-           Padding(
+          Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: Text(
               '${recyclingRecords.length} ${recyclingRecords.length == 1 ? 'Request' : 'Requests'}',
@@ -699,7 +709,7 @@ class _MyActivityPageState extends State<MyActivityPage>
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.memory(
-                  Uri.parse(image).data!.contentAsBytes(),
+                  base64Decode(image),
                   width: 80,
                   height: 80,
                   fit: BoxFit.cover,
@@ -802,7 +812,7 @@ class _MyActivityPageState extends State<MyActivityPage>
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-           Padding(
+          Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: Text(
               '${donationRecords.length} ${donationRecords.length == 1 ? 'Donation' : 'Donations'}',
@@ -821,8 +831,8 @@ class _MyActivityPageState extends State<MyActivityPage>
 
   Widget _buildDonationCard(Map<String, dynamic> record) {
     double amount = (record['amount25'] ?? 0).toDouble();
-    if(amount == 0 && record['amount'] != null) {
-       amount = (record['amount']).toDouble();
+    if (amount == 0 && record['amount'] != null) {
+      amount = (record['amount']).toDouble();
     }
     String category = record['donationCategory'] ?? '';
     String status = record['status'] ?? '';
@@ -948,7 +958,7 @@ class _MyActivityPageState extends State<MyActivityPage>
       child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-           Padding(
+          Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: Text(
               '${sellItems.length} ${sellItems.length == 1 ? 'Item' : 'Items'}',
@@ -986,7 +996,7 @@ class _MyActivityPageState extends State<MyActivityPage>
               ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: Image.memory(
-                  Uri.parse(image).data!.contentAsBytes(),
+                  base64Decode(image),
                   width: 100,
                   height: 100,
                   fit: BoxFit.cover,
