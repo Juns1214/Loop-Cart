@@ -36,7 +36,7 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  
+
   List<double> donationAmount = [0, 0, 0, 0, 0, 0];
   int recycleAmount = 0;
   int repairCount = 0;
@@ -65,7 +65,10 @@ class _DashboardPageState extends State<DashboardPage> {
       }
 
       // Fetch user profile for green coins
-      final userDoc = await _firestore.collection('user_profile').doc(userId).get();
+      final userDoc = await _firestore
+          .collection('user_profile')
+          .doc(userId)
+          .get();
       if (userDoc.exists) {
         setState(() {
           greenCoin = userDoc.data()?['greenCoins'] ?? 0;
@@ -92,30 +95,35 @@ class _DashboardPageState extends State<DashboardPage> {
         final data = doc.data();
         final amount = (data['amount'] ?? 0).toDouble();
         final category = data['donationCategory'] ?? '';
-        
+
         total += amount;
-        
+
         // Map categories to chart labels
         if (category.toLowerCase().contains('orphanage')) {
-          categoryTotals['Orphanage'] = (categoryTotals['Orphanage'] ?? 0) + amount;
+          categoryTotals['Orphanage'] =
+              (categoryTotals['Orphanage'] ?? 0) + amount;
         } else if (category.toLowerCase().contains('cancer')) {
-          categoryTotals['Cancer NGO'] = (categoryTotals['Cancer NGO'] ?? 0) + amount;
-        } else if (category.toLowerCase().contains('wildlife') || 
-                   category.toLowerCase().contains('mmf')) {
+          categoryTotals['Cancer NGO'] =
+              (categoryTotals['Cancer NGO'] ?? 0) + amount;
+        } else if (category.toLowerCase().contains('wildlife') ||
+            category.toLowerCase().contains('mmf')) {
           categoryTotals['MMF'] = (categoryTotals['MMF'] ?? 0) + amount;
-        } else if (category.toLowerCase().contains('environment') || 
-                   category.toLowerCase().contains('cetdem')) {
+        } else if (category.toLowerCase().contains('environment') ||
+            category.toLowerCase().contains('cetdem')) {
           categoryTotals['CETDEM'] = (categoryTotals['CETDEM'] ?? 0) + amount;
-        } else if (category.toLowerCase().contains('old') || 
-                   category.toLowerCase().contains('elderly') ||
-                   category.toLowerCase().contains('folk')) {
-          categoryTotals['Old Folk'] = (categoryTotals['Old Folk'] ?? 0) + amount;
+        } else if (category.toLowerCase().contains('old') ||
+            category.toLowerCase().contains('elderly') ||
+            category.toLowerCase().contains('folk')) {
+          categoryTotals['Old Folk'] =
+              (categoryTotals['Old Folk'] ?? 0) + amount;
         } else if (category.toLowerCase().contains('low income') ||
-                   category.toLowerCase().contains('poverty')) {
-          categoryTotals['Low Income'] = (categoryTotals['Low Income'] ?? 0) + amount;
+            category.toLowerCase().contains('poverty')) {
+          categoryTotals['Low Income'] =
+              (categoryTotals['Low Income'] ?? 0) + amount;
         } else {
           // Default to Low Income if category doesn't match
-          categoryTotals['Low Income'] = (categoryTotals['Low Income'] ?? 0) + amount;
+          categoryTotals['Low Income'] =
+              (categoryTotals['Low Income'] ?? 0) + amount;
         }
       }
 
@@ -184,9 +192,7 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
       body: isLoading
           ? const Center(
-              child: CircularProgressIndicator(
-                color: Color(0xFF22C55E),
-              ),
+              child: CircularProgressIndicator(color: Color(0xFF22C55E)),
             )
           : RefreshIndicator(
               onRefresh: _loadDashboardData,
@@ -421,10 +427,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [
-                            const Color(0xFFF0FDF4),
-                            Colors.white,
-                          ],
+                          colors: [const Color(0xFFF0FDF4), Colors.white],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
@@ -588,10 +591,7 @@ class _DashboardPageState extends State<DashboardPage> {
             const Spacer(),
             if (isCompleted)
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                  vertical: 4,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: const Color(0xFF10B981),
                   borderRadius: BorderRadius.circular(12),
@@ -617,9 +617,9 @@ class _DashboardPageState extends State<DashboardPage> {
         Row(
           children: [
             Text(
-              unit == "RM" 
-                ? "$unit ${current is double ? current.toStringAsFixed(2) : current}" 
-                : "$current $unit",
+              unit == "RM"
+                  ? "$unit ${current is double ? current.toStringAsFixed(2) : current}"
+                  : "$current $unit",
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,
@@ -628,10 +628,7 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
             Text(
               " / ${unit == "RM" ? "$unit $target" : "$target $unit"}",
-              style: const TextStyle(
-                fontSize: 14,
-                color: Colors.grey,
-              ),
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
             ),
           ],
         ),

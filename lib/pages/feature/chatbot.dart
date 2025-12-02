@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import '../../utils/router.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);

@@ -11,7 +11,6 @@ import '../../utils/address_form.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -31,18 +30,20 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// Recycling category model
+// Recycling category model with green coin rewards
 class RecyclingCategory {
   final String name;
   final IconData icon;
   final Color color;
   final List<String> keywords;
+  final int greenCoins;
 
   const RecyclingCategory({
     required this.name,
     required this.icon,
     required this.color,
     required this.keywords,
+    required this.greenCoins,
   });
 }
 
@@ -66,43 +67,78 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
   TimeOfDay selectedTime = const TimeOfDay(hour: 14, minute: 0);
   String? _selectedCategory;
 
-  // Define recycling categories with keyword mappings
+  // Define recycling categories with green coin rewards
   static const List<RecyclingCategory> categories = [
     RecyclingCategory(
       name: 'Plastic',
       icon: Icons.water_drop_outlined,
       color: Color(0xFF4CAF50),
-      keywords: ['plastic', 'bottle', 'container', 'packaging', 'bag', 'cup', 'straw', 'wrapper'],
+      keywords: [
+        'plastic',
+        'bottle',
+        'container',
+        'packaging',
+        'bag',
+        'cup',
+        'straw',
+        'wrapper',
+      ],
+      greenCoins: 15,
     ),
     RecyclingCategory(
       name: 'Paper',
       icon: Icons.description_outlined,
       color: Color(0xFF8D6E63),
-      keywords: ['paper', 'cardboard', 'box', 'newspaper', 'magazine', 'book', 'document', 'envelope'],
+      keywords: [
+        'paper',
+        'cardboard',
+        'box',
+        'newspaper',
+        'magazine',
+        'book',
+        'document',
+        'envelope',
+      ],
+      greenCoins: 10,
     ),
     RecyclingCategory(
       name: 'Glass',
       icon: Icons.wine_bar_outlined,
       color: Color(0xFF00BCD4),
       keywords: ['glass', 'jar', 'wine', 'beer', 'mirror', 'window'],
+      greenCoins: 20,
     ),
     RecyclingCategory(
       name: 'Metal',
       icon: Icons.recycling,
       color: Color(0xFF9E9E9E),
       keywords: ['metal', 'can', 'aluminum', 'tin', 'steel', 'copper', 'wire'],
+      greenCoins: 25,
     ),
     RecyclingCategory(
       name: 'Electronics',
       icon: Icons.devices_outlined,
       color: Color(0xFFFF9800),
-      keywords: ['phone', 'computer', 'laptop', 'tablet', 'electronic', 'battery', 'charger', 'cable', 'monitor', 'keyboard'],
+      keywords: [
+        'phone',
+        'computer',
+        'laptop',
+        'tablet',
+        'electronic',
+        'battery',
+        'charger',
+        'cable',
+        'monitor',
+        'keyboard',
+      ],
+      greenCoins: 30,
     ),
     RecyclingCategory(
       name: 'Cardboard',
       icon: Icons.inventory_2_outlined,
       color: Color(0xFF795548),
       keywords: ['cardboard', 'box', 'carton', 'packaging'],
+      greenCoins: 10,
     ),
   ];
 
@@ -111,6 +147,15 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
     _itemNameController.dispose();
     _descriptionController.dispose();
     super.dispose();
+  }
+
+  int _getGreenCoinsForCategory(String? category) {
+    if (category == null) return 0;
+    try {
+      return categories.firstWhere((c) => c.name == category).greenCoins;
+    } catch (e) {
+      return 0;
+    }
   }
 
   Future<void> pickImage() async {
@@ -122,7 +167,6 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
 
     try {
       final picker = ImagePicker();
-
       final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
       if (pickedFile != null) {
@@ -147,6 +191,58 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
   Future<String> convertImageToBase64(File imageFile) async {
     List<int> imageBytes = await imageFile.readAsBytes();
     return base64Encode(imageBytes);
+  }
+
+  String _generateTransactionId() {
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final random = (timestamp % 10000).toString().padLeft(4, '0');
+    return 'TXN$timestamp$random';
+  }
+
+  Future<void> _recordGreenCoinTransaction({
+    required String transactionId,
+    required int amount,
+    required String activity,
+    required String description,
+    Map<String, dynamic>? activityDetails,
+  }) async {
+    if (user == null) return;
+
+    try {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('user_profile')
+          .doc(user!.uid)
+          .get();
+
+      int currentBalance = 0;
+      if (userDoc.exists) {
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+        currentBalance = userData['greenCoins'] ?? 0;
+      }
+
+      int newBalance = currentBalance + amount;
+
+      await FirebaseFirestore.instance
+          .collection('green_coin_transactions')
+          .doc(transactionId)
+          .set({
+            'transactionId': transactionId,
+            'userId': user!.uid,
+            'amount': amount,
+            'balanceAfter': newBalance,
+            'activity': activity,
+            'activityDetails': activityDetails ?? {},
+            'description': description,
+            'createdAt': FieldValue.serverTimestamp(),
+            'status': 'completed',
+          });
+
+      print(
+        'Green coin transaction recorded: $amount coins, activity: $activity',
+      );
+    } catch (e) {
+      print('Error recording green coin transaction: $e');
+    }
   }
 
   Future<void> uploadTaskToDb() async {
@@ -180,6 +276,8 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
 
     try {
       final imageBase64 = await convertImageToBase64(_image!);
+      final transactionId = _generateTransactionId();
+      final greenCoinsEarned = _getGreenCoinsForCategory(_selectedCategory);
 
       await FirebaseFirestore.instance.collection("recycling_record").add({
         "user_id": user?.uid,
@@ -191,12 +289,35 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
         "scheduled_time": selectedTime.format(context),
         "address": _addressFormKey.currentState!.getAddressData(),
         "created_at": FieldValue.serverTimestamp(),
+        "greenCoinsEarned": greenCoinsEarned,
+        "transactionId": transactionId,
       });
+
+      // Update user's green coins
+      await FirebaseFirestore.instance
+          .collection('user_profile')
+          .doc(user!.uid)
+          .update({'greenCoins': FieldValue.increment(greenCoinsEarned)});
+
+      // Record green coin transaction
+      await _recordGreenCoinTransaction(
+        transactionId: transactionId,
+        amount: greenCoinsEarned,
+        activity: 'recycling_pickup',
+        description:
+            'Earned $greenCoinsEarned Green Coins from $_selectedCategory recycling',
+        activityDetails: {
+          'category': _selectedCategory,
+          'itemName': _itemNameController.text,
+        },
+      );
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Recycling pickup scheduled successfully!'),
+          SnackBar(
+            content: Text(
+              'Recycling pickup scheduled! You earned $greenCoinsEarned Green Coins.',
+            ),
             backgroundColor: Colors.green,
           ),
         );
@@ -204,9 +325,9 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
       }
     }
   }
@@ -257,7 +378,7 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // Product Image (moved to top for better UX)
+                // Product Image
                 const Text(
                   "Product Image",
                   style: TextStyle(
@@ -325,7 +446,7 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // Recycling Category (NEW)
+                // Recycling Category
                 const Text(
                   "Recycling Category",
                   style: TextStyle(
@@ -363,7 +484,9 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
                       backgroundColor: category.color.withOpacity(0.1),
                       labelStyle: TextStyle(
                         color: isSelected ? Colors.white : Colors.black87,
-                        fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                        fontWeight: isSelected
+                            ? FontWeight.bold
+                            : FontWeight.normal,
                       ),
                     );
                   }).toList(),
@@ -376,6 +499,61 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
                       style: TextStyle(color: Colors.red, fontSize: 12),
                     ),
                   ),
+
+                // Green Coin Reward Display
+                if (_selectedCategory != null) ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF0FDF4),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: const Color(0xFFBBF7D0)),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 40,
+                          height: 40,
+                          decoration: const BoxDecoration(
+                            color: Color(0xFF22C55E),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.eco,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "Earn Green Coins",
+                                style: TextStyle(
+                                  color: Color(0xFF166534),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                "You will earn ${_getGreenCoinsForCategory(_selectedCategory)} Green Coins for recycling this category.",
+                                style: const TextStyle(
+                                  color: Color(0xFF166534),
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 16),
 
                 // Product Name
@@ -432,7 +610,8 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
-                    hintText: "Auto-filled with detection results or enter manually",
+                    hintText:
+                        "Auto-filled with detection results or enter manually",
                     hintStyle: const TextStyle(
                       color: Colors.grey,
                       fontSize: 14,

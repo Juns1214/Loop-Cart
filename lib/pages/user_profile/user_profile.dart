@@ -36,13 +36,13 @@ class UserProfile extends StatefulWidget {
 class _UserProfileState extends State<UserProfile> {
   Map<String, dynamic>? userData;
   bool isLoading = true;
-  
+
   @override
   void initState() {
     super.initState();
     loadUserProfile();
   }
-  
+
   Future<void> loadUserProfile() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
@@ -51,7 +51,7 @@ class _UserProfileState extends State<UserProfile> {
             .collection('user_profile')
             .doc(user.uid)
             .get();
-        
+
         setState(() {
           userData = doc.data();
           isLoading = false;
@@ -137,7 +137,10 @@ class _UserProfileState extends State<UserProfile> {
                             Container(
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                border: Border.all(color: Colors.white, width: 4),
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 4,
+                                ),
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.black.withOpacity(0.2),
@@ -149,10 +152,18 @@ class _UserProfileState extends State<UserProfile> {
                               child: CircleAvatar(
                                 radius: 60,
                                 backgroundColor: Colors.grey[200],
-                                backgroundImage: userData?['profileImageURL'] != null && 
-                                                userData!['profileImageURL'].isNotEmpty
-                                    ? MemoryImage(base64Decode(userData!['profileImageURL']))
-                                    : AssetImage('assets/images/icon/LogoIcon.png') as ImageProvider,
+                                backgroundImage:
+                                    userData?['profileImageURL'] != null &&
+                                        userData!['profileImageURL'].isNotEmpty
+                                    ? MemoryImage(
+                                        base64Decode(
+                                          userData!['profileImageURL'],
+                                        ),
+                                      )
+                                    : AssetImage(
+                                            'assets/images/icon/LogoIcon.png',
+                                          )
+                                          as ImageProvider,
                               ),
                             ),
                             Positioned(
@@ -171,7 +182,11 @@ class _UserProfileState extends State<UserProfile> {
                                   ],
                                 ),
                                 child: IconButton(
-                                  icon: Icon(Icons.edit_rounded, color: Color(0xFF388E3C), size: 22),
+                                  icon: Icon(
+                                    Icons.edit_rounded,
+                                    color: Color(0xFF388E3C),
+                                    size: 22,
+                                  ),
                                   onPressed: _navigateToEditProfile,
                                   padding: EdgeInsets.all(10),
                                   constraints: BoxConstraints(),
@@ -180,26 +195,29 @@ class _UserProfileState extends State<UserProfile> {
                             ),
                           ],
                         ),
-                        
+
                         SizedBox(height: 20),
-                        
+
                         // User Name
                         Text(
                           userData?['name'] ?? 'No Name',
                           style: TextStyle(
-                            fontSize: 26, 
+                            fontSize: 26,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'Manrope',
                             color: Colors.white,
                           ),
                           textAlign: TextAlign.center,
                         ),
-                        
+
                         SizedBox(height: 8),
-                        
+
                         // User Email
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.white.withOpacity(0.2),
                             borderRadius: BorderRadius.circular(20),
@@ -207,12 +225,16 @@ class _UserProfileState extends State<UserProfile> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.email_rounded, color: Colors.white, size: 16),
+                              Icon(
+                                Icons.email_rounded,
+                                color: Colors.white,
+                                size: 16,
+                              ),
                               SizedBox(width: 8),
                               Text(
                                 userData?['email'] ?? 'No Email',
                                 style: TextStyle(
-                                  fontSize: 15, 
+                                  fontSize: 15,
                                   color: Colors.white,
                                   fontFamily: 'Manrope',
                                   fontWeight: FontWeight.w500,
@@ -221,13 +243,17 @@ class _UserProfileState extends State<UserProfile> {
                             ],
                           ),
                         ),
-                        
+
                         SizedBox(height: 8),
-                        
+
                         // Phone Number with +60 prefix
-                        if (userData?['phoneNumber'] != null && userData!['phoneNumber'].isNotEmpty)
+                        if (userData?['phoneNumber'] != null &&
+                            userData!['phoneNumber'].isNotEmpty)
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.white.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(20),
@@ -235,12 +261,16 @@ class _UserProfileState extends State<UserProfile> {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.phone_rounded, color: Colors.white, size: 16),
+                                Icon(
+                                  Icons.phone_rounded,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
                                 SizedBox(width: 8),
                                 Text(
                                   userData!['phoneNumber'],
                                   style: TextStyle(
-                                    fontSize: 15, 
+                                    fontSize: 15,
                                     color: Colors.white,
                                     fontFamily: 'Manrope',
                                     fontWeight: FontWeight.w500,
@@ -254,7 +284,10 @@ class _UserProfileState extends State<UserProfile> {
 
                         // Green Coins Badge
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 12,
+                          ),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(30),
@@ -269,7 +302,11 @@ class _UserProfileState extends State<UserProfile> {
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Icon(Icons.monetization_on, color: Colors.amber[700], size: 24),
+                              Icon(
+                                Icons.monetization_on,
+                                color: Colors.amber[700],
+                                size: 24,
+                              ),
                               SizedBox(width: 8),
                               Text(
                                 '${userData?['greenCoins'] ?? 0} Green Coins',
@@ -315,7 +352,11 @@ class _UserProfileState extends State<UserProfile> {
                                   color: Colors.blue.withOpacity(0.1),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: Icon(Icons.person_outline, color: Colors.blue[700], size: 22),
+                                child: Icon(
+                                  Icons.person_outline,
+                                  color: Colors.blue[700],
+                                  size: 22,
+                                ),
                               ),
                               SizedBox(width: 12),
                               Text(
@@ -332,7 +373,8 @@ class _UserProfileState extends State<UserProfile> {
                           SizedBox(height: 20),
 
                           // Date of Birth
-                          if (userData!['dateOfBirth'] != null && userData!['dateOfBirth'].isNotEmpty)
+                          if (userData!['dateOfBirth'] != null &&
+                              userData!['dateOfBirth'].isNotEmpty)
                             _buildDetailRow(
                               icon: Icons.cake_rounded,
                               iconColor: Colors.pink[400]!,
@@ -341,8 +383,11 @@ class _UserProfileState extends State<UserProfile> {
                             ),
 
                           // Address
-                          if (userData!['address'] != null && userData!['address'] is Map)
-                            _buildAddressSection(userData!['address'] as Map<String, dynamic>),
+                          if (userData!['address'] != null &&
+                              userData!['address'] is Map)
+                            _buildAddressSection(
+                              userData!['address'] as Map<String, dynamic>,
+                            ),
                         ],
                       ),
                     ),
@@ -358,9 +403,11 @@ class _UserProfileState extends State<UserProfile> {
                       _buildListItem(
                         icon: Icons.shopping_bag_rounded,
                         iconColor: Color(0xFF388E3C),
-                        title: 'Purchase History',
-                        subtitle: 'View your orders',
-                        onTap: () {},
+                        title: 'My Acitivity',
+                        subtitle: 'View your orders and activities',
+                        onTap: () {
+                          Navigator.pushNamed(context, '/my-activity');
+                        },
                       ),
                       Divider(height: 1, thickness: 1),
                       _buildListItem(
@@ -386,7 +433,12 @@ class _UserProfileState extends State<UserProfile> {
                         iconColor: Colors.blue[700]!,
                         title: 'Sustainability Dashboard',
                         subtitle: 'View your impact',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.pushNamed(
+                            context,
+                            '/sustainability-dashboard',
+                          );
+                        },
                       ),
                       Divider(height: 1, thickness: 1),
                       _buildListItem(
@@ -394,7 +446,9 @@ class _UserProfileState extends State<UserProfile> {
                         iconColor: Colors.purple[700]!,
                         title: 'Support ChatBot',
                         subtitle: 'Get instant help',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.pushNamed(context, '/chatbot');
+                        },
                       ),
                       Divider(height: 1, thickness: 1),
                       _buildListItem(
@@ -457,8 +511,8 @@ class _UserProfileState extends State<UserProfile> {
                                   onPressed: () async {
                                     await FirebaseAuth.instance.signOut();
                                     Navigator.pushNamedAndRemoveUntil(
-                                      context, 
-                                      '/login', 
+                                      context,
+                                      '/login',
                                       (route) => false,
                                     );
                                   },
@@ -546,13 +600,19 @@ class _UserProfileState extends State<UserProfile> {
   Widget _buildAddressSection(Map<String, dynamic> address) {
     // Combine address parts safely
     List<String> addressParts = [];
-    
+
     // Check for common address fields
-    if (address['line1'] != null && address['line1'].toString().isNotEmpty) addressParts.add(address['line1']);
-    if (address['line2'] != null && address['line2'].toString().isNotEmpty) addressParts.add(address['line2']);
-    if (address['city'] != null && address['city'].toString().isNotEmpty) addressParts.add(address['city']);
-    if (address['state'] != null && address['state'].toString().isNotEmpty) addressParts.add(address['state']);
-    if (address['postcode'] != null && address['postcode'].toString().isNotEmpty) addressParts.add(address['postcode']);
+    if (address['line1'] != null && address['line1'].toString().isNotEmpty)
+      addressParts.add(address['line1']);
+    if (address['line2'] != null && address['line2'].toString().isNotEmpty)
+      addressParts.add(address['line2']);
+    if (address['city'] != null && address['city'].toString().isNotEmpty)
+      addressParts.add(address['city']);
+    if (address['state'] != null && address['state'].toString().isNotEmpty)
+      addressParts.add(address['state']);
+    if (address['postcode'] != null &&
+        address['postcode'].toString().isNotEmpty)
+      addressParts.add(address['postcode']);
 
     String formattedAddress = addressParts.join(', ');
 
@@ -562,7 +622,9 @@ class _UserProfileState extends State<UserProfile> {
         icon: Icons.location_on_rounded,
         iconColor: Colors.orange[700]!,
         label: 'Address',
-        value: formattedAddress.isNotEmpty ? formattedAddress : 'Address incomplete',
+        value: formattedAddress.isNotEmpty
+            ? formattedAddress
+            : 'Address incomplete',
       ),
     );
   }
@@ -642,7 +704,7 @@ class _UserProfileState extends State<UserProfile> {
       title: Text(
         title,
         style: TextStyle(
-          fontSize: 16, 
+          fontSize: 16,
           fontWeight: FontWeight.w600,
           fontFamily: 'Manrope',
           color: titleColor ?? Colors.black87,

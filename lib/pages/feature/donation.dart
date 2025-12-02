@@ -62,13 +62,12 @@ class DonationOptionWidget extends StatelessWidget {
                     color: Color(0xFF2E5BFF).withOpacity(0.3),
                     blurRadius: 8,
                     offset: Offset(0, 2),
-                  )
+                  ),
                 ]
               : [],
         ),
         child: Row(
           children: [
-            // Circular image on the left
             ClipOval(
               child: Image.asset(
                 imageURL,
@@ -92,10 +91,9 @@ class DonationOptionWidget extends StatelessWidget {
                 },
               ),
             ),
-            
+
             SizedBox(width: 12),
-            
-            // Title and description in the middle
+
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -110,7 +108,6 @@ class DonationOptionWidget extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 4),
-                  // Description with text wrapping
                   Text(
                     description,
                     style: TextStyle(
@@ -124,10 +121,9 @@ class DonationOptionWidget extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             SizedBox(width: 12),
-            
-            // Checkbox on the right
+
             Container(
               width: 24,
               height: 24,
@@ -160,7 +156,7 @@ class DonationPage extends StatefulWidget {
 class _DonationPageState extends State<DonationPage> {
   final _formKey = GlobalKey<FormState>();
   final _amountController = TextEditingController();
-  
+
   int? selectedCategory;
   int? selectedAmount;
   List<int> donationAmount = [10, 25, 50, 100, 150, 200];
@@ -179,9 +175,14 @@ class _DonationPageState extends State<DonationPage> {
   }
 
   bool _canProceed() {
-    return selectedCategory != null && 
-           _amountController.text.isNotEmpty &&
-           (double.tryParse(_amountController.text) ?? 0) >= 1;
+    return selectedCategory != null &&
+        _amountController.text.isNotEmpty &&
+        (double.tryParse(_amountController.text) ?? 0) >= 1;
+  }
+
+  int _calculateGreenCoins() {
+    final amount = double.tryParse(_amountController.text) ?? 0;
+    return amount.floor(); // RM1 = 1 coin
   }
 
   @override
@@ -197,10 +198,7 @@ class _DonationPageState extends State<DonationPage> {
         ),
         title: const Text(
           'Donation',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.black87,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
         ),
         centerTitle: true,
       ),
@@ -256,7 +254,7 @@ class _DonationPageState extends State<DonationPage> {
                     color: Colors.black87,
                   ),
                 ),
-                
+
                 SizedBox(height: 12),
 
                 ListView.builder(
@@ -312,7 +310,10 @@ class _DonationPageState extends State<DonationPage> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Color(0xFF2E5BFF), width: 2),
+                      borderSide: BorderSide(
+                        color: Color(0xFF2E5BFF),
+                        width: 2,
+                      ),
                     ),
                     labelText: "Enter Amount (RM)",
                     prefixText: "RM ",
@@ -365,7 +366,9 @@ class _DonationPageState extends State<DonationPage> {
                         child: Text(
                           "RM $amount",
                           style: TextStyle(
-                            color: isSelected ? Colors.white : Color(0xFF2E5BFF),
+                            color: isSelected
+                                ? Colors.white
+                                : Color(0xFF2E5BFF),
                             fontWeight: FontWeight.bold,
                             fontSize: 15,
                           ),
@@ -377,7 +380,7 @@ class _DonationPageState extends State<DonationPage> {
 
                 SizedBox(height: 24),
 
-                // Green coin info
+                // Green coin info - UPDATED
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.all(16),
@@ -399,7 +402,9 @@ class _DonationPageState extends State<DonationPage> {
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               image: DecorationImage(
-                                image: AssetImage('assets/images/icon/Green Coin.png'),
+                                image: AssetImage(
+                                  'assets/images/icon/Green Coin.png',
+                                ),
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -417,13 +422,61 @@ class _DonationPageState extends State<DonationPage> {
                       ),
                       SizedBox(height: 12),
                       Text(
-                        "Make a difference! Every RM10 donated earns you 20 Green Coins that you can use for rewards.",
+                        "Make a difference! Every RM1 donated earns you 1 Green Coin that you can use for rewards.",
                         style: TextStyle(
                           color: Color(0xFF1B6839),
                           fontSize: 14,
                           height: 1.4,
                         ),
                       ),
+                      if (_amountController.text.isNotEmpty &&
+                          _calculateGreenCoins() > 0) ...[
+                        SizedBox(height: 12),
+                        Container(
+                          padding: EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: Color(0xFF1B6839).withOpacity(0.3),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "You'll earn:",
+                                style: TextStyle(
+                                  color: Color(0xFF1B6839),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    "${_calculateGreenCoins()}",
+                                    style: TextStyle(
+                                      color: Color(0xFF1B6839),
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(width: 6),
+                                  Text(
+                                    "Green Coins",
+                                    style: TextStyle(
+                                      color: Color(0xFF1B6839),
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -461,22 +514,16 @@ class _DonationPageState extends State<DonationPage> {
                         onPressed: _canProceed()
                             ? () {
                                 if (_formKey.currentState!.validate()) {
-                                  // Handle payment navigation
-                                  final selectedTitle = donationOptions[selectedCategory!]['title'];
-                                  
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        'Proceeding with RM${_amountController.text} for: $selectedTitle',
-                                      ),
-                                      backgroundColor: Colors.green,
-                                    ),
-                                  );
+                                  final selectedTitle =
+                                      donationOptions[selectedCategory!]['title'];
+
                                   Navigator.pushNamed(
                                     context,
                                     '/payment',
                                     arguments: {
-                                      'amount': double.parse(_amountController.text),
+                                      'amount': double.parse(
+                                        _amountController.text,
+                                      ),
                                       'category': selectedTitle,
                                     },
                                   );

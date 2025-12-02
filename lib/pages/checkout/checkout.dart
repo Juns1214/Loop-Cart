@@ -26,11 +26,7 @@ class Checkout extends StatefulWidget {
   final List<Map<String, dynamic>> selectedItems;
   final Map<String, dynamic>? userAddress;
 
-  const Checkout({
-    super.key,
-    required this.selectedItems,
-    this.userAddress,
-  });
+  const Checkout({super.key, required this.selectedItems, this.userAddress});
 
   @override
   State<Checkout> createState() => _CheckoutState();
@@ -38,22 +34,19 @@ class Checkout extends StatefulWidget {
 
 class _CheckoutState extends State<Checkout> {
   final User? currentUser = FirebaseAuth.instance.currentUser;
-  
+
   String selectedShippingMethod = 'Standard';
   String selectedPackaging = 'Standard Packaging';
   bool useGreenCoinDiscount = false;
-  
-  double shippingCost = 0.0;
+
+  double shippingCost = .0;
   double packagingCost = 2.0;
   int availableGreenCoins = 0;
   double greenCoinDiscount = 0.0;
-  
+
   bool isLoading = true;
 
-  final Map<String, double> shippingCosts = {
-    'Standard': 0.0,
-    'Express': 12.0,
-  };
+  final Map<String, double> shippingCosts = {'Standard': 0.0, 'Express': 12.0};
 
   final Map<String, double> packagingCosts = {
     'Standard Packaging': 2.0,
@@ -111,7 +104,7 @@ class _CheckoutState extends State<Checkout> {
     double shipping = shippingCost;
     double packaging = packagingCost;
     double discount = useGreenCoinDiscount ? greenCoinDiscount : 0;
-    
+
     return itemsTotal + shipping + packaging - discount;
   }
 
@@ -137,8 +130,8 @@ class _CheckoutState extends State<Checkout> {
         // Maximum discount is 50% of items total or available green coins
         double maxDiscountFromCoins = availableGreenCoins * 0.10;
         double maxDiscountAllowed = _calculateItemsTotal() * 0.5;
-        greenCoinDiscount = maxDiscountFromCoins < maxDiscountAllowed 
-            ? maxDiscountFromCoins 
+        greenCoinDiscount = maxDiscountFromCoins < maxDiscountAllowed
+            ? maxDiscountFromCoins
             : maxDiscountAllowed;
       } else {
         greenCoinDiscount = 0.0;
@@ -148,7 +141,7 @@ class _CheckoutState extends State<Checkout> {
 
   Widget _buildItemRow(Map<String, dynamic> item) {
     int quantity = item['quantity'] ?? 1;
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
@@ -170,7 +163,11 @@ class _CheckoutState extends State<Checkout> {
                             width: 60,
                             height: 60,
                             color: Colors.grey[300],
-                            child: Icon(Icons.image, size: 30, color: Colors.grey),
+                            child: Icon(
+                              Icons.image,
+                              size: 30,
+                              color: Colors.grey,
+                            ),
                           );
                         },
                       )
@@ -210,10 +207,7 @@ class _CheckoutState extends State<Checkout> {
           Expanded(
             child: Text(
               item['productName'] ?? 'Unknown Product',
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -268,7 +262,9 @@ class _CheckoutState extends State<Checkout> {
                   optionName,
                   style: TextStyle(
                     fontSize: 15,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                    fontWeight: isSelected
+                        ? FontWeight.w600
+                        : FontWeight.normal,
                   ),
                 ),
               ],
@@ -303,10 +299,7 @@ class _CheckoutState extends State<Checkout> {
             children: [
               Text(
                 'Shipping Address',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               IconButton(
                 icon: Icon(Icons.edit, color: Color(0xFF388E3C), size: 20),
@@ -320,10 +313,7 @@ class _CheckoutState extends State<Checkout> {
           if (widget.userAddress == null || widget.userAddress!.isEmpty)
             Text(
               'No address found. Please add your address.',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.red[700],
-              ),
+              style: TextStyle(fontSize: 14, color: Colors.red[700]),
             )
           else
             Column(
@@ -333,7 +323,7 @@ class _CheckoutState extends State<Checkout> {
                   widget.userAddress!['line1'] ?? '',
                   style: TextStyle(fontSize: 14),
                 ),
-                if (widget.userAddress!['line2'] != null && 
+                if (widget.userAddress!['line2'] != null &&
                     widget.userAddress!['line2'].isNotEmpty)
                   Text(
                     widget.userAddress!['line2'],
@@ -372,17 +362,12 @@ class _CheckoutState extends State<Checkout> {
         ),
         title: const Text(
           'Checkout',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
         ),
         centerTitle: true,
       ),
       body: isLoading
-          ? Center(
-              child: CircularProgressIndicator(color: Color(0xFF388E3C)),
-            )
+          ? Center(child: CircularProgressIndicator(color: Color(0xFF388E3C)))
           : SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -435,9 +420,9 @@ class _CheckoutState extends State<Checkout> {
                             ],
                           ),
                           SizedBox(height: 16),
-                          ...widget.selectedItems
-                              .map((item) => _buildItemRow(item))
-                              ,
+                          ...widget.selectedItems.map(
+                            (item) => _buildItemRow(item),
+                          ),
                         ],
                       ),
                     ),
@@ -613,11 +598,18 @@ class _CheckoutState extends State<Checkout> {
                       ),
                       child: Column(
                         children: [
-                          _buildSummaryRow('Items Total', _calculateItemsTotal()),
+                          _buildSummaryRow(
+                            'Items Total',
+                            _calculateItemsTotal(),
+                          ),
                           _buildSummaryRow('Shipping', shippingCost),
                           _buildSummaryRow('Packaging', packagingCost),
                           if (useGreenCoinDiscount)
-                            _buildSummaryRow('Discount', -greenCoinDiscount, isDiscount: true),
+                            _buildSummaryRow(
+                              'Discount',
+                              -greenCoinDiscount,
+                              isDiscount: true,
+                            ),
                           Divider(thickness: 2),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -650,10 +642,13 @@ class _CheckoutState extends State<Checkout> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          if (widget.userAddress == null || widget.userAddress!.isEmpty) {
+                          if (widget.userAddress == null ||
+                              widget.userAddress!.isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('Please add your shipping address first'),
+                                content: Text(
+                                  'Please add your shipping address first',
+                                ),
                                 backgroundColor: Colors.red,
                               ),
                             );
@@ -661,8 +656,8 @@ class _CheckoutState extends State<Checkout> {
                           }
 
                           // Calculate green coins used (how many coins = discount amount)
-                          int greenCoinsUsed = useGreenCoinDiscount 
-                              ? (greenCoinDiscount / 0.10).round() 
+                          int greenCoinsUsed = useGreenCoinDiscount
+                              ? (greenCoinDiscount / 0.10).round()
                               : 0;
 
                           // Pass complete order data to Payment page
@@ -678,7 +673,9 @@ class _CheckoutState extends State<Checkout> {
                                   'packagingType': selectedPackaging,
                                   'packagingCost': packagingCost,
                                   'itemsTotal': _calculateItemsTotal(),
-                                  'discount': useGreenCoinDiscount ? greenCoinDiscount : 0,
+                                  'discount': useGreenCoinDiscount
+                                      ? greenCoinDiscount
+                                      : 0,
                                   'greenCoinsUsed': greenCoinsUsed,
                                   'grandTotal': _calculateGrandTotal(),
                                 },
@@ -713,23 +710,19 @@ class _CheckoutState extends State<Checkout> {
     );
   }
 
-  Widget _buildSummaryRow(String label, double amount, {bool isDiscount = false}) {
+  Widget _buildSummaryRow(
+    String label,
+    double amount, {
+    bool isDiscount = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          Text(label, style: TextStyle(fontSize: 15, color: Colors.grey[700])),
           Text(
-            label,
-            style: TextStyle(
-              fontSize: 15,
-              color: Colors.grey[700],
-            ),
-          ),
-          Text(
-            amount == 0 
-                ? 'FREE' 
-                : 'RM ${amount.abs().toStringAsFixed(2)}',
+            amount == 0 ? 'FREE' : 'RM ${amount.abs().toStringAsFixed(2)}',
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,

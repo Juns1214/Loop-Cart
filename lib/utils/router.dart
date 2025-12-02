@@ -9,7 +9,7 @@ import '../pages/checkout/shopping_cart.dart';
 import '../pages/checkout/checkout.dart';
 import '../pages/checkout/payment.dart';
 import '../pages/checkout/payment_confirmation.dart';
-import '../pages/checkout/purchase_history.dart';
+import '../pages/checkout/my_activity.dart';
 import '../pages/feature/chatbot.dart';
 import '../pages/feature/donation.dart';
 import '../pages/feature/recycling_pickup.dart';
@@ -43,7 +43,7 @@ final Map routes = {
     transactionId: '',
     paymentMethod: '',
   ),
-  "/purchase-history": (context) => const PurchaseHistory(),
+  "/my-activity": (context) => const MyActivityPage(),
   "/chatbot": (context) => const ChatBotScreen(),
   "/donation": (context) => const DonationPage(),
   "/recycling-pickup": (context) => const RecyclingPickUpPage(),

@@ -44,26 +44,27 @@ class _EditProfileState extends State<EditProfile> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _dobController = TextEditingController();
-  
+
   // Address form controllers
   final TextEditingController _line1Controller = TextEditingController();
   final TextEditingController _line2Controller = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _postalController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
-  
+
   // Form keys
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final GlobalKey<AddressFormState> _addressFormKey = GlobalKey<AddressFormState>();
-  
+  final GlobalKey<AddressFormState> _addressFormKey =
+      GlobalKey<AddressFormState>();
+
   // Image
   File? _image;
   String? _existingImageBase64;
-  
+
   // Loading state
   bool _isLoading = true;
   bool _isSaving = false;
-  
+
   // User
   final User? user = FirebaseAuth.instance.currentUser;
 
@@ -98,11 +99,11 @@ class _EditProfileState extends State<EditProfile> {
 
       if (doc.exists) {
         final data = doc.data()!;
-        
+
         setState(() {
           _nameController.text = data['name'] ?? '';
           _emailController.text = data['email'] ?? user!.email ?? '';
-          
+
           // Remove +60 prefix if it exists in the database
           String phone = data['phoneNumber'] ?? '';
           if (phone.startsWith('+60')) {
@@ -111,9 +112,9 @@ class _EditProfileState extends State<EditProfile> {
             phone = phone.substring(2).trim();
           }
           _phoneController.text = phone;
-          
+
           _dobController.text = data['dateOfBirth'] ?? '';
-          
+
           // Load address data as map
           if (data['address'] != null && data['address'] is Map) {
             final address = data['address'] as Map<String, dynamic>;
@@ -123,10 +124,10 @@ class _EditProfileState extends State<EditProfile> {
             _postalController.text = address['postal'] ?? '';
             _stateController.text = address['state'] ?? '';
           }
-          
+
           // Load existing image
           _existingImageBase64 = data['profileImageURL'];
-          
+
           _isLoading = false;
         });
       } else {
@@ -208,7 +209,8 @@ class _EditProfileState extends State<EditProfile> {
     }
 
     // Validate address form only if user has filled any address field
-    bool hasAddressData = _line1Controller.text.isNotEmpty ||
+    bool hasAddressData =
+        _line1Controller.text.isNotEmpty ||
         _cityController.text.isNotEmpty ||
         _postalController.text.isNotEmpty ||
         _stateController.text.isNotEmpty;
@@ -224,7 +226,7 @@ class _EditProfileState extends State<EditProfile> {
 
     try {
       String? imageBase64;
-      
+
       // Convert new image to base64 if selected
       if (_image != null) {
         imageBase64 = await _convertImageToBase64(_image!);
@@ -233,7 +235,7 @@ class _EditProfileState extends State<EditProfile> {
       }
 
       // Prepare phone number with +60 prefix
-      String phoneWithPrefix = _phoneController.text.trim().isNotEmpty 
+      String phoneWithPrefix = _phoneController.text.trim().isNotEmpty
           ? '+60${_phoneController.text.trim()}'
           : '';
 
@@ -291,7 +293,12 @@ class _EditProfileState extends State<EditProfile> {
     }
   }
 
-  InputDecoration _inputDecoration(String label, {bool readOnly = false, Widget? suffixIcon, String? prefixText}) {
+  InputDecoration _inputDecoration(
+    String label, {
+    bool readOnly = false,
+    Widget? suffixIcon,
+    String? prefixText,
+  }) {
     return InputDecoration(
       labelText: label,
       labelStyle: TextStyle(
@@ -398,9 +405,17 @@ class _EditProfileState extends State<EditProfile> {
                               backgroundColor: Colors.grey[200],
                               backgroundImage: _image != null
                                   ? FileImage(_image!)
-                                  : (_existingImageBase64 != null && _existingImageBase64!.isNotEmpty
-                                      ? MemoryImage(base64Decode(_existingImageBase64!))
-                                      : AssetImage('assets/images/icon/LogoIcon.png')) as ImageProvider,
+                                  : (_existingImageBase64 != null &&
+                                                _existingImageBase64!.isNotEmpty
+                                            ? MemoryImage(
+                                                base64Decode(
+                                                  _existingImageBase64!,
+                                                ),
+                                              )
+                                            : AssetImage(
+                                                'assets/images/icon/LogoIcon.png',
+                                              ))
+                                        as ImageProvider,
                             ),
                           ),
                           Positioned(
@@ -412,12 +427,18 @@ class _EditProfileState extends State<EditProfile> {
                                 padding: EdgeInsets.all(12),
                                 decoration: BoxDecoration(
                                   gradient: LinearGradient(
-                                    colors: [Color(0xFF4CAF50), Color(0xFF388E3C)],
+                                    colors: [
+                                      Color(0xFF4CAF50),
+                                      Color(0xFF388E3C),
+                                    ],
                                     begin: Alignment.topLeft,
                                     end: Alignment.bottomRight,
                                   ),
                                   shape: BoxShape.circle,
-                                  border: Border.all(color: Colors.white, width: 4),
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 4,
+                                  ),
                                   boxShadow: [
                                     BoxShadow(
                                       color: Color(0xFF388E3C).withOpacity(0.4),
@@ -512,7 +533,10 @@ class _EditProfileState extends State<EditProfile> {
                           // Email Field (Read-only)
                           TextFormField(
                             controller: _emailController,
-                            decoration: _inputDecoration('Email', readOnly: true),
+                            decoration: _inputDecoration(
+                              'Email',
+                              readOnly: true,
+                            ),
                             style: TextStyle(
                               fontFamily: 'Manrope',
                               fontSize: 16,

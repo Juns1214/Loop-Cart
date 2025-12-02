@@ -12,6 +12,7 @@ import '../../utils/address_form.dart';
 import '../../utils/repair_option.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../utils/router.dart';
+import '../checkout/payment.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -69,7 +70,6 @@ class _RepairServicePageState extends State<RepairServicePage> {
 
     try {
       final picker = ImagePicker();
-
       final pickedFile = await picker.pickImage(source: ImageSource.gallery);
 
       if (pickedFile != null) {
@@ -96,8 +96,13 @@ class _RepairServicePageState extends State<RepairServicePage> {
     return base64Encode(imageBytes);
   }
 
-  Future<void> uploadTaskToDb() async {
-    // Validate main form
+  bool _isCustomRepair() {
+    return selectedRepair != null &&
+        selectedRepair!['Repair'] == 'Custom Repair';
+  }
+
+  Future<void> _saveCustomRepairRequest() async {
+    // Validate forms
     if (!_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill in all required fields')),
@@ -105,7 +110,6 @@ class _RepairServicePageState extends State<RepairServicePage> {
       return;
     }
 
-    // Validate address form
     if (!_addressFormKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please complete the address')),
@@ -113,7 +117,6 @@ class _RepairServicePageState extends State<RepairServicePage> {
       return;
     }
 
-    // Validate repair option
     if (selectedRepair == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please select a repair option')),
@@ -121,7 +124,6 @@ class _RepairServicePageState extends State<RepairServicePage> {
       return;
     }
 
-    // Validate image
     if (_image == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please upload a product image')),
@@ -142,12 +144,16 @@ class _RepairServicePageState extends State<RepairServicePage> {
         "repair_option": selectedRepair,
         "address": _addressFormKey.currentState!.getAddressData(),
         "created_at": FieldValue.serverTimestamp(),
+        "status": "Pending Review",
+        "paymentStatus": "Pending",
       });
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Repair service scheduled successfully!'),
+            content: Text(
+              'Custom repair request submitted! We\'ll contact you soon.',
+            ),
             backgroundColor: Colors.green,
           ),
         );
@@ -159,6 +165,80 @@ class _RepairServicePageState extends State<RepairServicePage> {
           context,
         ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
       }
+    }
+  }
+
+  Future<void> _proceedToPayment() async {
+    // Validate forms
+    if (!_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all required fields')),
+      );
+      return;
+    }
+
+    if (!_addressFormKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please complete the address')),
+      );
+      return;
+    }
+
+    if (selectedRepair == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a repair option')),
+      );
+      return;
+    }
+
+    if (_image == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please upload a product image')),
+      );
+      return;
+    }
+
+    try {
+      // Save repair request first (without payment status)
+      final imageBase64 = await convertImageToBase64(_image!);
+
+      await FirebaseFirestore.instance.collection("repair_record").add({
+        "user_id": user?.uid,
+        "name": _itemNameController.text,
+        "description": _descriptionController.text,
+        "image": imageBase64,
+        "scheduled_date": DateFormat('yyyy-MM-dd').format(selectedDate),
+        "scheduled_time": selectedTime.format(context),
+        "repair_option": selectedRepair,
+        "address": _addressFormKey.currentState!.getAddressData(),
+        "created_at": FieldValue.serverTimestamp(),
+        "status": "Pending Payment",
+      });
+
+      // Navigate to payment
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                Payment(orderData: {'repair_option': selectedRepair!}),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+      }
+    }
+  }
+
+  void _handleConfirmation() {
+    if (_isCustomRepair()) {
+      _saveCustomRepairRequest();
+    } else {
+      _proceedToPayment();
     }
   }
 
@@ -396,9 +476,17 @@ class _RepairServicePageState extends State<RepairServicePage> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: uploadTaskToDb,
-                        icon: const Icon(Icons.check_circle_outline),
-                        label: const Text("Confirm"),
+                        onPressed: _handleConfirmation,
+                        icon: Icon(
+                          _isCustomRepair()
+                              ? Icons.send_outlined
+                              : Icons.payment_outlined,
+                        ),
+                        label: Text(
+                          _isCustomRepair()
+                              ? "Submit Request"
+                              : "Proceed to Payment",
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: const Color(0xFF2E5BFF),
                           foregroundColor: Colors.white,
