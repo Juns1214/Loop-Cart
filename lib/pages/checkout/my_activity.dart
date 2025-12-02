@@ -194,7 +194,7 @@ class _MyActivityPageState extends State<MyActivityPage>
                 Tab(text: 'Recycling'),
                 Tab(text: 'Donations'),
                 Tab(text: 'Listed Items'),
-                Tab(text: 'Green Coins'), // NEW TAB
+                Tab(text: 'Green Coins'),
               ],
             ),
           ),
