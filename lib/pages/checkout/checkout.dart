@@ -39,7 +39,7 @@ class _CheckoutState extends State<Checkout> {
   String selectedPackaging = 'Standard Packaging';
   bool useGreenCoinDiscount = false;
 
-  double shippingCost = .0;
+  double shippingCost = 0.0;
   double packagingCost = 2.0;
   int availableGreenCoins = 0;
   double greenCoinDiscount = 0.0;
@@ -89,6 +89,20 @@ class _CheckoutState extends State<Checkout> {
         isLoading = false;
       });
     }
+  }
+
+  int _calculateGreenCoinsToEarn() {
+    int totalCoins = 0;
+    for (var item in widget.selectedItems) {
+      bool isPreowned = item['isPreowned'] ?? false;
+      if (isPreowned) {
+        // RM1 = 1 Green Coin
+        int itemTotal = ((item['productPrice'] ?? 0) * (item['quantity'] ?? 1))
+            .floor();
+        totalCoins += itemTotal;
+      }
+    }
+    return totalCoins;
   }
 
   double _calculateItemsTotal() {
@@ -141,6 +155,7 @@ class _CheckoutState extends State<Checkout> {
 
   Widget _buildItemRow(Map<String, dynamic> item) {
     int quantity = item['quantity'] ?? 1;
+    bool isPreowned = item['isPreowned'] ?? false;
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
@@ -199,17 +214,76 @@ class _CheckoutState extends State<Checkout> {
                     ),
                   ),
                 ),
+              // Pre-owned badge
+              if (isPreowned)
+                Positioned(
+                  bottom: -4,
+                  left: -4,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Color(0xFF2E5BFF),
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(color: Colors.white, width: 1.5),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.recycling,
+                          size: 10,
+                          color: Colors.white,
+                        ),
+                        SizedBox(width: 2),
+                        Text(
+                          'Pre-owned',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 8,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
             ],
           ),
           SizedBox(width: 12),
 
           // Product name
           Expanded(
-            child: Text(
-              item['productName'] ?? 'Unknown Product',
-              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item['productName'] ?? 'Unknown Product',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (isPreowned) ...[
+                  SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.eco,
+                        size: 12,
+                        color: Color(0xFF388E3C),
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        '+${((item['productPrice'] ?? 0) * quantity).floor()} coins',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Color(0xFF388E3C),
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ],
             ),
           ),
 
@@ -578,13 +652,98 @@ class _CheckoutState extends State<Checkout> {
                                 onChanged: availableGreenCoins > 0
                                     ? _toggleGreenCoinDiscount
                                     : null,
-                                activeThumbColor: Color(0xFF388E3C),
+                                activeColor: Color(0xFF388E3C),
                               ),
                             ],
                           ),
                         ],
                       ),
                     ),
+
+                    SizedBox(height: 20),
+
+                    // Green Coins to Earn Section
+                    if (_calculateGreenCoinsToEarn() > 0)
+                      Container(
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Color(0xFFF0FDF4), Color(0xFFDCFCE7)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Color(0xFF388E3C).withOpacity(0.3),
+                            width: 2,
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Image.asset(
+                                'assets/images/icon/Green Coin.png',
+                                width: 32,
+                                height: 32,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Icon(
+                                    Icons.eco,
+                                    color: Color(0xFF388E3C),
+                                    size: 32,
+                                  );
+                                },
+                              ),
+                            ),
+                            SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'You\'ll Earn Green Coins!',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Color(0xFF388E3C),
+                                    ),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    'Buy pre-owned items and earn rewards',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      color: Color(0xFF388E3C).withOpacity(0.8),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 8,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Color(0xFF388E3C),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                '+${_calculateGreenCoinsToEarn()}',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
 
                     SizedBox(height: 30),
 
@@ -678,6 +837,8 @@ class _CheckoutState extends State<Checkout> {
                                       : 0,
                                   'greenCoinsUsed': greenCoinsUsed,
                                   'grandTotal': _calculateGrandTotal(),
+                                  'greenCoinsToEarn':
+                                      _calculateGreenCoinsToEarn(),
                                 },
                               ),
                             ),

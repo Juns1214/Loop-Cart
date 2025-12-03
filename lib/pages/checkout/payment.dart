@@ -286,7 +286,7 @@ class _PaymentState extends State<Payment> {
       );
     } catch (e) {
       print('Error processing repair payment: $e');
-      print('Stack trace: ${StackTrace.current}'); // Add stack trace
+      print('Stack trace: ${StackTrace.current}');
 
       if (!mounted) return;
 
@@ -296,14 +296,14 @@ class _PaymentState extends State<Payment> {
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Payment failed: ${e.toString()}'), // Show actual error
+          content: Text('Payment failed: ${e.toString()}'),
           backgroundColor: Colors.red,
         ),
       );
     }
   }
 
-  // Process regular order payment
+  // Process regular order payment (UPDATED TO HANDLE PRE-OWNED ITEMS)
   Future<void> _processOrderPayment() async {
     if (currentUser == null) {
       if (!mounted) return;
@@ -364,6 +364,7 @@ class _PaymentState extends State<Payment> {
           'seller': sellerName,
           'sellerId': sellerId,
           'sellerProfileImage': sellerProfileImage,
+          'isPreowned': item['isPreowned'] ?? false, // ADD THIS
         });
       }
 
@@ -386,6 +387,7 @@ class _PaymentState extends State<Payment> {
         'discount': widget.orderData['discount'],
         'greenCoinsUsed': widget.orderData['greenCoinsUsed'],
         'grandTotal': widget.orderData['grandTotal'],
+        'greenCoinsToEarn': widget.orderData['greenCoinsToEarn'] ?? 0, // ADD THIS
         'trackingNumber': trackingNumber,
         'estimatedDelivery': {
           'from': Timestamp.fromDate(estimatedDeliveryFrom),
@@ -406,7 +408,7 @@ class _PaymentState extends State<Payment> {
           .doc(orderId)
           .set(orderDocument);
 
-      // Deduct green coins and record transaction
+      // Deduct green coins if used
       if (widget.orderData['greenCoinsUsed'] > 0) {
         await FirebaseFirestore.instance
             .collection('user_profile')
@@ -419,7 +421,7 @@ class _PaymentState extends State<Payment> {
 
         // Record green coin usage
         await _recordGreenCoinTransaction(
-          transactionId: transactionId,
+          transactionId: '${transactionId}_used',
           amount: -widget.orderData['greenCoinsUsed'],
           activity: 'purchase',
           description:
@@ -427,6 +429,30 @@ class _PaymentState extends State<Payment> {
           activityDetails: {
             'orderId': orderId,
             'discountAmount': widget.orderData['discount'],
+          },
+        );
+      }
+
+      // ADD GREEN COINS FOR PRE-OWNED PURCHASES
+      int greenCoinsToEarn = widget.orderData['greenCoinsToEarn'] ?? 0;
+      if (greenCoinsToEarn > 0) {
+        // Update user's green coins
+        await FirebaseFirestore.instance
+            .collection('user_profile')
+            .doc(currentUser!.uid)
+            .update({'greenCoins': FieldValue.increment(greenCoinsToEarn)});
+
+        // Record green coin earning transaction
+        await _recordGreenCoinTransaction(
+          transactionId: '${transactionId}_earned',
+          amount: greenCoinsToEarn,
+          activity: 'purchase_preowned_product',
+          description:
+              'Earned $greenCoinsToEarn Green Coins from purchasing pre-owned items',
+          activityDetails: {
+            'orderId': orderId,
+            'itemsTotal': widget.orderData['itemsTotal'],
+            'grandTotal': widget.orderData['grandTotal'],
           },
         );
       }

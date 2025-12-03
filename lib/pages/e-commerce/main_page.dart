@@ -361,7 +361,10 @@ class _MainPageState extends State<MainPage> {
                 ListTile(
                   contentPadding: EdgeInsets.symmetric(horizontal: 32),
                   title: Text('Second Hand Items'),
-                  onTap: () => Navigator.pop(context),
+                  onTap: () {
+                    Navigator.pop(context); // Close drawer
+                    Navigator.pushNamed(context, '/preowned-main-page');
+                  },
                 ),
               ],
             ),

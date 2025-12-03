@@ -20,6 +20,7 @@ import '../pages/user_profile/user_profile.dart';
 import '../pages/user_profile/edit_profile.dart';
 import '../pages/e-commerce/category_filter.dart';
 import '../pages/checkout/order_status.dart';
+import '../pages/e-commerce/preowned_main_page.dart';
 
 //1. Set up routes
 final Map routes = {
@@ -54,6 +55,7 @@ final Map routes = {
   "/edit-profile": (context) => const EditProfile(),
   "/order-status": (context, {arguments}) =>
       OrderStatus(orderId: arguments['orderId'] as String),
+  "/preowned-main-page": (context) => const PreownedMainPage(),
 };
 
 //2. Set up Route Generator (FIXED)

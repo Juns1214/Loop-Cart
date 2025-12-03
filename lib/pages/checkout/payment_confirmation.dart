@@ -89,6 +89,8 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
         ? 'Express (2-3 days)'
         : 'Standard (5-6 days)';
 
+    int greenCoinsEarned = widget.orderData['greenCoinsToEarn'] ?? 0;
+
     return Column(
       children: [
         // Success Animation
@@ -245,6 +247,86 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
             ],
           ),
         ),
+        
+        const SizedBox(height: 20),
+
+        // Green Coins Earned (if any pre-owned items)
+        if (greenCoinsEarned > 0)
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFF0FDF4), Color(0xFFDCFCE7)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Color(0xFF388E3C).withOpacity(0.3),
+                width: 2,
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Center(
+                    child: Image.asset(
+                      'assets/images/icon/Green Coin.png',
+                      width: 32,
+                      height: 32,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(
+                          Icons.eco,
+                          color: Color(0xFF388E3C),
+                          size: 32,
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Green Coins Earned',
+                        style: TextStyle(
+                          color: Color(0xFF388E3C),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'From pre-owned purchases',
+                        style: TextStyle(
+                          color: Color(0xFF388E3C).withOpacity(0.8),
+                          fontSize: 13,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Text(
+                  '+$greenCoinsEarned',
+                  style: TextStyle(
+                    color: Color(0xFF388E3C),
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
         const SizedBox(height: 30),
 
         // View Order Status Button

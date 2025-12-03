@@ -89,7 +89,13 @@ flutter:
     - assets/images/product/Tech/
     - assets/images/product/Vegan/
     - assets/images/donation category/
-    - assets/images/preowned product/
+    - assets/images/pre-owned product/Baby and Kids/
+    - assets/images/pre-owned product/Book & Stationery/
+    - assets/images/pre-owned product/Electronics/
+    - assets/images/pre-owned product/Furniture/
+    - assets/images/pre-owned product/Home Appliances/
+    - assets/images/pre-owned product/Musical Instruments/
+    - assets/images/pre-owned product/Vehicles/
     - assets/images/User Profile/
     - assets/images/sellers/
     - assets/images/general/

@@ -166,6 +166,7 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
   void _clearAll() {
     setState(() {
       selectedCategories.clear();
+      hasSearched = false;
     });
     _loadAllProducts();
   }
@@ -176,15 +177,25 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
     });
   }
 
-  void _applyFilters() {
-    _filterProducts();
+  // Preview function - just shows the count
+  Future<void> _previewResults() async {
+    await _filterProducts();
   }
 
-  void _applyAndReturn() {
-    Navigator.pop(context, {
-      'selectedCategories': selectedCategories.toList(),
-      'filteredProducts': filteredProducts,
-    });
+  // Apply filters and return to previous screen
+  Future<void> _applyAndReturn() async {
+    // First filter the products if not already done
+    if (!hasSearched || isLoading) {
+      await _filterProducts();
+    }
+    
+    // Then return with the results
+    if (mounted) {
+      Navigator.pop(context, {
+        'selectedCategories': selectedCategories.toList(),
+        'filteredProducts': filteredProducts,
+      });
+    }
   }
 
   @override
@@ -304,7 +315,7 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
             ),
           ),
 
-          // Results preview
+          // Results preview (only shows after preview button is clicked)
           if (hasSearched)
             Container(
               padding: EdgeInsets.all(16),
@@ -315,7 +326,7 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Results',
+                        'Preview Results',
                         style: TextStyle(
                           fontFamily: 'Manrope',
                           fontSize: 16,
@@ -353,9 +364,15 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
               children: [
                 Expanded(
                   child: OutlinedButton(
-                    onPressed: isLoading ? null : _applyFilters,
+                    onPressed: (isLoading || selectedCategories.isEmpty) 
+                        ? null 
+                        : _previewResults,
                     style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: Color(0xFF388E3C)),
+                      side: BorderSide(
+                        color: selectedCategories.isEmpty 
+                            ? Colors.grey.shade300 
+                            : Color(0xFF388E3C),
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -374,7 +391,9 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
                             'Preview',
                             style: TextStyle(
                               fontFamily: 'Manrope',
-                              color: Color(0xFF388E3C),
+                              color: selectedCategories.isEmpty 
+                                  ? Colors.grey.shade400 
+                                  : Color(0xFF388E3C),
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
                             ),
@@ -385,9 +404,14 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
                 Expanded(
                   flex: 2,
                   child: ElevatedButton(
-                    onPressed: isLoading ? null : _applyAndReturn,
+                    onPressed: (isLoading || selectedCategories.isEmpty) 
+                        ? null 
+                        : _applyAndReturn,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF388E3C),
+                      backgroundColor: selectedCategories.isEmpty 
+                          ? Colors.grey.shade300 
+                          : Color(0xFF388E3C),
+                      disabledBackgroundColor: Colors.grey.shade300,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -397,7 +421,9 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
                       'Apply Filters',
                       style: TextStyle(
                         fontFamily: 'Manrope',
-                        color: Colors.white,
+                        color: selectedCategories.isEmpty 
+                            ? Colors.grey.shade500 
+                            : Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),

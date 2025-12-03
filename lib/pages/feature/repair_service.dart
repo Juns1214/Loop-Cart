@@ -48,16 +48,76 @@ class _RepairServicePageState extends State<RepairServicePage> {
   final _addressFormKey = GlobalKey<AddressFormState>();
   final User? user = FirebaseAuth.instance.currentUser;
 
+  // Address controllers
+  final _line1Controller = TextEditingController();
+  final _line2Controller = TextEditingController();
+  final _cityController = TextEditingController();
+  final _postalController = TextEditingController();
+  final _stateController = TextEditingController();
+
   bool _isPickerActive = false;
+  bool _isLoadingAddress = true;
   File? _image;
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = const TimeOfDay(hour: 14, minute: 0);
   Map<String, String>? selectedRepair;
 
   @override
+  void initState() {
+    super.initState();
+    _loadUserAddress();
+  }
+
+  Future<void> _loadUserAddress() async {
+    if (user == null) {
+      setState(() {
+        _isLoadingAddress = false;
+      });
+      return;
+    }
+
+    try {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('user_profile')
+          .doc(user!.uid)
+          .get();
+
+      if (userDoc.exists && mounted) {
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+        
+        if (userData.containsKey('address') && userData['address'] != null) {
+          Map<String, dynamic> address = userData['address'] as Map<String, dynamic>;
+          
+          // Pre-fill the address controllers
+          setState(() {
+            _line1Controller.text = address['line1'] ?? '';
+            _line2Controller.text = address['line2'] ?? '';
+            _cityController.text = address['city'] ?? '';
+            _postalController.text = address['postal'] ?? '';
+            _stateController.text = address['state'] ?? '';
+          });
+        }
+      }
+    } catch (e) {
+      print('Error loading address: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingAddress = false;
+        });
+      }
+    }
+  }
+
+  @override
   void dispose() {
     _itemNameController.dispose();
     _descriptionController.dispose();
+    _line1Controller.dispose();
+    _line2Controller.dispose();
+    _cityController.dispose();
+    _postalController.dispose();
+    _stateController.dispose();
     super.dispose();
   }
 
@@ -268,252 +328,255 @@ class _RepairServicePageState extends State<RepairServicePage> {
         ),
         centerTitle: true,
       ),
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Schedule a repair and extend the life of your item.",
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 20),
+      body: _isLoadingAddress
+          ? const Center(child: CircularProgressIndicator())
+          : Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Schedule a repair and extend the life of your item.",
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
 
-                // SECTION: Item Information
-                const Text(
-                  "Item Information",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2E5BFF),
-                  ),
-                ),
-                const SizedBox(height: 16),
+                      // SECTION: Item Information
+                      const Text(
+                        "Item Information",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF2E5BFF),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
 
-                // Product Name
-                const Text(
-                  "Product Name",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _itemNameController,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    hintText: "Enter product name",
-                    hintStyle: const TextStyle(
-                      fontSize: 15,
-                      color: Colors.grey,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Please enter item name";
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
+                      // Product Name
+                      const Text(
+                        "Product Name",
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _itemNameController,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          hintText: "Enter product name",
+                          hintStyle: const TextStyle(
+                            fontSize: 15,
+                            color: Colors.grey,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Please enter item name";
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
 
-                // Product Image
-                const Text(
-                  "Product Images",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                GestureDetector(
-                  onTap: pickImage,
-                  child: Container(
-                    width: double.infinity,
-                    height: 200,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.shade400),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: _image == null
-                        ? Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.add_photo_alternate_outlined,
-                                size: 60,
-                                color: Colors.grey.shade400,
-                              ),
-                              const SizedBox(height: 8),
-                              const Text(
-                                "Browse from Gallery",
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.w500,
+                      // Product Image
+                      const Text(
+                        "Product Images",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      GestureDetector(
+                        onTap: pickImage,
+                        child: Container(
+                          width: double.infinity,
+                          height: 200,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.shade400),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: _image == null
+                              ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.add_photo_alternate_outlined,
+                                      size: 60,
+                                      color: Colors.grey.shade400,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    const Text(
+                                      "Browse from Gallery",
+                                      style: TextStyle(
+                                        color: Colors.grey,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : ClipRRect(
+                                  borderRadius: BorderRadius.circular(8),
+                                  child: Image.file(_image!, fit: BoxFit.cover),
+                                ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Product Description (Optional)
+                      const Text(
+                        "Product Description (Optional)",
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w900,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _descriptionController,
+                        maxLines: 4,
+                        maxLength: 100,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          hintText:
+                              "A detailed description of the product helps understand what needs repair (optional).",
+                          hintStyle: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 14,
+                          ),
+                          counterText: "${_descriptionController.text.length}/100",
+                        ),
+                        onChanged: (value) => setState(() {}),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Date & Time Picker
+                      const Text(
+                        "Schedule Details",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF2E5BFF),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      SyncfusionDateTimePicker(
+                        onDateTimeSelected: (date, time) {
+                          setState(() {
+                            selectedDate = date;
+                            selectedTime = time;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Address Form
+                      const Text(
+                        "Service Address",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF2E5BFF),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      AddressForm(
+                        key: _addressFormKey,
+                        line1Controller: _line1Controller,
+                        line2Controller: _line2Controller,
+                        cityController: _cityController,
+                        postalController: _postalController,
+                        stateController: _stateController,
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Repair Option Selector
+                      const Text(
+                        "Repair Options",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF2E5BFF),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      RepairOptionSelector(
+                        initialSelection: selectedRepair,
+                        onSelectionChanged: (repair) {
+                          setState(() {
+                            selectedRepair = repair;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Action Buttons
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: () => Navigator.pop(context),
+                              icon: const Icon(Icons.close),
+                              label: const Text("Cancel"),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: const Color(0xFF2E5BFF),
+                                side: const BorderSide(color: Color(0xFF2E5BFF)),
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
                                 ),
                               ),
-                            ],
-                          )
-                        : ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.file(_image!, fit: BoxFit.cover),
+                            ),
                           ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Product Description
-                const Text(
-                  "Product Description",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _descriptionController,
-                  maxLines: 4,
-                  maxLength: 100,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    hintText:
-                        "A detailed description of the product helps understand what needs repair.",
-                    hintStyle: const TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                    ),
-                    counterText: "${_descriptionController.text.length}/100",
-                  ),
-                  onChanged: (value) => setState(() {}),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Please enter item description";
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 24),
-
-                // Date & Time Picker
-                const Text(
-                  "Schedule Details",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2E5BFF),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                SyncfusionDateTimePicker(
-                  onDateTimeSelected: (date, time) {
-                    setState(() {
-                      selectedDate = date;
-                      selectedTime = time;
-                    });
-                  },
-                ),
-                const SizedBox(height: 24),
-
-                // Address Form
-                const Text(
-                  "Service Address",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2E5BFF),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                AddressForm(key: _addressFormKey),
-                const SizedBox(height: 24),
-
-                // Repair Option Selector
-                const Text(
-                  "Repair Options",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2E5BFF),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                RepairOptionSelector(
-                  initialSelection: selectedRepair,
-                  onSelectionChanged: (repair) {
-                    setState(() {
-                      selectedRepair = repair;
-                    });
-                  },
-                ),
-                const SizedBox(height: 20),
-
-                // Action Buttons
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () => Navigator.pop(context),
-                        icon: const Icon(Icons.close),
-                        label: const Text("Cancel"),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF2E5BFF),
-                          side: const BorderSide(color: Color(0xFF2E5BFF)),
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: _handleConfirmation,
+                              icon: Icon(
+                                _isCustomRepair()
+                                    ? Icons.send_outlined
+                                    : Icons.payment_outlined,
+                              ),
+                              label: Text(
+                                _isCustomRepair()
+                                    ? "Submit Request"
+                                    : "Proceed to Payment",
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF2E5BFF),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: _handleConfirmation,
-                        icon: Icon(
-                          _isCustomRepair()
-                              ? Icons.send_outlined
-                              : Icons.payment_outlined,
-                        ),
-                        label: Text(
-                          _isCustomRepair()
-                              ? "Submit Request"
-                              : "Proceed to Payment",
-                        ),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2E5BFF),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 20),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
     );
   }
 }

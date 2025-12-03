@@ -158,7 +158,7 @@ class ProductGrid extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.grey[200],
+          color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
@@ -186,7 +186,7 @@ class ProductGrid extends StatelessWidget {
                         return Container(
                           width: double.infinity,
                           height: 140,
-                          color: Colors.grey.shade200,
+                          color: Colors.white,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [

@@ -56,12 +56,19 @@ class RecyclingPickUpPage extends StatefulWidget {
 
 class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
   final _formKey = GlobalKey<FormState>();
-  final _itemNameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _addressFormKey = GlobalKey<AddressFormState>();
   final User? user = FirebaseAuth.instance.currentUser;
 
+  // Address controllers
+  final _line1Controller = TextEditingController();
+  final _line2Controller = TextEditingController();
+  final _cityController = TextEditingController();
+  final _postalController = TextEditingController();
+  final _stateController = TextEditingController();
+
   bool _isPickerActive = false;
+  bool _isLoadingAddress = true;
   File? _image;
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = const TimeOfDay(hour: 14, minute: 0);
@@ -143,9 +150,60 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _loadUserAddress();
+  }
+
+  Future<void> _loadUserAddress() async {
+    if (user == null) {
+      setState(() {
+        _isLoadingAddress = false;
+      });
+      return;
+    }
+
+    try {
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('user_profile')
+          .doc(user!.uid)
+          .get();
+
+      if (userDoc.exists && mounted) {
+        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+        
+        if (userData.containsKey('address') && userData['address'] != null) {
+          Map<String, dynamic> address = userData['address'] as Map<String, dynamic>;
+          
+          // Pre-fill the address controllers
+          setState(() {
+            _line1Controller.text = address['line1'] ?? '';
+            _line2Controller.text = address['line2'] ?? '';
+            _cityController.text = address['city'] ?? '';
+            _postalController.text = address['postal'] ?? '';
+            _stateController.text = address['state'] ?? '';
+          });
+        }
+      }
+    } catch (e) {
+      print('Error loading address: $e');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingAddress = false;
+        });
+      }
+    }
+  }
+
+  @override
   void dispose() {
-    _itemNameController.dispose();
     _descriptionController.dispose();
+    _line1Controller.dispose();
+    _line2Controller.dispose();
+    _cityController.dispose();
+    _postalController.dispose();
+    _stateController.dispose();
     super.dispose();
   }
 
@@ -281,7 +339,6 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
 
       await FirebaseFirestore.instance.collection("recycling_record").add({
         "user_id": user?.uid,
-        "name": _itemNameController.text,
         "description": _descriptionController.text,
         "category": _selectedCategory,
         "image": imageBase64,
@@ -308,7 +365,6 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
             'Earned $greenCoinsEarned Green Coins from $_selectedCategory recycling',
         activityDetails: {
           'category': _selectedCategory,
-          'itemName': _itemNameController.text,
         },
       );
 
@@ -349,360 +405,327 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
         ),
         centerTitle: true,
       ),
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "Arrange a pickup for recyclable items and help protect the environment.",
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // SECTION: Item Information
-                const Text(
-                  "Item Information",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2E5BFF),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Product Image
-                const Text(
-                  "Product Image",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                GestureDetector(
-                  onTap: pickImage,
-                  child: Container(
-                    width: double.infinity,
-                    height: 200,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.shade400),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: _image == null
-                        ? Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.add_photo_alternate_outlined,
-                                size: 60,
-                                color: Colors.grey.shade400,
-                              ),
-                              const SizedBox(height: 8),
-                              const Text(
-                                "📸 Tap to upload & auto-detect",
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ],
-                          )
-                        : Stack(
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.file(
-                                  _image!,
-                                  fit: BoxFit.cover,
-                                  width: double.infinity,
-                                  height: 200,
-                                ),
-                              ),
-                              Positioned(
-                                top: 8,
-                                right: 8,
-                                child: CircleAvatar(
-                                  backgroundColor: Colors.white,
-                                  child: IconButton(
-                                    icon: const Icon(Icons.edit, size: 20),
-                                    onPressed: pickImage,
-                                    color: Color(0xFF2E5BFF),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                // Recycling Category
-                const Text(
-                  "Recycling Category",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900,
-                    color: Colors.black,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: categories.map((category) {
-                    final isSelected = _selectedCategory == category.name;
-                    return ChoiceChip(
-                      label: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            category.icon,
-                            size: 18,
-                            color: isSelected ? Colors.white : category.color,
-                          ),
-                          const SizedBox(width: 6),
-                          Text(category.name),
-                        ],
+      body: _isLoadingAddress
+          ? const Center(child: CircularProgressIndicator())
+          : Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Arrange a pickup for recyclable items and help protect the environment.",
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                      selected: isSelected,
-                      onSelected: (selected) {
-                        setState(() {
-                          _selectedCategory = selected ? category.name : null;
-                        });
-                      },
-                      selectedColor: category.color,
-                      backgroundColor: category.color.withOpacity(0.1),
-                      labelStyle: TextStyle(
-                        color: isSelected ? Colors.white : Colors.black87,
-                        fontWeight: isSelected
-                            ? FontWeight.bold
-                            : FontWeight.normal,
-                      ),
-                    );
-                  }).toList(),
-                ),
-                if (_selectedCategory == null)
-                  const Padding(
-                    padding: EdgeInsets.only(top: 8),
-                    child: Text(
-                      'Please select a category',
-                      style: TextStyle(color: Colors.red, fontSize: 12),
-                    ),
-                  ),
+                      const SizedBox(height: 20),
 
-                // Green Coin Reward Display
-                if (_selectedCategory != null) ...[
-                  const SizedBox(height: 16),
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF0FDF4),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: const Color(0xFFBBF7D0)),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: const BoxDecoration(
-                            color: Color(0xFF22C55E),
-                            shape: BoxShape.circle,
+                      // SECTION: Item Information
+                      const Text(
+                        "Item Information",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF2E5BFF),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Product Image
+                      const Text(
+                        "Product Image",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      GestureDetector(
+                        onTap: pickImage,
+                        child: Container(
+                          width: double.infinity,
+                          height: 200,
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.shade400),
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          child: const Icon(
-                            Icons.eco,
-                            color: Colors.white,
-                            size: 20,
+                          child: _image == null
+                              ? Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.add_photo_alternate_outlined,
+                                      size: 60,
+                                      color: Colors.grey.shade400,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    const Text(
+                                      "📸 Tap to upload & auto-detect",
+                                      style: TextStyle(
+                                        color: Colors.grey,
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : Stack(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: Image.file(
+                                        _image!,
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                        height: 200,
+                                      ),
+                                    ),
+                                    Positioned(
+                                      top: 8,
+                                      right: 8,
+                                      child: CircleAvatar(
+                                        backgroundColor: Colors.white,
+                                        child: IconButton(
+                                          icon: const Icon(Icons.edit, size: 20),
+                                          onPressed: pickImage,
+                                          color: Color(0xFF2E5BFF),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Recycling Category
+                      const Text(
+                        "Recycling Category",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: categories.map((category) {
+                          final isSelected = _selectedCategory == category.name;
+                          return ChoiceChip(
+                            label: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  category.icon,
+                                  size: 18,
+                                  color: isSelected ? Colors.white : category.color,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(category.name),
+                              ],
+                            ),
+                            selected: isSelected,
+                            onSelected: (selected) {
+                              setState(() {
+                                _selectedCategory = selected ? category.name : null;
+                              });
+                            },
+                            selectedColor: category.color,
+                            backgroundColor: category.color.withOpacity(0.1),
+                            labelStyle: TextStyle(
+                              color: isSelected ? Colors.white : Colors.black87,
+                              fontWeight: isSelected
+                                  ? FontWeight.bold
+                                  : FontWeight.normal,
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      if (_selectedCategory == null)
+                        const Padding(
+                          padding: EdgeInsets.only(top: 8),
+                          child: Text(
+                            'Please select a category',
+                            style: TextStyle(color: Colors.red, fontSize: 12),
                           ),
                         ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+
+                      // Green Coin Reward Display
+                      if (_selectedCategory != null) ...[
+                        const SizedBox(height: 16),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF0FDF4),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: const Color(0xFFBBF7D0)),
+                          ),
+                          child: Row(
                             children: [
-                              const Text(
-                                "Earn Green Coins",
-                                style: TextStyle(
-                                  color: Color(0xFF166534),
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w700,
+                              Container(
+                                width: 40,
+                                height: 40,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFF22C55E),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.eco,
+                                  color: Colors.white,
+                                  size: 20,
                                 ),
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                "You will earn ${_getGreenCoinsForCategory(_selectedCategory)} Green Coins for recycling this category.",
-                                style: const TextStyle(
-                                  color: Color(0xFF166534),
-                                  fontSize: 14,
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    const Text(
+                                      "Earn Green Coins",
+                                      style: TextStyle(
+                                        color: Color(0xFF166534),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      "You will earn ${_getGreenCoinsForCategory(_selectedCategory)} Green Coins for recycling this category.",
+                                      style: const TextStyle(
+                                        color: Color(0xFF166534),
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
                         ),
                       ],
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 16),
+                      const SizedBox(height: 16),
 
-                // Product Name
-                const Text(
-                  "Product Name",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _itemNameController,
-                  onChanged: (value) => setState(() {}),
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    hintText: "Auto-filled or enter manually",
-                    hintStyle: const TextStyle(
-                      fontSize: 15,
-                      color: Colors.grey,
-                      fontWeight: FontWeight.normal,
-                    ),
-                    suffixIcon: _itemNameController.text.isNotEmpty
-                        ? const Icon(Icons.check_circle, color: Colors.green)
-                        : null,
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Please enter item name";
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-
-                // Product Description
-                const Text(
-                  "Product Description",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.black,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _descriptionController,
-                  maxLines: 4,
-                  maxLength: 200,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    hintText:
-                        "Auto-filled with detection results or enter manually",
-                    hintStyle: const TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                    ),
-                    counterText: "${_descriptionController.text.length}/200",
-                  ),
-                  onChanged: (value) => setState(() {}),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return "Please enter item description";
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 24),
-
-                // Date & Time Picker
-                const Text(
-                  "Schedule Details",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2E5BFF),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                SyncfusionDateTimePicker(
-                  onDateTimeSelected: (date, time) {
-                    setState(() {
-                      selectedDate = date;
-                      selectedTime = time;
-                    });
-                  },
-                ),
-                const SizedBox(height: 24),
-
-                // Address Form
-                const Text(
-                  "Service Address",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2E5BFF),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                AddressForm(key: _addressFormKey),
-                const SizedBox(height: 24),
-
-                // Action Buttons
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton.icon(
-                        onPressed: () => Navigator.pop(context),
-                        icon: const Icon(Icons.close),
-                        label: const Text("Cancel"),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF2E5BFF),
-                          side: const BorderSide(color: Color(0xFF2E5BFF)),
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
+                      // Product Description (Optional)
+                      const Text(
+                        "Product Description (Optional)",
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                          fontWeight: FontWeight.w900,
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: ElevatedButton.icon(
-                        onPressed: uploadTaskToDb,
-                        icon: const Icon(Icons.check_circle_outline),
-                        label: const Text("Confirm Pickup"),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF2E5BFF),
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _descriptionController,
+                        maxLines: 4,
+                        maxLength: 200,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
+                          hintText:
+                              "Add any additional details about the item (optional)",
+                          hintStyle: const TextStyle(
+                            color: Colors.grey,
+                            fontSize: 14,
+                          ),
+                          counterText: "${_descriptionController.text.length}/200",
+                        ),
+                        onChanged: (value) => setState(() {}),
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Date & Time Picker
+                      const Text(
+                        "Schedule Details",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF2E5BFF),
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 8),
+                      SyncfusionDateTimePicker(
+                        onDateTimeSelected: (date, time) {
+                          setState(() {
+                            selectedDate = date;
+                            selectedTime = time;
+                          });
+                        },
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Address Form
+                      const Text(
+                        "Service Address",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF2E5BFF),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      AddressForm(
+                        key: _addressFormKey,
+                        line1Controller: _line1Controller,
+                        line2Controller: _line2Controller,
+                        cityController: _cityController,
+                        postalController: _postalController,
+                        stateController: _stateController,
+                      ),
+                      const SizedBox(height: 24),
+
+                      // Action Buttons
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: () => Navigator.pop(context),
+                              icon: const Icon(Icons.close),
+                              label: const Text("Cancel"),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: const Color(0xFF2E5BFF),
+                                side: const BorderSide(color: Color(0xFF2E5BFF)),
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: ElevatedButton.icon(
+                              onPressed: uploadTaskToDb,
+                              icon: const Icon(Icons.check_circle_outline),
+                              label: const Text("Confirm Pickup"),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF2E5BFF),
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  ),
                 ),
-                const SizedBox(height: 20),
-              ],
+              ),
             ),
-          ),
-        ),
-      ),
     );
   }
 }

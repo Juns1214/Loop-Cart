@@ -198,7 +198,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
         ),
       ),
     ).then((_) {
-      // Reload cart when returning from checkout
       _loadCartItems();
     });
   }
@@ -208,6 +207,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
     bool isSelected = selectedItems.contains(docId);
     int quantity = item['quantity'] ?? 1;
     double price = (item['productPrice'] ?? 0).toDouble();
+    bool isPreowned = item['isPreowned'] ?? false;
 
     return Card(
       margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -224,29 +224,65 @@ class _ShoppingCartState extends State<ShoppingCart> {
             ),
 
             // Product Image
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: item['imageUrl'] != null && item['imageUrl'].isNotEmpty
-                  ? Image.asset(
-                      item['imageUrl'],
-                      width: 80,
-                      height: 80,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
+            Stack(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: item['imageUrl'] != null && item['imageUrl'].isNotEmpty
+                      ? Image.asset(
+                          item['imageUrl'],
+                          width: 80,
+                          height: 80,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Container(
+                              width: 80,
+                              height: 80,
+                              color: Colors.grey[300],
+                              child: Icon(Icons.image, size: 40, color: Colors.grey),
+                            );
+                          },
+                        )
+                      : Container(
                           width: 80,
                           height: 80,
                           color: Colors.grey[300],
                           child: Icon(Icons.image, size: 40, color: Colors.grey),
-                        );
-                      },
-                    )
-                  : Container(
-                      width: 80,
-                      height: 80,
-                      color: Colors.grey[300],
-                      child: Icon(Icons.image, size: 40, color: Colors.grey),
+                        ),
+                ),
+                // Pre-owned badge
+                if (isPreowned)
+                  Positioned(
+                    top: 4,
+                    left: 4,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: Color(0xFF2E5BFF),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.recycling,
+                            size: 10,
+                            color: Colors.white,
+                          ),
+                          SizedBox(width: 2),
+                          Text(
+                            'Pre-owned',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 9,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
+                  ),
+              ],
             ),
 
             SizedBox(width: 12),
@@ -274,6 +310,27 @@ class _ShoppingCartState extends State<ShoppingCart> {
                         color: Colors.grey[600],
                       ),
                     ),
+                  if (isPreowned) ...[
+                    SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.eco,
+                          size: 12,
+                          color: Color(0xFF388E3C),
+                        ),
+                        SizedBox(width: 4),
+                        Text(
+                          'Earn ${(price * quantity).floor()} Green Coins',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Color(0xFF388E3C),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                   SizedBox(height: 8),
                   Text(
                     'RM ${price.toStringAsFixed(2)}',
@@ -340,6 +397,19 @@ class _ShoppingCartState extends State<ShoppingCart> {
 
   @override
   Widget build(BuildContext context) {
+    // Calculate total green coins to earn
+    int totalGreenCoinsToEarn = 0;
+    for (var item in cartItems) {
+      if (selectedItems.contains(item['docId'])) {
+        bool isPreowned = item['isPreowned'] ?? false;
+        if (isPreowned) {
+          int quantity = item['quantity'] ?? 1;
+          double price = (item['productPrice'] ?? 0).toDouble();
+          totalGreenCoinsToEarn += (price * quantity).floor();
+        }
+      }
+    }
+
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -407,6 +477,58 @@ class _ShoppingCartState extends State<ShoppingCart> {
                 )
               : Column(
                   children: [
+                    // Green Coins Earning Banner (if any pre-owned items selected)
+                    if (totalGreenCoinsToEarn > 0)
+                      Container(
+                        margin: EdgeInsets.all(16),
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [Color(0xFFF0FDF4), Color(0xFFDCFCE7)],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: Color(0xFF388E3C).withOpacity(0.3),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Image.asset(
+                                'assets/images/icon/Green Coin.png',
+                                width: 24,
+                                height: 24,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Icon(
+                                    Icons.eco,
+                                    color: Color(0xFF388E3C),
+                                    size: 24,
+                                  );
+                                },
+                              ),
+                            ),
+                            SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                'You\'ll earn $totalGreenCoinsToEarn Green Coins with this purchase!',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF388E3C),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
                     Expanded(
                       child: RefreshIndicator(
                         color: Color(0xFF388E3C),
