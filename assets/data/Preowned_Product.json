@@ -1,0 +1,527 @@
+[
+    {
+        "id": "PO-EL001",
+        "name": "Canon Autoboy Tele Quartz Date Film Camera",
+        "price": 380.00,
+        "description": "Pre-owned Canon Autoboy film camera in good working condition. Features:\n• Functional autofocus and flash\n• Date stamping feature works properly\n• Minor cosmetic wear on body\n• Lens is clear with no scratches\n• Battery compartment clean",
+        "category": "Electronics",
+        "seller": "RetroTech Finds",
+        "imageUrl1": "assets/images/pre-owned product/Electronics/Canon Autoboy Tele Quartz Date Film Camera P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Electronics/Canon Autoboy Tele Quartz Date Film Camera P2.jpg",
+        "imageUrl3": "assets/images/pre-owned product/Electronics/Canon Autoboy Tele Quartz Date Film Camera P3.jpg"
+    },
+    {
+        "id": "PO-EL002",
+        "name": "Radio Pocket Vintage",
+        "price": 55.00,
+        "description": "Vintage pocket radio in working condition. Features:\n• Clear AM/FM reception\n• All buttons functional\n• Minor scratches on casing\n• Includes original antenna\n• Battery operated",
+        "category": "Electronics",
+        "seller": "Vintage Audio Hub",
+        "imageUrl1": "assets/images/pre-owned product/Electronics/Radio Pocket Vintage P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Electronics/Radio Pocket Vintage P2.jpg"
+    },
+    {
+        "id": "PO-EL003",
+        "name": "Realme 14X",
+        "price": 240.00,
+        "description": "Pre-owned Realme 14X smartphone in good condition. Features:\n• Screen has minor scratches, no cracks\n• Battery health at 85%\n• All functions working properly\n• Comes with original charger\n• Factory reset done",
+        "category": "Electronics",
+        "seller": "Mobile Resale Store",
+        "imageUrl1": "assets/images/pre-owned product/Electronics/Realme 14X.jpg"
+    },
+    {
+        "id": "PO-EL004",
+        "name": "Realme 13",
+        "price": 450.00,
+        "description": "Pre-owned Realme 13 in excellent condition. Features:\n• Minimal signs of use\n• Battery health at 92%\n• Screen protector applied\n• All accessories included\n• Original box available",
+        "category": "Electronics",
+        "seller": "Mobile Resale Store",
+        "imageUrl1": "assets/images/pre-owned product/Electronics/Realme 13.jpg"
+    },
+    {
+        "id": "PO-EL005",
+        "name": "iPhone 15 Pro Max",
+        "price": 3100.00,
+        "description": "Pre-owned iPhone 15 Pro Max in very good condition. Features:\n• Screen in pristine condition\n• Battery health at 96%\n• No dents or major scratches\n• Face ID and all cameras working perfectly\n• Comes with original cable",
+        "category": "Electronics",
+        "seller": "Premium Mobile Exchange",
+        "imageUrl1": "assets/images/pre-owned product/Electronics/Iphone 15 Pro Max P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Electronics/Iphone 15 Pro Max P2.jpg"
+    },
+    {
+        "id": "PO-EL006",
+        "name": "iPad Mini",
+        "price": 580.00,
+        "description": "Pre-owned iPad Mini in good condition. Features:\n• Screen has light scratches\n• Battery holds charge well\n• Touch response perfect\n• No dead pixels\n• Includes charging cable",
+        "category": "Electronics",
+        "seller": "Tech Trade Center",
+        "imageUrl1": "assets/images/pre-owned product/Electronics/Ipad Mini P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Electronics/Ipad Mini P2.jpg",
+        "imageUrl3": "assets/images/pre-owned product/Electronics/Ipad Mini P3.jpg"
+    },
+    {
+        "id": "PO-EL007",
+        "name": "Cable HDMI",
+        "price": 4.50,
+        "description": "Pre-owned HDMI cable in working condition. Features:\n• Tested and working\n• Minor wear on connectors\n• 1.5 meter length\n• Good signal quality\n• Clean condition",
+        "category": "Electronics",
+        "seller": "Cable & More",
+        "imageUrl1": "assets/images/pre-owned product/Electronics/Cable HTMI.jpg"
+    },
+    {
+        "id": "PO-EL008",
+        "name": "MacBook Pro 13",
+        "price": 620.00,
+        "description": "Pre-owned MacBook Pro 13-inch in functional condition. Features:\n• Screen in good condition\n• Keyboard all keys working\n• Battery cycle count moderate\n• Minor scratches on case\n• Comes with charger",
+        "category": "Electronics",
+        "seller": "Laptop Second Hand",
+        "imageUrl1": "assets/images/pre-owned product/Electronics/Macbook Pro 13 P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Electronics/Macbook Pro 13 P2.jpg"
+    },
+    {
+        "id": "PO-HA001",
+        "name": "Juice Blender",
+        "price": 320.00,
+        "description": "Pre-owned juice blender in working condition. Features:\n• Motor runs smoothly\n• All speed settings functional\n• Minor stains on container\n• Blades sharp and intact\n• Includes lid",
+        "category": "Home Appliances",
+        "seller": "HomeGear Marketplace",
+        "imageUrl1": "assets/images/pre-owned product/Home Appliances/Juice Blender.jpg"
+    },
+    {
+        "id": "PO-HA002",
+        "name": "Khind Air Fryer",
+        "price": 110.00,
+        "description": "Pre-owned Khind air fryer in good working order. Features:\n• Heating element works perfectly\n• Timer functional\n• Basket has minor wear\n• Non-stick coating mostly intact\n• Easy to clean",
+        "category": "Home Appliances",
+        "seller": "Kitchen Essentials Hub",
+        "imageUrl1": "assets/images/pre-owned product/Home Appliances/Khind Air Fryer P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Home Appliances/Khind Air Fryer P2.jpg",
+        "imageUrl3": "assets/images/pre-owned product/Home Appliances/Khind Air Fryer P3.jpg"
+    },
+    {
+        "id": "PO-HA003",
+        "name": "Microwave Oven",
+        "price": 85.00,
+        "description": "Pre-owned microwave oven in working condition. Features:\n• Heats food evenly\n• Turntable rotates properly\n• Door seals well\n• Control panel responsive\n• Interior clean",
+        "category": "Home Appliances",
+        "seller": "Appliance Resale Co.",
+        "imageUrl1": "assets/images/pre-owned product/Home Appliances/Microwave Oven P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Home Appliances/Microwave Oven P2.jpg"
+    },
+    {
+        "id": "PO-HA004",
+        "name": "Table Fan",
+        "price": 160.00,
+        "description": "Pre-owned table fan in excellent working condition. Features:\n• All speed settings work\n• Oscillation function smooth\n• Minimal noise\n• Grill has minor rust spots\n• Stable base",
+        "category": "Home Appliances",
+        "seller": "Cool Breeze Store",
+        "imageUrl1": "assets/images/pre-owned product/Home Appliances/Table Fan P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Home Appliances/Table Fan P2.jpg"
+    },
+    {
+        "id": "PO-HA005",
+        "name": "Vacuum Cleaner",
+        "price": 90.00,
+        "description": "Pre-owned vacuum cleaner in good condition. Features:\n• Strong suction power\n• All attachments included\n• Filter cleaned and replaced\n• Cord retracts smoothly\n• Minor scratches on body",
+        "category": "Home Appliances",
+        "seller": "Clean Home Solutions",
+        "imageUrl1": "assets/images/pre-owned product/Home Appliances/Vacuum Cleaner.jpg"
+    },
+    {
+        "id": "PO-HA006",
+        "name": "Samsung Washing Machine 10.5 kg",
+        "price": 480.00,
+        "description": "Pre-owned Samsung washing machine in working condition. Features:\n• All wash cycles functional\n• Drum spins smoothly\n• No leaks\n• Minor dents on exterior\n• Energy efficient",
+        "category": "Home Appliances",
+        "seller": "Laundry Solutions",
+        "imageUrl1": "assets/images/pre-owned product/Home Appliances/Sumsung Washing Machine 10.5 kg P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Home Appliances/Sumsung Washing Machine 10.5 kg P2.jpg"
+    },
+    {
+        "id": "PO-HA007",
+        "name": "Bosch Refrigerator",
+        "price": 750.00,
+        "description": "Pre-owned Bosch refrigerator in good working order. Features:\n• Cooling function excellent\n• Both compartments working\n• Minor scratches on door\n• Shelves all intact\n• Energy saving mode works",
+        "category": "Home Appliances",
+        "seller": "Cool Storage Depot",
+        "imageUrl1": "assets/images/pre-owned product/Home Appliances/Bosch Refrigerator.jpg"
+    },
+    {
+        "id": "PO-HA008",
+        "name": "Electric BBQ Grill",
+        "price": 38.00,
+        "description": "Pre-owned electric BBQ grill in functional condition. Features:\n• Heating element works well\n• Temperature control functional\n• Grill plate has some stains\n• Drip tray included\n• Compact size",
+        "category": "Home Appliances",
+        "seller": "Grill Master Shop",
+        "imageUrl1": "assets/images/pre-owned product/Home Appliances/Electric BBQ Grill P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Home Appliances/Electric BBQ Grill P2.jpg"
+    },
+    {
+        "id": "PO-FU001",
+        "name": "Wooden Solid Dining Table Set",
+        "price": 380.00,
+        "description": "Pre-owned solid wood dining table set in good condition. Features:\n• Sturdy construction\n• Minor scratches on surface\n• All chairs stable\n• Natural wood finish\n• Seats 6 people comfortably",
+        "category": "Furniture",
+        "seller": "Furniture Revival",
+        "imageUrl1": "assets/images/pre-owned product/Furniture/Wooden Solid Dining Table Set.jpg"
+    },
+    {
+        "id": "PO-FU002",
+        "name": "IKEA Working Table",
+        "price": 850.00,
+        "description": "Pre-owned IKEA working table in excellent condition. Features:\n• Spacious work surface\n• Minimal wear and tear\n• Drawers slide smoothly\n• Stable legs\n• Easy to assemble",
+        "category": "Furniture",
+        "seller": "Office Setup Store",
+        "imageUrl1": "assets/images/pre-owned product/Furniture/Ikea Working Table P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Furniture/Ikea Working Table P2.jpg",
+        "imageUrl3": "assets/images/pre-owned product/Furniture/Ikea Working Table P3.jpg"
+    },
+    {
+        "id": "PO-FU003",
+        "name": "Office Table Desk",
+        "price": 1700.00,
+        "description": "Pre-owned executive office desk in very good condition. Features:\n• Premium wood finish\n• Multiple storage compartments\n• Cable management system\n• Minor surface scratches\n• Heavy duty construction",
+        "category": "Furniture",
+        "seller": "Executive Furniture Co.",
+        "imageUrl1": "assets/images/pre-owned product/Furniture/Office Table Desk P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Furniture/Office Table Desk P2.jpg"
+    },
+    {
+        "id": "PO-FU004",
+        "name": "Book Shelf",
+        "price": 45.00,
+        "description": "Pre-owned bookshelf in fair condition. Features:\n• Stable and functional\n• All shelves intact\n• Some surface scratches\n• Holds books well\n• Easy to clean",
+        "category": "Furniture",
+        "seller": "Home Storage Hub",
+        "imageUrl1": "assets/images/pre-owned product/Furniture/Book Shelf.jpg"
+    },
+    {
+        "id": "PO-FU005",
+        "name": "Sofa",
+        "price": 700.00,
+        "description": "Pre-owned sofa in good condition. Features:\n• Comfortable cushions\n• Fabric shows minor wear\n• Frame is sturdy\n• No major stains\n• Seats 3 people",
+        "category": "Furniture",
+        "seller": "Comfort Living Store",
+        "imageUrl1": "assets/images/pre-owned product/Furniture/Sofa P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Furniture/Sofa P2.jpg"
+    },
+    {
+        "id": "PO-FU006",
+        "name": "Sedentary Office Chair",
+        "price": 140.00,
+        "description": "Pre-owned office chair in working condition. Features:\n• Adjustable height works\n• Cushioning still comfortable\n• Fabric has minor pilling\n• Wheels roll smoothly\n• Backrest support good",
+        "category": "Furniture",
+        "seller": "Chair Solutions",
+        "imageUrl1": "assets/images/pre-owned product/Furniture/Sedentary Office Chair.jpg"
+    },
+    {
+        "id": "PO-FU007",
+        "name": "Office Chair",
+        "price": 45.00,
+        "description": "Pre-owned basic office chair in fair condition. Features:\n• Functional for daily use\n• Some wear on armrests\n• Height adjustment works\n• Stable base\n• Budget-friendly option",
+        "category": "Furniture",
+        "seller": "Budget Office Gear",
+        "imageUrl1": "assets/images/pre-owned product/Furniture/Office Chair P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Furniture/Office Chair P2.jpg"
+    },
+    {
+        "id": "PO-FU008",
+        "name": "Nordic Standing Chair",
+        "price": 270.00,
+        "description": "Pre-owned Nordic style standing chair in good condition. Features:\n• Ergonomic design intact\n• Adjustable height mechanism works\n• Fabric in good condition\n• Stable base\n• Modern aesthetic maintained",
+        "category": "Furniture",
+        "seller": "Scandinavian Home",
+        "imageUrl1": "assets/images/pre-owned product/Furniture/Nordic Standing Chair P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Furniture/Nordic Standing Chair P2.jpg"
+    },
+    {
+        "id": "PO-FU009",
+        "name": "IKEA Bed Side Drawer Table",
+        "price": 70.00,
+        "description": "Pre-owned IKEA bedside table in good condition. Features:\n• Drawers slide easily\n• Compact size\n• Minor surface scratches\n• Stable construction\n• Matches most decor",
+        "category": "Furniture",
+        "seller": "Bedroom Essentials",
+        "imageUrl1": "assets/images/pre-owned product/Furniture/IKEA Bed Side Drawer Table P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Furniture/IKEA Bed Side Drawer Table P2.jpg"
+    },
+    {
+        "id": "PO-VH001",
+        "name": "Proton Saga",
+        "price": 27500.00,
+        "description": "Pre-owned Proton Saga in running condition. Features:\n• Engine runs smoothly\n• Regular maintenance done\n• Minor exterior scratches\n• Interior clean and tidy\n• Air conditioning works",
+        "category": "Vehicles",
+        "seller": "AutoDeal Motors",
+        "imageUrl1": "assets/images/pre-owned product/Vehicles/Proton Saga P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Vehicles/Proton Saga P2.jpg"
+    },
+    {
+        "id": "PO-VH002",
+        "name": "Perodua Myvi",
+        "price": 40000.00,
+        "description": "Pre-owned Perodua Myvi in good condition. Features:\n• Well-maintained engine\n• Low mileage\n• No major accidents\n• All electronics working\n• Fresh service done",
+        "category": "Vehicles",
+        "seller": "Drive Smart Auto",
+        "imageUrl1": "assets/images/pre-owned product/Vehicles/Perodua Myvi P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Vehicles/Perodua Myvi P2.jpg",
+        "imageUrl3": "assets/images/pre-owned product/Vehicles/Perodua Myvi P1.jpg"
+    },
+    {
+        "id": "PO-VH003",
+        "name": "Mercedes Benz E200",
+        "price": 25800.00,
+        "description": "Pre-owned Mercedes Benz E200 in good condition. Features:\n• Luxury features functional\n• Leather seats well-maintained\n• Regular servicing at authorized center\n• Minor wear on exterior\n• Powerful engine performance",
+        "category": "Vehicles",
+        "seller": "Luxury Auto Exchange",
+        "imageUrl1": "assets/images/pre-owned product/Vehicles/Mercedes Benz E200 P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Vehicles/Mercedes Benz E200 P2.jpg"
+    },
+    {
+        "id": "PO-VH004",
+        "name": "BMW 530e 2.0 Sport",
+        "price": 70000.00,
+        "description": "Pre-owned BMW 530e hybrid in excellent condition. Features:\n• Hybrid system working perfectly\n• Low mileage for year\n• Full service history\n• Premium interior condition\n• Advanced safety features active",
+        "category": "Vehicles",
+        "seller": "Premium Motors Hub",
+        "imageUrl1": "assets/images/pre-owned product/Vehicles/BMW 530e 2.0 Sport P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Vehicles/BMW 530e 2.0 Sport P2.jpg"
+    },
+    {
+        "id": "PO-BK001",
+        "name": "Baby Stroller",
+        "price": 75.00,
+        "description": "Pre-owned baby stroller in functional condition. Features:\n• Wheels roll smoothly\n• Brakes work properly\n• Fabric has minor stains\n• Safety harness intact\n• Folds easily for storage",
+        "category": "Baby and Kids",
+        "seller": "Little Ones Resale",
+        "imageUrl1": "assets/images/pre-owned product/Baby and Kids/Baby Stroller P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Baby and Kids/Baby Stroller P2.jpg"
+    },
+    {
+        "id": "PO-BK002",
+        "name": "Two-Way Baby Stroller",
+        "price": 45.00,
+        "description": "Pre-owned two-way baby stroller in working condition. Features:\n• Reversible seat works\n• Canopy provides good shade\n• Minor wear on handle\n• Storage basket included\n• Easy to maneuver",
+        "category": "Baby and Kids",
+        "seller": "Baby Gear Market",
+        "imageUrl1": "assets/images/pre-owned product/Baby and Kids/Two-Way Baby Stroller P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Baby and Kids/Two-Way Baby Stroller P2.jpg"
+    },
+    {
+        "id": "PO-BK003",
+        "name": "Royal Kiddy Compact Folding Baby Crib",
+        "price": 150.00,
+        "description": "Pre-owned Royal Kiddy baby crib in good condition. Features:\n• Sturdy frame construction\n• Folding mechanism works smoothly\n• Mattress included and clean\n• Minor scratches on frame\n• Safety standards met",
+        "category": "Baby and Kids",
+        "seller": "Nursery Essentials",
+        "imageUrl1": "assets/images/pre-owned product/Baby and Kids/Royal Kiddy Compact Folding Baby Crib P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Baby and Kids/Royal Kiddy Compact Folding Baby Crib P2.jpg"
+    },
+    {
+        "id": "PO-BK004",
+        "name": "Wooden Baby Crib",
+        "price": 90.00,
+        "description": "Pre-owned wooden baby crib in functional condition. Features:\n• Solid wood construction\n• Adjustable mattress height\n• Minor wear on finish\n• All slats intact and secure\n• Classic design",
+        "category": "Baby and Kids",
+        "seller": "Wooden Wonders",
+        "imageUrl1": "assets/images/pre-owned product/Baby and Kids/Wooden Baby Crib P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Baby and Kids/Wooden Baby Crib P2.jpg"
+    },
+    {
+        "id": "PO-BK005",
+        "name": "Baby Carrier",
+        "price": 18.00,
+        "description": "Pre-owned baby carrier in good condition. Features:\n• Straps adjusted and secure\n• Padding still comfortable\n• Fabric washed and clean\n• Buckles work properly\n• Suitable for newborn to toddler",
+        "category": "Baby and Kids",
+        "seller": "Parent Helper Store",
+        "imageUrl1": "assets/images/pre-owned product/Baby and Kids/Baby Carrier .jpg"
+    },
+    {
+        "id": "PO-BK006",
+        "name": "Baby Bath",
+        "price": 28.00,
+        "description": "Pre-owned baby bath in clean condition. Features:\n• Non-slip surface intact\n• Drain plug works\n• Comfortable support\n• Easy to clean\n• Compact storage",
+        "category": "Baby and Kids",
+        "seller": "Bath Time Shop",
+        "imageUrl1": "assets/images/pre-owned product/Baby and Kids/Baby Bath P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Baby and Kids/Baby Bath P2.jpg"
+    },
+    {
+        "id": "PO-BK007",
+        "name": "Kids Chair",
+        "price": 75.00,
+        "description": "Pre-owned kids chair in good condition. Features:\n• Stable and safe\n• Easy to clean surface\n• Minor scuff marks\n• Comfortable for children\n• Lightweight and portable",
+        "category": "Baby and Kids",
+        "seller": "Kids Furniture Co.",
+        "imageUrl1": "assets/images/pre-owned product/Baby and Kids/Kids Chair P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Baby and Kids/Kids Chair P2.jpg"
+    },
+    {
+        "id": "PO-MI001",
+        "name": "Wooden Brown Ganbang Musical With 2 Handle",
+        "price": 100.00,
+        "description": "Pre-owned wooden ganbang in playable condition. Features:\n• All keys produce clear sound\n• Handles secure\n• Wood finish shows patina\n• Traditional craftsmanship\n• Unique cultural instrument",
+        "category": "Musical Instruments",
+        "seller": "Traditional Music Shop",
+        "imageUrl1": "assets/images/pre-owned product/Musical Instruments/Wooden Brown Ganbang Musical With 2 Handle P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Musical Instruments/Wooden Brown Ganbang Musical With 2 Handle P2.jpg"
+    },
+    {
+        "id": "PO-MI002",
+        "name": "Yamaha LJ16 Acoustic Guitar",
+        "price": 3100.00,
+        "description": "Pre-owned Yamaha LJ16 in excellent condition. Features:\n• Excellent tone quality\n• No cracks or major dents\n• Action properly set up\n• All tuners work smoothly\n• Includes hard case",
+        "category": "Musical Instruments",
+        "seller": "String Instruments Pro",
+        "imageUrl1": "assets/images/pre-owned product/Musical Instruments/Yamaha LJ16 Acoustic Guitar P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Musical Instruments/Yamaha LJ16 Acoustic Guitar P2.jpg"
+    },
+    {
+        "id": "PO-MI003",
+        "name": "Djembe Children Wooden Mini Drum",
+        "price": 80.00,
+        "description": "Pre-owned djembe drum in good condition. Features:\n• Skin intact with good tension\n• Wood body has minor wear\n• Produces rich sound\n• Perfect size for children\n• Traditional rope tuning",
+        "category": "Musical Instruments",
+        "seller": "Drum Circle Store",
+        "imageUrl1": "assets/images/pre-owned product/Musical Instruments/Djembe Children Wooden Mini Drum.jpg"
+    },
+    {
+        "id": "PO-MI004",
+        "name": "Casio Digital Piano Privia PX-770",
+        "price": 2750.00,
+        "description": "Pre-owned Casio Privia in excellent working condition. Features:\n• All keys responsive\n• Weighted hammer action intact\n• Multiple voices work perfectly\n• Pedals function properly\n• Minimal cosmetic wear",
+        "category": "Musical Instruments",
+        "seller": "Piano Gallery",
+        "imageUrl1": "assets/images/pre-owned product/Musical Instruments/Casio Digital Piano Privia PX-770.jpg"
+    },
+    {
+        "id": "PO-MI005",
+        "name": "Yamaha Piano",
+        "price": 240.00,
+        "description": "Pre-owned Yamaha keyboard in working condition. Features:\n• All keys functional\n• Sound quality clear\n• Minor scratches on body\n• Power adapter included\n• Multiple sound options",
+        "category": "Musical Instruments",
+        "seller": "Keyboard Central",
+        "imageUrl1": "assets/images/pre-owned product/Musical Instruments/Yamaha Piano P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Musical Instruments/Yamaha Piano P2.jpg"
+    },
+    {
+        "id": "PO-MI006",
+        "name": "Rock Guitar",
+        "price": 1050.00,
+        "description": "Pre-owned electric rock guitar in good condition. Features:\n• All pickups working\n• Frets in good shape\n• Minor dings on body\n• Hardware functions well\n• Great rock tone",
+        "category": "Musical Instruments",
+        "seller": "Electric Strings Shop",
+        "imageUrl1": "assets/images/pre-owned product/Musical Instruments/Rock Guitar.jpg"
+    },
+    {
+        "id": "PO-MI007",
+        "name": "Audio Equalizer",
+        "price": 170.00,
+        "description": "Pre-owned audio equalizer in working condition. Features:\n• All sliders move smoothly\n• Clear audio processing\n• Minor wear on faceplate\n• All connections working\n• Professional quality",
+        "category": "Musical Instruments",
+        "seller": "Sound Engineering Hub",
+        "imageUrl1": "assets/images/pre-owned product/Musical Instruments/Audio Equalizer P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Musical Instruments/Audio Equalizer P2.jpg"
+    },
+    {
+        "id": "PO-MI008",
+        "name": "Stereo Amplifier",
+        "price": 190.00,
+        "description": "Pre-owned stereo amplifier in functional condition. Features:\n• Clean sound output\n• All inputs working\n• Volume controls smooth\n• Minor cosmetic wear\n• Good power output",
+        "category": "Musical Instruments",
+        "seller": "Audio Tech Store",
+        "imageUrl1": "assets/images/pre-owned product/Musical Instruments/Stereo Amplifier .jpg"
+    },
+    {
+        "id": "PO-BS001",
+        "name": "Agent of SUIT",
+        "price": 28.00,
+        "description": "Pre-owned book in good reading condition. Features:\n• Pages intact and readable\n• Cover shows minor wear\n• No torn pages\n• Binding solid\n• Clean interior",
+        "category": "Books & Stationery",
+        "seller": "BookWorm Exchange",
+        "imageUrl1": "assets/images/pre-owned product/Book & Stationery/Agent of SUIT.jpg"
+    },
+    {
+        "id": "PO-BS002",
+        "name": "Sophie Kinsella Novel (8 books)",
+        "price": 18.00,
+        "description": "Pre-owned collection of 8 Sophie Kinsella novels. Features:\n• All books complete\n• Pages in readable condition\n• Covers show shelf wear\n• No missing pages\n• Great value set",
+        "category": "Books & Stationery",
+        "seller": "Novel Treasures",
+        "imageUrl1": "assets/images/pre-owned product/Book & Stationery/Sophie Kinsella Novel (8 book) P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Book & Stationery/Sophie Kinsella Novel (8 book) P2.jpg"
+    },
+    {
+        "id": "PO-BS003",
+        "name": "InvestiGATORS Hard Cover Books",
+        "price": 65.00,
+        "description": "Pre-owned hardcover InvestiGATORS books in good condition. Features:\n• Hard covers intact\n• Pages crisp and clean\n• Illustrations clear\n• Minor shelf wear\n• Perfect for young readers",
+        "category": "Books & Stationery",
+        "seller": "Kids Book Corner",
+        "imageUrl1": "assets/images/pre-owned product/Book & Stationery/InvestiGATORS Hard Cover Books P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Book & Stationery/InvestiGATORS Hard Cover Books P2.jpg"
+    },
+    {
+        "id": "PO-BS004",
+        "name": "SPM Study Materials",
+        "price": 45.00,
+        "description": "Pre-owned SPM study materials in usable condition. Features:\n• Contains notes and exercises\n• Some highlighting present\n• Pages complete\n• Useful for revision\n• Multiple subjects included",
+        "category": "Books & Stationery",
+        "seller": "Study Smart Resources",
+        "imageUrl1": "assets/images/pre-owned product/Book & Stationery/SPM Study Materials (10 book) P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Book & Stationery/SPM Study Materials (10 book) P2.jpg"
+    },
+    {
+        "id": "PO-BS005",
+        "name": "History Text Book",
+        "price": 18.00,
+        "description": "Pre-owned history textbook in good condition. Features:\n• All pages intact\n• Some underlining present\n• Cover shows wear\n• Binding solid\n• Comprehensive content",
+        "category": "Books & Stationery",
+        "seller": "Textbook Hub",
+        "imageUrl1": "assets/images/pre-owned product/Book & Stationery/History Text Book (Collins).jpg"
+    },
+    {
+        "id": "PO-BS006",
+        "name": "Porsche Magazine",
+        "price": 90.00,
+        "description": "Pre-owned Porsche magazine collection in good condition. Features:\n• Pages well-preserved\n• High-quality images intact\n• Minor cover wear\n• Collector's item\n• Interesting automotive content",
+        "category": "Books & Stationery",
+        "seller": "Auto Literature Shop",
+        "imageUrl1": "assets/images/pre-owned product/Book & Stationery/Porsche Megazine P1.jpg",
+        "imageUrl2": "assets/images/pre-owned product/Book & Stationery/Porsche Megazine P2.jpg"
+    },
+    {
+        "id": "PO-BS007",
+        "name": "Children's Encyclopedia (50 Books)",
+        "price": 420.00,
+        "description": "Pre-owned children's encyclopedia set in good condition. Features:\n• Complete 50-book set\n• Educational content intact\n• Pages readable and clean\n• Covers show some wear\n• Excellent learning resource",
+        "category": "Books & Stationery",
+        "seller": "Knowledge Library",
+        "imageUrl1": "assets/images/pre-owned product/Book & Stationery/Children’s Encyclopedia (50 Books).jpg"
+    },
+    {
+        "id": "PO-BS008",
+        "name": "The Tiger's Fang - Spiritual Book",
+        "price": 18.00,
+        "description": "Pre-owned spiritual book in readable condition. Features:\n• All pages present\n• Cover shows age\n• Text clear and legible\n• Binding intact\n• Meaningful content preserved",
+        "category": "Books & Stationery",
+        "seller": "Spiritual Reads",
+        "imageUrl1": "assets/images/pre-owned product/Book & Stationery/The Tiger’s Fang - Spiritual Book.jpg"
+    },
+    {
+        "id": "PO-BS009",
+        "name": "Pre-owned Stationery (25 items)",
+        "price": 75.00,
+        "description": "Pre-owned stationery collection in usable condition. Features:\n• 25 mixed items included\n• Pens, pencils, erasers, rulers\n• All items functional\n• Some show minor wear\n• Great value bundle",
+        "category": "Books & Stationery",
+        "seller": "Office Supplies Plus",
+        "imageUrl1": "assets/images/pre-owned product/Book & Stationery/Pre-owned Stationery (25 items).jpg"
+    },
+    {
+        "id": "PO-BS010",
+        "name": "Stationery Organizer",
+        "price": 25.00,
+        "description": "Pre-owned stationery organizer in good condition. Features:\n• All compartments intact\n• Functional for desk use\n• Minor scratches present\n• Keeps items organized\n• Sturdy construction",
+        "category": "Books & Stationery",
+        "seller": "Desk Solutions",
+        "imageUrl1": "assets/images/pre-owned product/Book & Stationery/Stationery Organizer.jpg"
+    }
+]

@@ -89,6 +89,10 @@ flutter:
     - assets/images/product/Tech/
     - assets/images/product/Vegan/
     - assets/images/donation category/
+    - assets/images/preowned product/
+    - assets/images/User Profile/
+    - assets/images/sellers/
+    - assets/images/general/
     - assets/lottie/
     - assets/fonts/
     - assets/data/
