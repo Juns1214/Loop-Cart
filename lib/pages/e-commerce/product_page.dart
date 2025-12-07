@@ -1,6 +1,11 @@
+// lib/pages/product_page.dart
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:intl/intl.dart';
+import '../feature/best_value_comparison.dart';
+import '../feature/best_value_comparison_widget.dart';
 
 class ProductPage extends StatefulWidget {
   final Map<String, dynamic> product;
@@ -19,14 +24,45 @@ class _ProductPageState extends State<ProductPage> {
   bool showAllReviews = false;
   bool isAddingToCart = false;
 
+  // Honest Assessment state
+  Map<String, dynamic>? honestAssessment;
+  bool isLoadingAssessment = true;
+
   final User? currentUser = FirebaseAuth.instance.currentUser;
 
   @override
   void initState() {
     super.initState();
     _loadProductDetails();
+    _loadHonestAssessment();
   }
 
+  // Load honest assessment
+  Future<void> _loadHonestAssessment() async {
+    setState(() {
+      isLoadingAssessment = true;
+    });
+
+    try {
+      String productId = widget.product['id'] ?? '';
+      Map<String, dynamic>? assessment = 
+          await HonestAssessmentService.getHonestAssessment(
+        productId: productId,
+      );
+
+      setState(() {
+        honestAssessment = assessment;
+        isLoadingAssessment = false;
+      });
+    } catch (e) {
+      print('Error loading honest assessment: $e');
+      setState(() {
+        isLoadingAssessment = false;
+      });
+    }
+  }
+
+  // UPDATED: Load product details including reviews from 'reviews' collection
   Future<void> _loadProductDetails() async {
     setState(() {
       isLoading = true;
@@ -54,7 +90,7 @@ class _ProductPageState extends State<ProductPage> {
         sellerItemCount = productCount.docs.length;
       }
 
-      // Fetch reviews for this product
+      // Fetch reviews from 'reviews' collection with new structure
       String productId = widget.product['id'] ?? '';
       if (productId.isNotEmpty) {
         QuerySnapshot reviewSnapshot = await FirebaseFirestore.instance
@@ -62,9 +98,32 @@ class _ProductPageState extends State<ProductPage> {
             .where('productId', isEqualTo: productId)
             .get();
 
-        reviews = reviewSnapshot.docs
-            .map((doc) => doc.data() as Map<String, dynamic>)
+        List<Map<String, dynamic>> loadedReviews = reviewSnapshot.docs
+            .map((doc) {
+              Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+              
+              // Ensure all required fields exist with new structure
+              return {
+                'reviewId': data['reviewId'] ?? doc.id,
+                'productId': data['productId'] ?? '',
+                'rating': data['rating'] ?? 0,
+                'reviewTitle': data['reviewTitle'] ?? '',
+                'reviewText': data['reviewText'] ?? '',
+                'userName': data['userName'] ?? 'Anonymous',
+                'userProfileUrl': data['userProfileUrl'] ?? '',
+                'reviewDate': data['reviewDate'] ?? '',
+              };
+            })
             .toList();
+
+        // Sort by date (newest first)
+        loadedReviews.sort((a, b) {
+          String dateA = a['reviewDate'] ?? '';
+          String dateB = b['reviewDate'] ?? '';
+          return dateB.compareTo(dateA);
+        });
+
+        reviews = loadedReviews;
       }
 
       setState(() {
@@ -126,7 +185,7 @@ class _ProductPageState extends State<ProductPage> {
 
         // Get the updated item data
         Map<String, dynamic> itemData = cartItem.data() as Map<String, dynamic>;
-        itemData['quantity'] = newQuantity; // Update with new quantity
+        itemData['quantity'] = newQuantity;
         itemData['docId'] = itemDocId;
         itemToCheckout = itemData;
 
@@ -150,6 +209,7 @@ class _ProductPageState extends State<ProductPage> {
           'seller': widget.product['seller'] ?? '',
           'sellerProfileImage': sellerData?['profileImage'] ?? '',
           'category': widget.product['category'] ?? '',
+          'isPreowned': false, // Regular products are not pre-owned
           'dateAdded': FieldValue.serverTimestamp(),
         };
 
@@ -215,7 +275,7 @@ class _ProductPageState extends State<ProductPage> {
         context,
         '/checkout',
         arguments: {
-          'selectedItems': [singleItem], // Only pass the single item as a list
+          'selectedItems': [singleItem],
           'userAddress': userAddress,
         },
       );
@@ -245,8 +305,26 @@ class _ProductPageState extends State<ProductPage> {
     return Row(children: stars);
   }
 
-  // Build review card
+  // UPDATED: Build review card with new structure
   Widget _buildReviewCard(Map<String, dynamic> review) {
+    int rating = review['rating'] ?? 0;
+    String reviewTitle = review['reviewTitle'] ?? '';
+    String reviewText = review['reviewText'] ?? '';
+    String userName = review['userName'] ?? 'Anonymous';
+    String userProfileUrl = review['userProfileUrl'] ?? '';
+    String reviewDate = review['reviewDate'] ?? '';
+
+    // Format date from ISO string
+    String formattedDate = '';
+    if (reviewDate.isNotEmpty) {
+      try {
+        DateTime date = DateTime.parse(reviewDate);
+        formattedDate = DateFormat('MMM dd, yyyy').format(date);
+      } catch (e) {
+        formattedDate = reviewDate;
+      }
+    }
+
     return Container(
       margin: EdgeInsets.only(bottom: 16),
       padding: EdgeInsets.all(16),
@@ -268,15 +346,12 @@ class _ProductPageState extends State<ProductPage> {
             children: [
               CircleAvatar(
                 radius: 20,
-                backgroundImage:
-                    review['userProfileUrl'] != null &&
-                        review['userProfileUrl'].isNotEmpty
-                    ? AssetImage(review['userProfileUrl'])
+                backgroundColor: Color(0xFF388E3C).withOpacity(0.1),
+                backgroundImage: userProfileUrl.isNotEmpty
+                    ? AssetImage(userProfileUrl)
                     : null,
-                child:
-                    review['userProfileUrl'] == null ||
-                        review['userProfileUrl'].isEmpty
-                    ? Icon(Icons.person, size: 20)
+                child: userProfileUrl.isEmpty
+                    ? Icon(Icons.person, color: Color(0xFF388E3C), size: 20)
                     : null,
               ),
               SizedBox(width: 12),
@@ -284,36 +359,105 @@ class _ProductPageState extends State<ProductPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      review['userName'] ?? 'Anonymous',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            userName,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        // Verified Buyer Badge
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Color(0xFF388E3C).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.verified,
+                                size: 10,
+                                color: Color(0xFF388E3C),
+                              ),
+                              SizedBox(width: 2),
+                              Text(
+                                'Verified',
+                                style: TextStyle(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF388E3C),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                     SizedBox(height: 2),
-                    _buildStarRating((review['rating'] ?? 0).toDouble()),
+                    Row(
+                      children: [
+                        // Rating stars
+                        Row(
+                          children: List.generate(5, (index) {
+                            return Icon(
+                              index < rating ? Icons.star : Icons.star_border,
+                              color: Colors.amber,
+                              size: 16,
+                            );
+                          }),
+                        ),
+                        if (formattedDate.isNotEmpty) ...[
+                          SizedBox(width: 8),
+                          Text(
+                            '• $formattedDate',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
                   ],
                 ),
               ),
             ],
           ),
-          SizedBox(height: 12),
-          if (review['reviewTitle'] != null && review['reviewTitle'].isNotEmpty)
+          
+          if (reviewTitle.isNotEmpty) ...[
+            SizedBox(height: 12),
             Text(
-              review['reviewTitle'],
-              style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-            ),
-          SizedBox(height: 4),
-          if (review['reviewText'] != null && review['reviewText'].isNotEmpty)
-            Text(
-              review['reviewText'],
+              reviewTitle,
               style: TextStyle(
-                fontSize: 13,
-                color: Colors.grey.shade700,
-                height: 1.4,
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
               ),
             ),
+          ],
+          
+          if (reviewText.isNotEmpty) ...[
+            SizedBox(height: 8),
+            Text(
+              reviewText,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade700,
+                height: 1.5,
+              ),
+            ),
+          ],
         ],
       ),
     );
@@ -580,25 +724,74 @@ class _ProductPageState extends State<ProductPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text(
-                              'Rating & Reviews',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Customer Reviews',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                if (reviews.isNotEmpty)
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 12,
+                                      vertical: 6,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Color(0xFF388E3C).withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Text(
+                                      '${reviews.length} reviews',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Color(0xFF388E3C),
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                              ],
                             ),
                             SizedBox(height: 16),
 
+                            // Honest Assessment Widget
+                            HonestAssessmentWidget(
+                              assessment: honestAssessment,
+                              isLoading: isLoadingAssessment,
+                            ),
+
+                            // Reviews List
                             if (reviews.isEmpty)
                               Center(
                                 child: Padding(
-                                  padding: const EdgeInsets.all(20.0),
-                                  child: Text(
-                                    'No reviews yet',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey.shade600,
-                                    ),
+                                  padding: const EdgeInsets.all(32.0),
+                                  child: Column(
+                                    children: [
+                                      Icon(
+                                        Icons.rate_review_outlined,
+                                        size: 60,
+                                        color: Colors.grey.shade400,
+                                      ),
+                                      SizedBox(height: 12),
+                                      Text(
+                                        'No reviews yet',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        'Be the first to review this product',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          color: Colors.grey.shade500,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               )

@@ -134,6 +134,1120 @@ class _MyActivityPageState extends State<MyActivityPage>
     }).toList();
   }
 
+  // Add this method to _MyActivityPageState class
+
+  Future<void> _confirmReceiveParcel(String orderId) async {
+    try {
+      await FirebaseFirestore.instance.collection('orders').doc(orderId).update(
+        {'isReceived': true, 'receivedAt': FieldValue.serverTimestamp()},
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Package received! You can now provide feedback.'),
+          backgroundColor: Color(0xFF388E3C),
+        ),
+      );
+
+      _loadPurchaseHistory(); // Reload data
+    } catch (e) {
+      print('Error confirming receipt: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to confirm receipt. Please try again.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  // PART 1: Replace the entire _showFeedbackDialog method in my_activity.dart with this:
+
+Future<void> _showFeedbackDialog(Map<String, dynamic> order) async {
+  // Get user info from user_profile collection
+  String userName = 'Anonymous';
+  String userProfileUrl = '';
+  
+  try {
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance
+        .collection('user_profile')
+        .doc(currentUser!.uid)
+        .get();
+    
+    if (userDoc.exists) {
+      Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
+      userName = userData['fullName'] ?? userData['name'] ?? 'Anonymous';
+      userProfileUrl = userData['profilePicture'] ?? userData['profileImage'] ?? '';
+    }
+  } catch (e) {
+    print('Error loading user profile: $e');
+  }
+
+  // Get all items from order
+  List<dynamic> orderItems = order['items'] ?? [];
+  
+  // Show dialog to select which item to review
+  await showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      title: Row(
+        children: [
+          Icon(Icons.rate_review, color: Color(0xFF388E3C)),
+          SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'Select Item to Review',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
+        ],
+      ),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Choose which item you want to review:',
+              style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+            ),
+            SizedBox(height: 16),
+            ...orderItems.map((item) {
+              bool isPreowned = item['isPreowned'] ?? false;
+              String productName = item['productName'] ?? 'Unknown Product';
+              String imageUrl = item['imageUrl'] ?? '';
+              
+              return Card(
+                margin: EdgeInsets.only(bottom: 12),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                    _showItemReviewDialog(
+                      item: item,
+                      orderId: order['orderId'],
+                      userName: userName,
+                      userProfileUrl: userProfileUrl,
+                    );
+                  },
+                  borderRadius: BorderRadius.circular(12),
+                  child: Padding(
+                    padding: EdgeInsets.all(12),
+                    child: Row(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: imageUrl.isNotEmpty
+                              ? Image.asset(
+                                  imageUrl,
+                                  width: 60,
+                                  height: 60,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) => Container(
+                                    width: 60,
+                                    height: 60,
+                                    color: Colors.grey[300],
+                                    child: Icon(Icons.image, color: Colors.grey),
+                                  ),
+                                )
+                              : Container(
+                                  width: 60,
+                                  height: 60,
+                                  color: Colors.grey[300],
+                                  child: Icon(Icons.image, color: Colors.grey),
+                                ),
+                        ),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                productName,
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              SizedBox(height: 4),
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: isPreowned 
+                                      ? Color(0xFF2E5BFF).withOpacity(0.1)
+                                      : Color(0xFF388E3C).withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  isPreowned ? 'Pre-owned' : 'Regular',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: isPreowned 
+                                        ? Color(0xFF2E5BFF)
+                                        : Color(0xFF388E3C),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Icon(
+                          Icons.arrow_forward_ios,
+                          size: 16,
+                          color: Colors.grey,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(
+            'Cancel',
+            style: TextStyle(color: Colors.grey[600], fontSize: 16),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+// NEW METHOD: Show review dialog for specific item
+Future<void> _showItemReviewDialog({
+  required Map<String, dynamic> item,
+  required String orderId,
+  required String userName,
+  required String userProfileUrl,
+}) async {
+  double rating = 5.0;
+  TextEditingController titleController = TextEditingController();
+  TextEditingController textController = TextEditingController();
+  
+  bool isPreowned = item['isPreowned'] ?? false;
+  String productId = item['productId'] ?? '';
+  String productName = item['productName'] ?? 'Unknown Product';
+
+  await showDialog(
+    context: context,
+    builder: (context) => StatefulBuilder(
+      builder: (context, setState) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.rate_review, color: Color(0xFF388E3C)),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'Review Product',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 8),
+            Text(
+              productName,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.normal,
+                color: Colors.grey[600],
+              ),
+            ),
+            SizedBox(height: 4),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: isPreowned 
+                    ? Color(0xFF2E5BFF).withOpacity(0.1)
+                    : Color(0xFF388E3C).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Text(
+                isPreowned ? 'Pre-owned Product' : 'Regular Product',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  color: isPreowned ? Color(0xFF2E5BFF) : Color(0xFF388E3C),
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Your Rating',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[800],
+                ),
+              ),
+              SizedBox(height: 12),
+              Center(
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(5, (index) {
+                        return IconButton(
+                          icon: Icon(
+                            index < rating ? Icons.star : Icons.star_border,
+                            color: Colors.amber,
+                            size: 40,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              rating = (index + 1).toDouble();
+                            });
+                          },
+                        );
+                      }),
+                    ),
+                    Text(
+                      '${rating.toInt()} out of 5 stars',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF388E3C),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 24),
+              
+              // Review Title
+              Text(
+                'Review Title',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[800],
+                ),
+              ),
+              SizedBox(height: 8),
+              TextField(
+                controller: titleController,
+                maxLength: 100,
+                decoration: InputDecoration(
+                  hintText: 'Summarize your experience',
+                  hintStyle: TextStyle(color: Colors.grey[400]),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey[300]!),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: Color(0xFF388E3C),
+                      width: 2,
+                    ),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[50],
+                  counterText: '',
+                ),
+              ),
+              SizedBox(height: 16),
+              
+              // Review Text
+              Text(
+                'Your Review',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.grey[800],
+                ),
+              ),
+              SizedBox(height: 8),
+              TextField(
+                controller: textController,
+                maxLines: 5,
+                maxLength: 500,
+                decoration: InputDecoration(
+                  hintText: 'Share your thoughts about the product...',
+                  hintStyle: TextStyle(color: Colors.grey[400]),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: Colors.grey[300]!),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(
+                      color: Color(0xFF388E3C),
+                      width: 2,
+                    ),
+                  ),
+                  filled: true,
+                  fillColor: Colors.grey[50],
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: Colors.grey[600], fontSize: 16),
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              if (titleController.text.trim().isEmpty || 
+                  textController.text.trim().isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Please fill in all fields'),
+                    backgroundColor: Colors.orange,
+                  ),
+                );
+                return;
+              }
+
+              try {
+                // Generate unique review ID
+                String reviewId = 'REV${DateTime.now().millisecondsSinceEpoch}';
+                
+                // Determine which collection to use
+                String collectionName = isPreowned ? 'preowned_reviews' : 'reviews';
+                
+                // Create review document with exact structure you specified
+                Map<String, dynamic> reviewData = {
+                  'reviewId': reviewId,
+                  'productId': productId,
+                  'rating': rating.toInt(),
+                  'reviewTitle': titleController.text.trim(),
+                  'reviewText': textController.text.trim(),
+                  'userName': userName,
+                  'userProfileUrl': userProfileUrl,
+                  'reviewDate': DateTime.now().toIso8601String(),
+                };
+
+                // Save to appropriate collection
+                await FirebaseFirestore.instance
+                    .collection(collectionName)
+                    .doc(reviewId)
+                    .set(reviewData);
+
+                // Mark item as reviewed in the order
+                // Update order to track which items have been reviewed
+                await _markItemAsReviewed(orderId, productId);
+
+                Navigator.pop(context);
+
+                // Show success message with option to view review
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Thank you for your review!'),
+                    backgroundColor: Color(0xFF388E3C),
+                    action: SnackBarAction(
+                      label: 'View Review',
+                      textColor: Colors.white,
+                      onPressed: () {
+                        _showSubmittedReviewDialog(reviewData, isPreowned);
+                      },
+                    ),
+                    duration: Duration(seconds: 4),
+                  ),
+                );
+
+                _loadPurchaseHistory();
+              } catch (e) {
+                print('Error submitting review: $e');
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Failed to submit review'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Color(0xFF388E3C),
+              foregroundColor: Colors.white,
+              padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Text('Submit Review', style: TextStyle(fontSize: 16)),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+// NEW METHOD: Mark item as reviewed
+Future<void> _markItemAsReviewed(String orderId, String productId) async {
+  try {
+    DocumentSnapshot orderDoc = await FirebaseFirestore.instance
+        .collection('orders')
+        .doc(orderId)
+        .get();
+    
+    if (orderDoc.exists) {
+      Map<String, dynamic> orderData = orderDoc.data() as Map<String, dynamic>;
+      List<dynamic> items = orderData['items'] ?? [];
+      
+      // Add reviewedProductIds field if it doesn't exist
+      List<dynamic> reviewedProducts = orderData['reviewedProductIds'] ?? [];
+      
+      if (!reviewedProducts.contains(productId)) {
+        reviewedProducts.add(productId);
+        
+        // Check if all items have been reviewed
+        bool allReviewed = true;
+        for (var item in items) {
+          String itemProductId = item['productId'] ?? '';
+          if (!reviewedProducts.contains(itemProductId)) {
+            allReviewed = false;
+            break;
+          }
+        }
+        
+        await FirebaseFirestore.instance
+            .collection('orders')
+            .doc(orderId)
+            .update({
+              'reviewedProductIds': reviewedProducts,
+              'hasFeedback': allReviewed,
+            });
+      }
+    }
+  } catch (e) {
+    print('Error marking item as reviewed: $e');
+  }
+}
+
+// NEW METHOD: Show submitted review in a dialog
+Future<void> _showSubmittedReviewDialog(
+  Map<String, dynamic> reviewData,
+  bool isPreowned,
+) async {
+  await showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+      ),
+      title: Row(
+        children: [
+          Icon(
+            Icons.check_circle,
+            color: Color(0xFF388E3C),
+            size: 28,
+          ),
+          SizedBox(width: 12),
+          Text(
+            'Your Review',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+      content: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Product Type Badge
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: isPreowned 
+                    ? Color(0xFF2E5BFF).withOpacity(0.1)
+                    : Color(0xFF388E3C).withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    isPreowned ? Icons.recycling : Icons.shopping_bag,
+                    size: 14,
+                    color: isPreowned ? Color(0xFF2E5BFF) : Color(0xFF388E3C),
+                  ),
+                  SizedBox(width: 6),
+                  Text(
+                    isPreowned ? 'Pre-owned Product' : 'Regular Product',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: isPreowned ? Color(0xFF2E5BFF) : Color(0xFF388E3C),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 16),
+            
+            // Rating
+            Row(
+              children: List.generate(5, (index) {
+                return Icon(
+                  index < reviewData['rating'] ? Icons.star : Icons.star_border,
+                  color: Colors.amber,
+                  size: 24,
+                );
+              }),
+            ),
+            SizedBox(height: 16),
+            
+            // Title
+            Text(
+              reviewData['reviewTitle'],
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            SizedBox(height: 12),
+            
+            // Review Text
+            Text(
+              reviewData['reviewText'],
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.grey[700],
+                height: 1.5,
+              ),
+            ),
+            SizedBox(height: 16),
+            
+            // Metadata
+            Divider(),
+            SizedBox(height: 8),
+            Row(
+              children: [
+                Icon(Icons.person, size: 16, color: Colors.grey[600]),
+                SizedBox(width: 8),
+                Text(
+                  reviewData['userName'],
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 4),
+            Row(
+              children: [
+                Icon(Icons.access_time, size: 16, color: Colors.grey[600]),
+                SizedBox(width: 8),
+                Text(
+                  _formatReviewDate(reviewData['reviewDate']),
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 8),
+            Container(
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Color(0xFFF0FDF4),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: Color(0xFF388E3C).withOpacity(0.3),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    size: 16,
+                    color: Color(0xFF388E3C),
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'Saved to ${isPreowned ? "pre-owned" : "regular"} products collection',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF388E3C),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        ElevatedButton(
+          onPressed: () => Navigator.pop(context),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Color(0xFF388E3C),
+            foregroundColor: Colors.white,
+            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: Text('Close', style: TextStyle(fontSize: 16)),
+        ),
+      ],
+    ),
+  );
+}
+
+// Helper method to format review date
+String _formatReviewDate(String isoDate) {
+  try {
+    DateTime date = DateTime.parse(isoDate);
+    return DateFormat('MMM dd, yyyy').format(date);
+  } catch (e) {
+    return isoDate;
+  }
+}
+
+// PART 2: Replace the _buildPurchaseCard method in my_activity.dart with this:
+
+Widget _buildPurchaseCard(Map<String, dynamic> order) {
+  String orderId = order['orderId'] ?? '';
+  String status = order['status'] ?? 'Unknown';
+  Timestamp? orderDate = order['orderDate'];
+  double grandTotal = (order['grandTotal'] ?? 0).toDouble();
+  List<dynamic> items = order['items'] ?? [];
+  bool isReceived = order['isReceived'] ?? false;
+  bool isDelivered = status == 'Delivered';
+  
+  // Get list of reviewed product IDs
+  List<dynamic> reviewedProductIds = order['reviewedProductIds'] ?? [];
+  
+  // Check if all items have been reviewed
+  bool allItemsReviewed = items.isNotEmpty && 
+      items.every((item) => reviewedProductIds.contains(item['productId']));
+  
+  // Count reviewed vs total items
+  int reviewedCount = reviewedProductIds.length;
+  int totalItemCount = items.length;
+
+  int totalQuantity = items.fold(
+    0,
+    (sum, item) => sum + (item['quantity'] as int? ?? 1),
+  );
+
+  return Card(
+    margin: const EdgeInsets.only(bottom: 12),
+    elevation: 2,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Order Header
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Order #${orderId.substring(orderId.length > 8 ? orderId.length - 8 : 0)}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    _formatDate(orderDate),
+                    style: TextStyle(fontSize: 13, color: Colors.grey[600]),
+                  ),
+                ],
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    'RM ${grandTotal.toStringAsFixed(2)}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF388E3C),
+                    ),
+                  ),
+                  Text(
+                    '$totalQuantity items',
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          
+          const SizedBox(height: 12),
+
+          // Status Badges Row
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              // Order Status
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: _getStatusColor(status),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  status,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              
+              // Received Badge
+              if (isReceived)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.blue[50],
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.blue),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.check_circle, size: 14, color: Colors.blue),
+                      SizedBox(width: 4),
+                      Text(
+                        'Received',
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              
+              // Review Status Badge
+              if (isReceived)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: allItemsReviewed 
+                        ? Colors.amber[50] 
+                        : Colors.grey[100],
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: allItemsReviewed ? Colors.amber : Colors.grey[400]!,
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        allItemsReviewed ? Icons.star : Icons.star_border,
+                        size: 14,
+                        color: allItemsReviewed ? Colors.amber : Colors.grey[600],
+                      ),
+                      SizedBox(width: 4),
+                      Text(
+                        allItemsReviewed 
+                            ? 'All Reviewed' 
+                            : 'Reviewed $reviewedCount/$totalItemCount',
+                        style: TextStyle(
+                          color: allItemsReviewed 
+                              ? Colors.amber[800] 
+                              : Colors.grey[700],
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+
+          // Product Items Preview (show first 2 items)
+          if (items.isNotEmpty) ...[
+            SizedBox(height: 12),
+            Divider(),
+            SizedBox(height: 8),
+            Text(
+              'Items in Order:',
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[700],
+              ),
+            ),
+            SizedBox(height: 8),
+            ...items.take(2).map((item) {
+              bool isPreowned = item['isPreowned'] ?? false;
+              String productId = item['productId'] ?? '';
+              bool isItemReviewed = reviewedProductIds.contains(productId);
+              
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  children: [
+                    // Product Image
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(6),
+                      child: item['imageUrl'] != null && item['imageUrl'].isNotEmpty
+                          ? Image.asset(
+                              item['imageUrl'],
+                              width: 50,
+                              height: 50,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Container(
+                                width: 50,
+                                height: 50,
+                                color: Colors.grey[300],
+                                child: Icon(Icons.image, size: 24, color: Colors.grey),
+                              ),
+                            )
+                          : Container(
+                              width: 50,
+                              height: 50,
+                              color: Colors.grey[300],
+                              child: Icon(Icons.image, size: 24, color: Colors.grey),
+                            ),
+                    ),
+                    SizedBox(width: 12),
+                    
+                    // Product Info
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item['productName'] ?? 'Unknown',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          SizedBox(height: 4),
+                          Row(
+                            children: [
+                              // Product Type Badge
+                              Container(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: isPreowned 
+                                      ? Color(0xFF2E5BFF).withOpacity(0.1)
+                                      : Color(0xFF388E3C).withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  isPreowned ? 'Pre-owned' : 'Regular',
+                                  style: TextStyle(
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.bold,
+                                    color: isPreowned 
+                                        ? Color(0xFF2E5BFF)
+                                        : Color(0xFF388E3C),
+                                  ),
+                                ),
+                              ),
+                              
+                              // Reviewed Badge
+                              if (isItemReviewed) ...[
+                                SizedBox(width: 6),
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.amber[50],
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.check_circle,
+                                        size: 9,
+                                        color: Colors.amber[800],
+                                      ),
+                                      SizedBox(width: 2),
+                                      Text(
+                                        'Reviewed',
+                                        style: TextStyle(
+                                          fontSize: 9,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.amber[800],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    
+                    // Quantity
+                    Text(
+                      'x${item['quantity'] ?? 1}',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
+            
+            // Show "and X more items" if there are more than 2 items
+            if (items.length > 2)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  '+ ${items.length - 2} more ${items.length - 2 == 1 ? "item" : "items"}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Color(0xFF388E3C),
+                    fontWeight: FontWeight.w600,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ),
+          ],
+
+          // Action buttons for delivered orders
+          if (isDelivered) ...[
+            SizedBox(height: 12),
+            Divider(),
+            SizedBox(height: 8),
+            
+            // Buttons Row
+            Row(
+              children: [
+                // Receive Parcel Button (if not received yet)
+                if (!isReceived)
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () => _confirmReceiveParcel(orderId),
+                      icon: Icon(Icons.inventory_2, size: 18),
+                      label: Text('Receive Parcel'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF388E3C),
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                
+                // Give Feedback Button (if received but not all items reviewed)
+                if (isReceived && !allItemsReviewed) ...[
+                  if (!isReceived) SizedBox(width: 8),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () => _showFeedbackDialog(order),
+                      icon: Icon(Icons.rate_review, size: 18),
+                      label: Text(
+                        reviewedCount == 0 
+                            ? 'Review Items' 
+                            : 'Review More',
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF2E5BFF),
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            
+            // View Details Button (always shown)
+            SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    '/order-status',
+                    arguments: {'orderId': orderId},
+                  );
+                },
+                icon: Icon(Icons.info_outline, size: 18),
+                label: Text('View Order Details'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: Color(0xFF388E3C),
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  side: BorderSide(color: Color(0xFF388E3C)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ],
+      ),
+    ),
+  );
+}
+
   // NEW: Load Green Coin Records
   Future<void> _loadGreenCoinRecords() async {
     final snapshot = await FirebaseFirestore.instance
@@ -571,88 +1685,6 @@ class _MyActivityPageState extends State<MyActivityPage>
           ),
           ...purchaseHistory.map((order) => _buildPurchaseCard(order)),
         ],
-      ),
-    );
-  }
-
-  Widget _buildPurchaseCard(Map<String, dynamic> order) {
-    String orderId = order['orderId'] ?? '';
-    String status = order['status'] ?? 'Unknown';
-    Timestamp? orderDate = order['orderDate'];
-    double grandTotal = (order['grandTotal'] ?? 0).toDouble();
-    List<dynamic> items = order['items'] ?? [];
-
-    int totalItems = items.fold(
-      0,
-      (sum, item) => sum + (item['quantity'] as int? ?? 1),
-    );
-
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Order #${orderId.substring(orderId.length > 8 ? orderId.length - 8 : 0)}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      _formatDate(orderDate),
-                      style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-                    ),
-                  ],
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      'RM ${grandTotal.toStringAsFixed(2)}',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF388E3C),
-                      ),
-                    ),
-                    Text(
-                      '$totalItems items',
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: _getStatusColor(status),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                status,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

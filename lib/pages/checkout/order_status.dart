@@ -15,42 +15,37 @@ class _OrderStatusState extends State<OrderStatus> {
   Map<String, dynamic>? orderData;
   bool isLoading = true;
   
-  // Status progression config (in SECONDS for testing - change to days in production)
-  final Map<int, Map<String, dynamic>> statusConfig = {
-    0: {
+  // All statuses for display
+  final List<Map<String, dynamic>> statusConfig = [
+    {
       'status': 'Order Placed',
       'description': 'Your order has been placed successfully.',
-      'secondsToNext': 15, // 15 seconds for testing (change to days * 86400)
     },
-    1: {
+    {
       'status': 'Processing',
       'description': 'Your order is being processed.',
-      'secondsToNext': 30, // 30 seconds for testing
     },
-    2: {
+    {
       'status': 'Shipped',
       'description': 'Your order has been shipped.',
-      'secondsToNext': 30, // 30 seconds for testing
     },
-    3: {
+    {
       'status': 'Out for Delivery',
       'description': 'Your order is out for delivery.',
-      'secondsToNext': 15, // 15 seconds for testing
     },
-    4: {
+    {
       'status': 'Delivered',
       'description': 'Your order has been delivered.',
-      'secondsToNext': 0,
     },
-  };
+  ];
 
   @override
   void initState() {
     super.initState();
-    _loadAndUpdateOrderStatus();
+    _loadOrderStatus();
   }
 
-  Future<void> _loadAndUpdateOrderStatus() async {
+  Future<void> _loadOrderStatus() async {
     try {
       DocumentSnapshot orderDoc = await FirebaseFirestore.instance
           .collection('orders')
@@ -63,17 +58,6 @@ class _OrderStatusState extends State<OrderStatus> {
         });
         return;
       }
-
-      Map<String, dynamic> data = orderDoc.data() as Map<String, dynamic>;
-      
-      // Check if status needs progression
-      await _progressOrderStatus(data);
-
-      // Reload updated data
-      orderDoc = await FirebaseFirestore.instance
-          .collection('orders')
-          .doc(widget.orderId)
-          .get();
       
       setState(() {
         orderData = orderDoc.data() as Map<String, dynamic>;
@@ -85,67 +69,6 @@ class _OrderStatusState extends State<OrderStatus> {
       setState(() {
         isLoading = false;
       });
-    }
-  }
-
-  Future<void> _progressOrderStatus(Map<String, dynamic> data) async {
-    int currentStatusIndex = data['currentStatusIndex'] ?? 0;
-    
-    // If already delivered, no need to progress
-    if (currentStatusIndex >= 4) return;
-
-    Timestamp lastUpdate = data['lastStatusUpdate'];
-    DateTime lastUpdateDate = lastUpdate.toDate();
-    DateTime now = DateTime.now();
-    
-    int secondsPassed = now.difference(lastUpdateDate).inSeconds;
-    
-    // Check if we need to progress to next status
-    var currentConfig = statusConfig[currentStatusIndex];
-    int secondsNeeded = currentConfig?['secondsToNext'] ?? 0;
-    
-    if (secondsPassed >= secondsNeeded && secondsNeeded > 0) {
-      // Progress to next status
-      int newStatusIndex = currentStatusIndex + 1;
-      
-      // Calculate the exact time when status should have changed
-      DateTime newStatusTime = lastUpdateDate.add(Duration(seconds: secondsNeeded));
-      
-      // Update status history
-      List<dynamic> statusHistory = List.from(data['statusHistory'] ?? []);
-      
-      var newStatusConfig = statusConfig[newStatusIndex];
-      statusHistory.add({
-        'status': newStatusConfig?['status'],
-        'timestamp': Timestamp.fromDate(newStatusTime),
-        'description': newStatusConfig?['description'],
-      });
-
-      // Update in Firestore
-      await FirebaseFirestore.instance
-          .collection('orders')
-          .doc(widget.orderId)
-          .update({
-        'currentStatusIndex': newStatusIndex,
-        'status': newStatusConfig?['status'],
-        'statusHistory': statusHistory,
-        'lastStatusUpdate': Timestamp.fromDate(newStatusTime),
-      });
-
-      // Check if we can progress further (recursive)
-      if (newStatusIndex < 4) {
-        int additionalSeconds = now.difference(newStatusTime).inSeconds;
-        int nextSecondsNeeded = statusConfig[newStatusIndex]?['secondsToNext'] ?? 0;
-        
-        if (additionalSeconds >= nextSecondsNeeded && nextSecondsNeeded > 0) {
-          // Reload and check again
-          DocumentSnapshot updatedDoc = await FirebaseFirestore.instance
-              .collection('orders')
-              .doc(widget.orderId)
-              .get();
-          await _progressOrderStatus(updatedDoc.data() as Map<String, dynamic>);
-        }
-      }
     }
   }
 
@@ -312,15 +235,15 @@ class _OrderStatusState extends State<OrderStatus> {
       );
     }
 
-    int currentStatusIndex = orderData!['currentStatusIndex'] ?? 0;
+    int currentStatusIndex = orderData!['currentStatusIndex'] ?? 4; // Default to delivered
     List<dynamic> statusHistory = orderData!['statusHistory'] ?? [];
     
-    String currentStatus = orderData!['status'] ?? 'Order Placed';
+    String currentStatus = orderData!['status'] ?? 'Delivered';
     String trackingNumber = orderData!['trackingNumber'] ?? 'N/A';
     
     // Get estimated delivery
     Map<String, dynamic>? estimatedDelivery = orderData!['estimatedDelivery'];
-    String estimatedDeliveryText = '';
+    String estimatedDeliveryText = 'Delivered';
     if (estimatedDelivery != null) {
       String from = _formatDateShort(estimatedDelivery['from']);
       String to = _formatDateShort(estimatedDelivery['to']);
@@ -339,12 +262,8 @@ class _OrderStatusState extends State<OrderStatus> {
       addressText += address['state'] ?? '';
     }
 
-    // Current status badge color
-    Color statusBadgeColor = currentStatusIndex >= 4 
-        ? Color(0xFF388E3C) // Delivered
-        : currentStatusIndex >= 2 
-            ? Colors.orange // Shipped or Out for Delivery
-            : Colors.blue; // Order Placed or Processing
+    // Status badge color (always green for delivered)
+    Color statusBadgeColor = Color(0xFF388E3C);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -371,7 +290,7 @@ class _OrderStatusState extends State<OrderStatus> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  // Estimated Delivery Card
+                  // Delivery Status Card
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(20),
@@ -393,20 +312,26 @@ class _OrderStatusState extends State<OrderStatus> {
                     ),
                     child: Column(
                       children: [
+                        Icon(
+                          Icons.check_circle,
+                          color: Colors.white,
+                          size: 64,
+                        ),
+                        SizedBox(height: 12),
                         Text(
-                          'Estimated Delivery',
+                          'Package Delivered!',
                           style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white70,
-                            fontWeight: FontWeight.w500,
+                            fontSize: 18,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                         SizedBox(height: 8),
                         Text(
-                          estimatedDeliveryText,
+                          _formatDateShort(orderData!['orderDate']),
                           style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
                             color: Colors.white,
                           ),
                           textAlign: TextAlign.center,
@@ -415,13 +340,13 @@ class _OrderStatusState extends State<OrderStatus> {
                         Container(
                           padding: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                           decoration: BoxDecoration(
-                            color: statusBadgeColor,
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
                             currentStatus,
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Color(0xFF388E3C),
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
                             ),
@@ -460,17 +385,17 @@ class _OrderStatusState extends State<OrderStatus> {
                         ),
                         SizedBox(height: 16),
                         
-                        // Build status cards from history
-                        for (int i = 0; i < 5; i++)
+                        // Build all status cards as completed
+                        for (int i = 0; i < statusConfig.length; i++)
                           buildOrderStatusCard(
-                            status: statusConfig[i]?['status'] ?? '',
+                            status: statusConfig[i]['status'] ?? '',
                             date: i < statusHistory.length 
                                 ? _formatDate(statusHistory[i]['timestamp']) 
-                                : '',
-                            description: statusConfig[i]?['description'] ?? '',
-                            isCompleted: i <= currentStatusIndex,
+                                : _formatDate(orderData!['orderDate']),
+                            description: statusConfig[i]['description'] ?? '',
+                            isCompleted: true,
                             isFirst: i == 0,
-                            isLast: i == 4,
+                            isLast: i == statusConfig.length - 1,
                           ),
                       ],
                     ),

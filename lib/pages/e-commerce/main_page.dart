@@ -7,6 +7,7 @@ import 'package:flutter_application_1/utils/bottom_nav_bar.dart';
 import '../../utils/router.dart';
 import '../preference/preference_service.dart';
 import '../../utils/cart_icon_with_badge.dart';
+import '../../utils/rating_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

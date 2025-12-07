@@ -1,7 +1,11 @@
+// lib/pages/preowned_product_page.dart
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_application_1/utils/swiper.dart';
+import '../feature/best_value_comparison.dart';
+import '../feature/best_value_comparison_widget.dart';
 
 class PreownedProductPage extends StatefulWidget {
   final Map<String, dynamic> product;
@@ -16,6 +20,46 @@ class _PreownedProductPageState extends State<PreownedProductPage> {
   bool isAddingToCart = false;
   final User? currentUser = FirebaseAuth.instance.currentUser;
 
+  // Honest Assessment state
+  Map<String, dynamic>? honestAssessment;
+  bool isLoadingAssessment = true;
+
+  // Reviews state
+  List<Map<String, dynamic>> reviews = [];
+  bool isLoadingReviews = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadHonestAssessment();
+    _loadReviews();
+  }
+
+  // Load honest assessment
+  Future<void> _loadHonestAssessment() async {
+    setState(() {
+      isLoadingAssessment = true;
+    });
+
+    try {
+      String productId = widget.product['id'] ?? '';
+      Map<String, dynamic>? assessment =
+          await BestValueComparisonService.getBestValueComparison(
+            productId: productId,
+          );
+
+      setState(() {
+        honestAssessment = assessment;
+        isLoadingAssessment = false;
+      });
+    } catch (e) {
+      print('Error loading honest assessment: $e');
+      setState(() {
+        isLoadingAssessment = false;
+      });
+    }
+  }
+
   // Calculate Green Coins to earn
   int _calculateGreenCoinsToEarn() {
     double price = (widget.product['price'] ?? 0).toDouble();
@@ -25,25 +69,25 @@ class _PreownedProductPageState extends State<PreownedProductPage> {
   // Build image pages for swiper
   List<Widget> _buildImagePages() {
     List<Widget> pages = [];
-    
+
     // Add imageUrl1
-    if (widget.product['imageUrl1'] != null && 
+    if (widget.product['imageUrl1'] != null &&
         widget.product['imageUrl1'].isNotEmpty) {
       pages.add(_buildImageWidget(widget.product['imageUrl1']));
     }
-    
+
     // Add imageUrl2
-    if (widget.product['imageUrl2'] != null && 
+    if (widget.product['imageUrl2'] != null &&
         widget.product['imageUrl2'].isNotEmpty) {
       pages.add(_buildImageWidget(widget.product['imageUrl2']));
     }
-    
+
     // Add imageUrl3
-    if (widget.product['imageUrl3'] != null && 
+    if (widget.product['imageUrl3'] != null &&
         widget.product['imageUrl3'].isNotEmpty) {
       pages.add(_buildImageWidget(widget.product['imageUrl3']));
     }
-    
+
     // If no images, show placeholder
     if (pages.isEmpty) {
       pages.add(
@@ -51,17 +95,11 @@ class _PreownedProductPageState extends State<PreownedProductPage> {
           width: double.infinity,
           height: 350,
           color: Colors.grey.shade200,
-          child: Center(
-            child: Icon(
-              Icons.image,
-              size: 80,
-              color: Colors.grey,
-            ),
-          ),
+          child: Center(child: Icon(Icons.image, size: 80, color: Colors.grey)),
         ),
       );
     }
-    
+
     return pages;
   }
 
@@ -134,7 +172,7 @@ class _PreownedProductPageState extends State<PreownedProductPage> {
 
         // Get the updated item data
         Map<String, dynamic> itemData = cartItem.data() as Map<String, dynamic>;
-        itemData['quantity'] = newQuantity; // Update with new quantity
+        itemData['quantity'] = newQuantity;
         itemData['docId'] = itemDocId;
         itemToCheckout = itemData;
 
@@ -157,7 +195,7 @@ class _PreownedProductPageState extends State<PreownedProductPage> {
           'seller': widget.product['seller'] ?? '',
           'sellerProfileImage': '',
           'category': widget.product['category'] ?? '',
-          'isPreowned': true, // Mark as pre-owned
+          'isPreowned': true,
           'dateAdded': FieldValue.serverTimestamp(),
         };
 
@@ -223,7 +261,7 @@ class _PreownedProductPageState extends State<PreownedProductPage> {
         context,
         '/checkout',
         arguments: {
-          'selectedItems': [singleItem], // Only pass the single item as a list
+          'selectedItems': [singleItem],
           'userAddress': userAddress,
         },
       );
@@ -236,6 +274,206 @@ class _PreownedProductPageState extends State<PreownedProductPage> {
         ),
       );
     }
+  }
+
+  Future<void> _loadReviews() async {
+    setState(() {
+      isLoadingReviews = true;
+    });
+
+    try {
+      String productId = widget.product['id'] ?? '';
+
+      // Load from preowned_reviews collection with new structure
+      QuerySnapshot reviewsSnapshot = await FirebaseFirestore.instance
+          .collection('preowned_reviews')
+          .where('productId', isEqualTo: productId)
+          .get();
+
+      List<Map<String, dynamic>> loadedReviews = reviewsSnapshot.docs.map((
+        doc,
+      ) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+        // Ensure all required fields exist
+        return {
+          'reviewId': data['reviewId'] ?? doc.id,
+          'productId': data['productId'] ?? '',
+          'rating': data['rating'] ?? 0,
+          'reviewTitle': data['reviewTitle'] ?? '',
+          'reviewText': data['reviewText'] ?? '',
+          'userName': data['userName'] ?? 'Anonymous',
+          'userProfileUrl': data['userProfileUrl'] ?? '',
+          'reviewDate': data['reviewDate'] ?? '',
+        };
+      }).toList();
+
+      // Sort by date (newest first)
+      loadedReviews.sort((a, b) {
+        String dateA = a['reviewDate'] ?? '';
+        String dateB = b['reviewDate'] ?? '';
+        return dateB.compareTo(dateA);
+      });
+
+      setState(() {
+        reviews = loadedReviews;
+        isLoadingReviews = false;
+      });
+    } catch (e) {
+      print('Error loading reviews: $e');
+      setState(() {
+        isLoadingReviews = false;
+      });
+    }
+  }
+
+  // Replace the _buildReviewCard() method with this updated version:
+  Widget _buildReviewCard(Map<String, dynamic> review) {
+    int rating = review['rating'] ?? 0;
+    String reviewTitle = review['reviewTitle'] ?? '';
+    String reviewText = review['reviewText'] ?? '';
+    String userName = review['userName'] ?? 'Anonymous';
+    String userProfileUrl = review['userProfileUrl'] ?? '';
+    String reviewDate = review['reviewDate'] ?? '';
+
+    // Format date from ISO string
+    String formattedDate = '';
+    if (reviewDate.isNotEmpty) {
+      try {
+        DateTime date = DateTime.parse(reviewDate);
+        formattedDate = '${date.day}/${date.month}/${date.year}';
+      } catch (e) {
+        formattedDate = reviewDate;
+      }
+    }
+
+    return Container(
+      margin: EdgeInsets.only(bottom: 12),
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade200),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // User info and rating
+          Row(
+            children: [
+              // User avatar
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: Color(0xFF388E3C).withOpacity(0.1),
+                backgroundImage: userProfileUrl.isNotEmpty
+                    ? AssetImage(userProfileUrl)
+                    : null,
+                child: userProfileUrl.isEmpty
+                    ? Icon(Icons.person, color: Color(0xFF388E3C))
+                    : null,
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            userName,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        // Verified Buyer Badge
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Color(0xFF388E3C).withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.verified,
+                                size: 10,
+                                color: Color(0xFF388E3C),
+                              ),
+                              SizedBox(width: 2),
+                              Text(
+                                'Verified',
+                                style: TextStyle(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF388E3C),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    if (formattedDate.isNotEmpty) ...[
+                      SizedBox(height: 2),
+                      Text(
+                        formattedDate,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              // Rating stars
+              Row(
+                children: List.generate(5, (index) {
+                  return Icon(
+                    index < rating ? Icons.star : Icons.star_border,
+                    color: Colors.amber,
+                    size: 18,
+                  );
+                }),
+              ),
+            ],
+          ),
+
+          if (reviewTitle.isNotEmpty) ...[
+            SizedBox(height: 12),
+            Text(
+              reviewTitle,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
+          ],
+
+          if (reviewText.isNotEmpty) ...[
+            SizedBox(height: 8),
+            Text(
+              reviewText,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade700,
+                height: 1.5,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
   }
 
   @override
@@ -259,13 +497,10 @@ class _PreownedProductPageState extends State<PreownedProductPage> {
                       height: 350,
                       color: Colors.white,
                       child: imagePages.length > 1
-                          ? Swiper(
-                              pages: imagePages,
-                              height: 350,
-                            )
+                          ? Swiper(pages: imagePages, height: 350)
                           : imagePages[0],
                     ),
-                    
+
                     // Back button
                     SafeArea(
                       child: Padding(
@@ -288,7 +523,7 @@ class _PreownedProductPageState extends State<PreownedProductPage> {
                         ),
                       ),
                     ),
-                    
+
                     // Image counter (if multiple images)
                     if (imagePages.length > 1)
                       Positioned(
@@ -471,7 +706,7 @@ class _PreownedProductPageState extends State<PreownedProductPage> {
                               ],
                             ),
                           ),
-                          
+
                           // Category badge
                           if (widget.product['category'] != null &&
                               widget.product['category'].isNotEmpty) ...[
@@ -591,6 +826,97 @@ class _PreownedProductPageState extends State<PreownedProductPage> {
                   ),
                 ),
 
+                SizedBox(height: 8),
+
+                // Reviews Section
+                Container(
+                  color: Colors.white,
+                  padding: EdgeInsets.all(20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Customer Reviews',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          if (!isLoadingReviews && reviews.isNotEmpty)
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Color(0xFF388E3C).withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                '${reviews.length} reviews',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Color(0xFF388E3C),
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      SizedBox(height: 16),
+
+                      // Honest Assessment Widget
+                      PreownedHonestAssessmentWidget(
+                        assessment: honestAssessment,
+                        isLoading: isLoadingAssessment,
+                      ),
+
+                      // Reviews List
+                      if (isLoadingReviews)
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(32.0),
+                            child: CircularProgressIndicator(
+                              color: Color(0xFF388E3C),
+                            ),
+                          ),
+                        )
+                      else if (reviews.isEmpty)
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.all(32.0),
+                            child: Column(
+                              children: [
+                                Icon(
+                                  Icons.rate_review_outlined,
+                                  size: 60,
+                                  color: Colors.grey.shade400,
+                                ),
+                                SizedBox(height: 12),
+                                Text(
+                                  'No reviews yet',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey.shade600,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      else
+                        Column(
+                          children: reviews.map((review) {
+                            return _buildReviewCard(review);
+                          }).toList(),
+                        ),
+                    ],
+                  ),
+                ),
+
                 SizedBox(height: 100),
               ],
             ),
@@ -633,10 +959,7 @@ class _PreownedProductPageState extends State<PreownedProductPage> {
                     : Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            Icons.shopping_cart,
-                            size: 24,
-                          ),
+                          Icon(Icons.shopping_cart, size: 24),
                           SizedBox(width: 12),
                           Text(
                             'Add to Cart',

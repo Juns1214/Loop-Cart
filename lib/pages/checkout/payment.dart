@@ -303,7 +303,9 @@ class _PaymentState extends State<Payment> {
     }
   }
 
-  // Process regular order payment (UPDATED TO HANDLE PRE-OWNED ITEMS)
+  // Update the _processOrderPayment method in payment.dart
+  // Replace the existing method with this updated version
+
   Future<void> _processOrderPayment() async {
     if (currentUser == null) {
       if (!mounted) return;
@@ -325,14 +327,6 @@ class _PaymentState extends State<Payment> {
       final transactionId = _generateTransactionId();
       final trackingNumber = _generateTrackingNumber();
       final now = DateTime.now();
-
-      int deliveryDays = widget.orderData['shippingMethod'] == 'Express'
-          ? 3
-          : 6;
-      final estimatedDeliveryFrom = now.add(Duration(days: deliveryDays));
-      final estimatedDeliveryTo = estimatedDeliveryFrom.add(
-        const Duration(days: 1),
-      );
 
       List<Map<String, dynamic>> itemsWithSeller = [];
 
@@ -364,16 +358,45 @@ class _PaymentState extends State<Payment> {
           'seller': sellerName,
           'sellerId': sellerId,
           'sellerProfileImage': sellerProfileImage,
-          'isPreowned': item['isPreowned'] ?? false, // ADD THIS
+          'isPreowned': item['isPreowned'] ?? false,
         });
       }
+
+      // Create complete status history for all stages
+      List<Map<String, dynamic>> completeStatusHistory = [
+        {
+          'status': 'Order Placed',
+          'timestamp': Timestamp.fromDate(now),
+          'description': 'Your order has been placed successfully.',
+        },
+        {
+          'status': 'Processing',
+          'timestamp': Timestamp.fromDate(now),
+          'description': 'Your order is being processed.',
+        },
+        {
+          'status': 'Shipped',
+          'timestamp': Timestamp.fromDate(now),
+          'description': 'Your order has been shipped.',
+        },
+        {
+          'status': 'Out for Delivery',
+          'timestamp': Timestamp.fromDate(now),
+          'description': 'Your order is out for delivery.',
+        },
+        {
+          'status': 'Delivered',
+          'timestamp': Timestamp.fromDate(now),
+          'description': 'Your order has been delivered.',
+        },
+      ];
 
       Map<String, dynamic> orderDocument = {
         'orderId': orderId,
         'userId': currentUser!.uid,
         'orderDate': Timestamp.fromDate(now),
-        'status': 'Order Placed',
-        'currentStatusIndex': 0,
+        'status': 'Delivered', // Set as delivered immediately
+        'currentStatusIndex': 4, // Index 4 = Delivered
         'items': itemsWithSeller,
         'shippingAddress': widget.orderData['shippingAddress'],
         'shippingMethod': widget.orderData['shippingMethod'],
@@ -387,20 +410,17 @@ class _PaymentState extends State<Payment> {
         'discount': widget.orderData['discount'],
         'greenCoinsUsed': widget.orderData['greenCoinsUsed'],
         'grandTotal': widget.orderData['grandTotal'],
-        'greenCoinsToEarn': widget.orderData['greenCoinsToEarn'] ?? 0, // ADD THIS
+        'greenCoinsToEarn': widget.orderData['greenCoinsToEarn'] ?? 0,
         'trackingNumber': trackingNumber,
         'estimatedDelivery': {
-          'from': Timestamp.fromDate(estimatedDeliveryFrom),
-          'to': Timestamp.fromDate(estimatedDeliveryTo),
+          'from': Timestamp.fromDate(now),
+          'to': Timestamp.fromDate(now),
         },
-        'statusHistory': [
-          {
-            'status': 'Order Placed',
-            'timestamp': Timestamp.fromDate(now),
-            'description': 'Your order has been placed successfully.',
-          },
-        ],
+        'deliveredAt': Timestamp.fromDate(now), // Add delivery timestamp
+        'statusHistory': completeStatusHistory, // Complete history
         'lastStatusUpdate': Timestamp.fromDate(now),
+        'isReceived': false, // Track if user confirmed receipt
+        'hasFeedback': false, // Track if user provided feedback
       };
 
       await FirebaseFirestore.instance
@@ -419,7 +439,6 @@ class _PaymentState extends State<Payment> {
               ),
             });
 
-        // Record green coin usage
         await _recordGreenCoinTransaction(
           transactionId: '${transactionId}_used',
           amount: -widget.orderData['greenCoinsUsed'],
@@ -433,16 +452,14 @@ class _PaymentState extends State<Payment> {
         );
       }
 
-      // ADD GREEN COINS FOR PRE-OWNED PURCHASES
+      // Add green coins for pre-owned purchases
       int greenCoinsToEarn = widget.orderData['greenCoinsToEarn'] ?? 0;
       if (greenCoinsToEarn > 0) {
-        // Update user's green coins
         await FirebaseFirestore.instance
             .collection('user_profile')
             .doc(currentUser!.uid)
             .update({'greenCoins': FieldValue.increment(greenCoinsToEarn)});
 
-        // Record green coin earning transaction
         await _recordGreenCoinTransaction(
           transactionId: '${transactionId}_earned',
           amount: greenCoinsToEarn,
@@ -476,7 +493,6 @@ class _PaymentState extends State<Payment> {
         isProcessing = false;
       });
 
-      // Navigate to payment confirmation
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(

@@ -1,0 +1,4742 @@
+[
+  {
+    "reviewId": "REV001",
+    "productId": "CL001",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 5,
+    "reviewTitle": "Love these Adidas clothes!",
+    "reviewText": "The quality is amazing and they're so comfortable for my morning runs. The breathable material keeps me cool even during intense workouts. Highly recommend!",
+    "reviewDate": "2025-10-15T14:30:00Z"
+  },
+  {
+    "reviewId": "REV002",
+    "productId": "CL001",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 4,
+    "reviewTitle": "Good quality sportswear",
+    "reviewText": "Nice fit and great material. My wife loves wearing these for yoga classes. Only minor issue is the sizing runs slightly small.",
+    "reviewDate": "2025-10-10T09:15:00Z"
+  },
+  {
+    "reviewId": "REV003",
+    "productId": "CL002",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 5,
+    "reviewTitle": "Perfect for business meetings",
+    "reviewText": "This suit set is exactly what I needed. The tailoring is excellent and it looks very professional. Great value for money!",
+    "reviewDate": "2025-10-18T11:20:00Z"
+  },
+  {
+    "reviewId": "REV004",
+    "productId": "CL003",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 5,
+    "reviewTitle": "Vintage vibes!",
+    "reviewText": "These trousers are absolutely gorgeous! The vintage design is unique and they're surprisingly comfortable for all-day wear. Perfect for both office and casual outings.",
+    "reviewDate": "2025-10-12T16:45:00Z"
+  },
+  {
+    "reviewId": "REV005",
+    "productId": "CL004",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 5,
+    "reviewTitle": "Cozy and stylish",
+    "reviewText": "This cardigan is perfect for the cooler evenings. The material is soft and the hood adds a nice casual touch. Very happy with this purchase!",
+    "reviewDate": "2025-10-20T13:30:00Z"
+  },
+  {
+    "reviewId": "REV006",
+    "productId": "CL004",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 4,
+    "reviewTitle": "Great jacket for autumn",
+    "reviewText": "My husband wears this constantly. It's warm without being too heavy. The only downside is it attracts lint easily.",
+    "reviewDate": "2025-10-14T10:00:00Z"
+  },
+  {
+    "reviewId": "REV007",
+    "productId": "CL005",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 4,
+    "reviewTitle": "Comfortable everyday pants",
+    "reviewText": "These cotton pants are really comfortable and breathable. Great for casual wear. The fit is good but I wish there were more color options.",
+    "reviewDate": "2025-10-08T15:20:00Z"
+  },
+  {
+    "reviewId": "REV008",
+    "productId": "CL006",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 5,
+    "reviewTitle": "Best basic tee",
+    "reviewText": "Can't go wrong with this plain t-shirt. 100% cotton feels great on the skin and it washes well. Bought 3 more in different colors!",
+    "reviewDate": "2025-10-16T12:10:00Z"
+  },
+  {
+    "reviewId": "REV009",
+    "productId": "CL007",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 5,
+    "reviewTitle": "Flattering fit",
+    "reviewText": "These slim fit pants are amazing! The stretchable fabric makes them so comfortable and they look really stylish. Perfect for work or going out.",
+    "reviewDate": "2025-10-19T14:45:00Z"
+  },
+  {
+    "reviewId": "REV010",
+    "productId": "CL008",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 5,
+    "reviewTitle": "Love this bomber jacket!",
+    "reviewText": "This jacket is fire! The quality is top-notch and it gives off great streetwear vibes. The ribbed cuffs fit perfectly. Definitely recommend!",
+    "reviewDate": "2025-10-21T09:30:00Z"
+  },
+  {
+    "reviewId": "REV011",
+    "productId": "CL009",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 5,
+    "reviewTitle": "Perfect summer dress",
+    "reviewText": "This dress is absolutely perfect for hot weather! The fabric is light and airy, and it looks great. I've received so many compliments wearing it!",
+    "reviewDate": "2025-10-11T17:00:00Z"
+  },
+  {
+    "reviewId": "REV012",
+    "productId": "CL009",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 4,
+    "reviewTitle": "Pretty and comfortable",
+    "reviewText": "Really nice dress for casual summer outings. The material breathes well. Would give 5 stars but the straps are a bit thin for my liking.",
+    "reviewDate": "2025-10-13T11:25:00Z"
+  },
+  {
+    "reviewId": "REV013",
+    "productId": "CL010",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 4,
+    "reviewTitle": "Fun and colorful",
+    "reviewText": "These pants are so unique! Love the colorful design. They're comfortable and definitely a conversation starter. Fabric quality is good too.",
+    "reviewDate": "2025-10-17T13:15:00Z"
+  },
+  {
+    "reviewId": "REV014",
+    "productId": "CL011",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 5,
+    "reviewTitle": "Classic polo shirt",
+    "reviewText": "Great quality polo shirt. Clean design and comfortable fit. Works well for casual Fridays at the office or weekend wear.",
+    "reviewDate": "2025-10-09T10:40:00Z"
+  },
+  {
+    "reviewId": "REV015",
+    "productId": "CL012",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 5,
+    "reviewTitle": "Professional and stylish",
+    "reviewText": "This blazer is exactly what I needed for work. The fabric is high quality and the fit is perfect. Makes me feel confident and professional!",
+    "reviewDate": "2025-10-22T15:50:00Z"
+  },
+  {
+    "reviewId": "REV016",
+    "productId": "CL013",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 4,
+    "reviewTitle": "Elegant blouse",
+    "reviewText": "Beautiful blouse with soft fabric. I wear it to work and for casual dinners. Very versatile piece. Slight wrinkles easily but overall great quality.",
+    "reviewDate": "2025-10-07T14:20:00Z"
+  },
+  {
+    "reviewId": "REV017",
+    "productId": "DF001",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 5,
+    "reviewTitle": "Great dairy-free option",
+    "reviewText": "These arrowroot biscuits are delicious! Perfect for my dairy-free diet. They're crispy and not too sweet. Great with tea!",
+    "reviewDate": "2025-10-15T09:30:00Z"
+  },
+  {
+    "reviewId": "REV018",
+    "productId": "DF002",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 5,
+    "reviewTitle": "Tastes like real butter",
+    "reviewText": "I'm lactose intolerant and this butter is a game changer! It spreads easily and tastes amazing. Great for cooking and baking too!",
+    "reviewDate": "2025-10-18T11:45:00Z"
+  },
+  {
+    "reviewId": "REV019",
+    "productId": "DF003",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 4,
+    "reviewTitle": "Good dairy-free cheese",
+    "reviewText": "As someone who can't have dairy, this cheese alternative is pretty good. It melts well on pizza and sandwiches. Flavor is decent though not exactly like real cheese.",
+    "reviewDate": "2025-10-12T16:20:00Z"
+  },
+  {
+    "reviewId": "REV020",
+    "productId": "DF004",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 5,
+    "reviewTitle": "Best dairy-free ice cream!",
+    "reviewText": "This coconut milk ice cream is incredible! So creamy and delicious. You wouldn't even know it's dairy-free. My whole family loves it!",
+    "reviewDate": "2025-10-20T14:30:00Z"
+  },
+  {
+    "reviewId": "REV021",
+    "productId": "DF004",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 5,
+    "reviewTitle": "Creamy and delicious",
+    "reviewText": "Finally found a dairy-free ice cream that actually tastes good! The coconut milk makes it so creamy. Love all the flavors!",
+    "reviewDate": "2025-10-16T13:15:00Z"
+  },
+  {
+    "reviewId": "REV022",
+    "productId": "DF005",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 4,
+    "reviewTitle": "Healthy yogurt alternative",
+    "reviewText": "Good plant-based yogurt with probiotics. The texture is nice and it's healthy. Taste is good but takes some getting used to if you're used to dairy yogurt.",
+    "reviewDate": "2025-10-14T10:50:00Z"
+  },
+  {
+    "reviewId": "REV023",
+    "productId": "DF006",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 5,
+    "reviewTitle": "Perfect for desserts",
+    "reviewText": "This dairy-free whipped cream is fantastic! Light and fluffy, perfect topping for my coffee and desserts. Can't believe it's made from coconut!",
+    "reviewDate": "2025-10-19T15:40:00Z"
+  },
+  {
+    "reviewId": "REV024",
+    "productId": "EF001",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 5,
+    "reviewTitle": "Love eco-friendly products",
+    "reviewText": "These biodegradable bowls are great! Sturdy enough for daily use and I feel good knowing they're environmentally friendly. Highly recommend!",
+    "reviewDate": "2025-10-21T12:00:00Z"
+  },
+  {
+    "reviewId": "REV025",
+    "productId": "EF002",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 5,
+    "reviewTitle": "Gentle and effective",
+    "reviewText": "This dishwashing soap works really well and smells nice. Love that it's plant-based and safe for the environment. Cuts through grease easily!",
+    "reviewDate": "2025-10-17T09:25:00Z"
+  },
+  {
+    "reviewId": "REV026",
+    "productId": "EF003",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 4,
+    "reviewTitle": "Useful reusable bag",
+    "reviewText": "Good quality drawstring bag. I use it for grocery shopping and gym clothes. Durable material and the right size for daily use.",
+    "reviewDate": "2025-10-13T14:30:00Z"
+  },
+  {
+    "reviewId": "REV027",
+    "productId": "EF004",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 5,
+    "reviewTitle": "Works for everything",
+    "reviewText": "This multipurpose soap is amazing! I use it for dishes, counters, and even floors. Natural ingredients and very effective. Great product!",
+    "reviewDate": "2025-10-10T11:15:00Z"
+  },
+  {
+    "reviewId": "REV028",
+    "productId": "EF005",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 4,
+    "reviewTitle": "Good eco detergent",
+    "reviewText": "Cleans clothes well and doesn't irritate my sensitive skin. Love that it's plant-based. Would prefer if it had a stronger scent though.",
+    "reviewDate": "2025-10-08T16:45:00Z"
+  },
+  {
+    "reviewId": "REV029",
+    "productId": "EF006",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 4,
+    "reviewTitle": "Natural scrubbing pad",
+    "reviewText": "Works great for dishes and scrubbing. Love that it's natural and biodegradable. Lasts a decent amount of time before needing replacement.",
+    "reviewDate": "2025-10-15T13:20:00Z"
+  },
+  {
+    "reviewId": "REV030",
+    "productId": "EF007",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 5,
+    "reviewTitle": "Eco-friendly and effective",
+    "reviewText": "Used this sealant for some home repairs. It's weatherproof and works great! Happy to find a non-toxic option that actually works.",
+    "reviewDate": "2025-10-22T10:30:00Z"
+  },
+  {
+    "reviewId": "REV031",
+    "productId": "EF008",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 5,
+    "reviewTitle": "Durable chopping board",
+    "reviewText": "This wheat straw chopping board is sturdy and looks great in my kitchen. Easy to clean and I love that it's eco-friendly. Very happy with this purchase!",
+    "reviewDate": "2025-10-18T14:55:00Z"
+  },
+  {
+    "reviewId": "REV032",
+    "productId": "EF009",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 5,
+    "reviewTitle": "Complete sustainable set",
+    "reviewText": "Great quality cutlery set! The wheat straw material is surprisingly durable. Perfect for daily use and camping. Love supporting sustainable products!",
+    "reviewDate": "2025-10-11T12:40:00Z"
+  },
+  {
+    "reviewId": "REV033",
+    "productId": "FT001",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 5,
+    "reviewTitle": "Perfect for home workouts",
+    "reviewText": "These dumbbells are solid quality. Good grip and various weights available. Been using them daily for my strength training. Excellent purchase!",
+    "reviewDate": "2025-10-20T08:30:00Z"
+  },
+  {
+    "reviewId": "REV034",
+    "productId": "FT002",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 5,
+    "reviewTitle": "Great home gym addition",
+    "reviewText": "This treadmill is fantastic! Multiple speed settings and runs smoothly. Been using it every morning for my cardio. Worth every penny!",
+    "reviewDate": "2025-10-16T07:15:00Z"
+  },
+  {
+    "reviewId": "REV035",
+    "productId": "FT003",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 4,
+    "reviewTitle": "Good upper body workout",
+    "reviewText": "This power twister really works your arms and chest. Compact and easy to store. Takes some getting used to but definitely effective.",
+    "reviewDate": "2025-10-12T09:45:00Z"
+  },
+  {
+    "reviewId": "REV036",
+    "productId": "FT004",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 5,
+    "reviewTitle": "Sturdy pull-up bar",
+    "reviewText": "Excellent quality pull-up bar! Very sturdy and easy to install. My husband uses it daily for his workouts. Great value for money!",
+    "reviewDate": "2025-10-19T11:20:00Z"
+  },
+  {
+    "reviewId": "REV037",
+    "productId": "FT005",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 5,
+    "reviewTitle": "Targets multiple muscles",
+    "reviewText": "Love this push-up board! The color-coded positions help target different muscle groups. Really enhanced my push-up routine. Highly recommend!",
+    "reviewDate": "2025-10-14T08:50:00Z"
+  },
+  {
+    "reviewId": "REV038",
+    "productId": "FT006",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 4,
+    "reviewTitle": "Great for cardio",
+    "reviewText": "Good quality jump rope. I use it for my daily cardio warm-ups. The rope is durable and the handles are comfortable. Great workout tool!",
+    "reviewDate": "2025-10-10T07:30:00Z"
+  },
+  {
+    "reviewId": "REV039",
+    "productId": "FT007",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 5,
+    "reviewTitle": "Versatile resistance band",
+    "reviewText": "These resistance bands are perfect for home workouts! Great quality and very versatile. I use them for strength training and stretching. Excellent!",
+    "reviewDate": "2025-10-17T10:15:00Z"
+  },
+  {
+    "reviewId": "REV040",
+    "productId": "FT008",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 4,
+    "reviewTitle": "Helps with form",
+    "reviewText": "This sit-up assistant is helpful for maintaining proper form during ab workouts. Sturdy build and does the job well. Good addition to home gym.",
+    "reviewDate": "2025-10-21T09:00:00Z"
+  },
+  {
+    "reviewId": "REV041",
+    "productId": "GF001",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 5,
+    "reviewTitle": "Delicious gluten-free treat",
+    "reviewText": "These brownie chips are amazing! Perfect for my gluten-free diet. Great for baking or just snacking. Very tasty!",
+    "reviewDate": "2025-10-15T14:20:00Z"
+  },
+  {
+    "reviewId": "REV042",
+    "productId": "GF002",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 5,
+    "reviewTitle": "Best gluten-free flour",
+    "reviewText": "This cassava flour is excellent for baking! Works great in all my recipes. So happy to find a high-quality gluten-free option!",
+    "reviewDate": "2025-10-18T11:30:00Z"
+  },
+  {
+    "reviewId": "REV043",
+    "productId": "GF003",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 5,
+    "reviewTitle": "Tasty cookies",
+    "reviewText": "My daughter has celiac disease and she loves these cookies! They're crunchy and the chocolate chips are generous. Great gluten-free option!",
+    "reviewDate": "2025-10-12T15:45:00Z"
+  },
+  {
+    "reviewId": "REV044",
+    "productId": "GF004",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 4,
+    "reviewTitle": "Quick and tasty meal",
+    "reviewText": "These instant noodles are convenient and taste good. Perfect for busy days. Glad there's a gluten-free option that doesn't compromise on flavor!",
+    "reviewDate": "2025-10-20T13:10:00Z"
+  },
+  {
+    "reviewId": "REV045",
+    "productId": "GF005",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 5,
+    "reviewTitle": "Versatile baking flour",
+    "reviewText": "This multipurpose gluten-free flour is fantastic! I've used it for cakes, bread, and cookies - all turned out great. Highly recommend!",
+    "reviewDate": "2025-10-16T10:25:00Z"
+  },
+  {
+    "reviewId": "REV046",
+    "productId": "GF006",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 4,
+    "reviewTitle": "Tasty pizza crackers",
+    "reviewText": "These pizza-flavored crackers are really good! Great snack for when I'm craving pizza. Gluten-free and delicious. Would buy again!",
+    "reviewDate": "2025-10-14T12:50:00Z"
+  },
+  {
+    "reviewId": "REV047",
+    "productId": "GF007",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 5,
+    "reviewTitle": "Perfect breakfast oats",
+    "reviewText": "These gluten-free rolled oats are excellent! I have them every morning for breakfast. Great quality and very nutritious. Love them!",
+    "reviewDate": "2025-10-19T08:15:00Z"
+  },
+  {
+    "reviewId": "REV048",
+    "productId": "GF008",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 5,
+    "reviewTitle": "Great gluten-free soy sauce",
+    "reviewText": "Finally found a gluten-free soy sauce that tastes authentic! Use it in all my Asian cooking. Premium quality and flavor!",
+    "reviewDate": "2025-10-11T14:40:00Z"
+  },
+  {
+    "reviewId": "REV049",
+    "productId": "GF009",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 4,
+    "reviewTitle": "Healthy noodle option",
+    "reviewText": "These kale noodles are nutritious and taste good. Great for a balanced diet. A bit different from regular noodles but worth trying!",
+    "reviewDate": "2025-10-17T11:55:00Z"
+  },
+  {
+    "reviewId": "REV050",
+    "productId": "GF010",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 4,
+    "reviewTitle": "Classic crackers",
+    "reviewText": "These original crackers are perfect for snacking with cheese or spreads. Gluten-free and tasty. Keep them stocked in my pantry!",
+    "reviewDate": "2025-10-13T15:30:00Z"
+  },
+  {
+    "reviewId": "REV051",
+    "productId": "GL001",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 5,
+    "reviewTitle": "Authentic pizza taste",
+    "reviewText": "This Dr.Oetker pizza is delicious! Tastes authentic and cooks perfectly. Great for quick dinners when I don't feel like cooking. Highly recommend!",
+    "reviewDate": "2025-10-15T18:20:00Z"
+  },
+  {
+    "reviewId": "REV052",
+    "productId": "GL002",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 5,
+    "reviewTitle": "Perfect bagels",
+    "reviewText": "These hand-rolled bagels are amazing! Soft inside with a perfect crust. Love them for breakfast with cream cheese. Fresh and delicious!",
+    "reviewDate": "2025-10-18T08:45:00Z"
+  },
+  {
+    "reviewId": "REV053",
+    "productId": "GL003",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 4,
+    "reviewTitle": "Great for pastries",
+    "reviewText": "This puff pastry sheet works wonderfully! Flaky and buttery. I've made several desserts with it. Good quality and easy to work with.",
+    "reviewDate": "2025-10-12T16:10:00Z"
+  },
+  {
+    "reviewId": "REV054",
+    "productId": "GL004",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 5,
+    "reviewTitle": "Fresh sandwich bread",
+    "reviewText": "This sandwich bread is soft and fresh! Perfect for daily sandwiches and toast. Stays fresh for days. My go-to bread now!",
+    "reviewDate": "2025-10-20T09:30:00Z"
+  },
+  {
+    "reviewId": "REV055",
+    "productId": "HL001",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 5,
+    "reviewTitle": "Premium quality ghee",
+    "reviewText": "This Alzara ghee blend is excellent! Rich flavor and perfect for cooking. Fully Halal certified which is important to me. Highly recommend!",
+    "reviewDate": "2025-10-16T12:25:00Z"
+  },
+  {
+    "reviewId": "REV056",
+    "productId": "HL002",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 4,
+    "reviewTitle": "Convenient canned food",
+    "reviewText": "Good variety of Halal canned food. Very convenient for quick meals and meal prep. Quality is decent and prices are reasonable.",
+    "reviewDate": "2025-10-14T13:50:00Z"
+  },
+  {
+    "reviewId": "REV057",
+    "productId": "HL003",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 5,
+    "reviewTitle": "Authentic curry flavor",
+    "reviewText": "This chicken kurma is so flavorful! The spices are authentic and it's ready-to-cook. Makes dinner time so much easier. Delicious Halal option!",
+    "reviewDate": "2025-10-19T17:35:00Z"
+  },
+  {
+    "reviewId": "REV058",
+    "productId": "HL004",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 4,
+    "reviewTitle": "Healthy comfort food",
+    "reviewText": "This chicken porridge is comforting and healthy. Easy to prepare and tastes homemade. Perfect for when you're feeling under the weather!",
+    "reviewDate": "2025-10-11T10:15:00Z"
+  },
+  {
+    "reviewId": "REV059",
+    "productId": "HL005",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 5,
+    "reviewTitle": "Authentic Chinese dish",
+    "reviewText": "Love this Chinese Goreng Cina! Tastes authentic and is ready to cook in minutes. Great Halal option for Chinese food lovers. Will buy again!",
+    "reviewDate": "2025-10-17T18:45:00Z"
+  },
+  {
+    "reviewId": "REV060",
+    "productId": "HL006",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 5,
+    "reviewTitle": "High quality Halal beef",
+    "reviewText": "This Halal beef is top quality! Tender and fresh. Perfect for grilling and cooking traditional dishes. Very satisfied with this purchase!",
+    "reviewDate": "2025-10-22T14:20:00Z"
+  },
+  {
+    "reviewId": "REV061",
+    "productId": "HL007",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 5,
+    "reviewTitle": "Premium Halal lamb",
+    "reviewText": "Excellent quality lamb! The meat is tender and flavorful. Perfect for special occasions and traditional recipes. Worth the price!",
+    "reviewDate": "2025-10-15T16:50:00Z"
+  },
+  {
+    "reviewId": "REV062",
+    "productId": "HL008",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 4,
+    "reviewTitle": "Quality dried anchovies",
+    "reviewText": "Good quality ikan bilis. Perfect for Malaysian cooking. Clean and fresh. Use them regularly in my sambal and nasi lemak!",
+    "reviewDate": "2025-10-13T11:30:00Z"
+  },
+  {
+    "reviewId": "REV063",
+    "productId": "HL009",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 4,
+    "reviewTitle": "Quick side dish",
+    "reviewText": "These instant mashed potatoes are convenient and taste good. Great as a side dish for busy weeknights. Halal certified too!",
+    "reviewDate": "2025-10-20T12:40:00Z"
+  },
+  {
+    "reviewId": "REV064",
+    "productId": "HL010",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 5,
+    "reviewTitle": "Authentic sambal belacan",
+    "reviewText": "This sambal belacan is amazing! Traditional flavor that reminds me of home. Perfect addition to any Malaysian meal. Highly recommend!",
+    "reviewDate": "2025-10-18T13:55:00Z"
+  },
+  {
+    "reviewId": "REV065",
+    "productId": "HL011",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 5,
+    "reviewTitle": "Perfect curry spice",
+    "reviewText": "This gulai curry spice mix is authentic! Makes cooking Malaysian curry so easy. Great flavor and Halal certified. Keep it stocked in my kitchen!",
+    "reviewDate": "2025-10-16T15:20:00Z"
+  },
+  {
+    "reviewId": "REV066",
+    "productId": "NH001",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 5,
+    "reviewTitle": "Tender and flavorful",
+    "reviewText": "This braised pork belly is absolutely delicious! So tender and full of flavor. Perfect for main courses. One of the best I've tried!",
+    "reviewDate": "2025-10-21T17:30:00Z"
+  },
+  {
+    "reviewId": "REV067",
+    "productId": "NH002",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 4,
+    "reviewTitle": "Crispy snack",
+    "reviewText": "These crispy pork sticks are tasty! Great as an appetizer or snack. Nice crunch and good flavor. My guests loved them!",
+    "reviewDate": "2025-10-14T16:45:00Z"
+  },
+  {
+    "reviewId": "REV068",
+    "productId": "NH003",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 5,
+    "reviewTitle": "Delicious noodle dish",
+    "reviewText": "Love this minced pork noodle! Quick to prepare and tastes amazing. Perfect for lunch or dinner. Great value for money!",
+    "reviewDate": "2025-10-19T12:15:00Z"
+  },
+  {
+    "reviewId": "REV069",
+    "productId": "NH004",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 5,
+    "reviewTitle": "Best bak kwa ever!",
+    "reviewText": "This pork bak kwa is phenomenal! Sweet and savory perfection. Great for festive occasions or as a special treat. Worth every penny!",
+    "reviewDate": "2025-10-17T14:25:00Z"
+  },
+  {
+    "reviewId": "REV070",
+    "productId": "NH005",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 5,
+    "reviewTitle": "Quality pork jerky",
+    "reviewText": "High-quality pork jerky! Tender and flavorful. Perfect snack for road trips or work. Will definitely buy more!",
+    "reviewDate": "2025-10-15T13:50:00Z"
+  },
+  {
+    "reviewId": "REV071",
+    "productId": "NH006",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 4,
+    "reviewTitle": "Classic luncheon meat",
+    "reviewText": "Good quality pork luncheon meat. Perfect for quick breakfast or sandwiches. Tastes just like I remember. Always keep a can in my pantry!",
+    "reviewDate": "2025-10-12T09:20:00Z"
+  },
+  {
+    "reviewId": "REV072",
+    "productId": "NH007",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 5,
+    "reviewTitle": "Fresh minced pork",
+    "reviewText": "Fresh and high-quality minced pork. Great for making meatballs, dumplings, and various dishes. Will continue buying from here!",
+    "reviewDate": "2025-10-20T11:35:00Z"
+  },
+  {
+    "reviewId": "REV073",
+    "productId": "NH008",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 5,
+    "reviewTitle": "Tender pork ribs",
+    "reviewText": "These pork rib cubes are so tender! Perfect for stews and soups. The meat falls off the bone. Excellent quality!",
+    "reviewDate": "2025-10-18T15:40:00Z"
+  },
+  {
+    "reviewId": "REV074",
+    "productId": "NH009",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 5,
+    "reviewTitle": "Flavorful pork chops",
+    "reviewText": "These stewed pork chops are amazing! Full of flavor and very tender. Perfect for hearty family meals. Highly recommend!",
+    "reviewDate": "2025-10-16T17:55:00Z"
+  },
+  {
+    "reviewId": "REV075",
+    "productId": "NT001",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 5,
+    "reviewTitle": "Premium cashews",
+    "reviewText": "These cashew nuts are premium quality! Crunchy and fresh. Perfect for snacking or adding to dishes. Love them!",
+    "reviewDate": "2025-10-21T10:30:00Z"
+  },
+  {
+    "reviewId": "REV076",
+    "productId": "NT002",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 5,
+    "reviewTitle": "Healthy mix nuts",
+    "reviewText": "This mixed nuts pack is fantastic! Great variety and all fresh. Perfect healthy snack for work or home. Excellent value!",
+    "reviewDate": "2025-10-19T14:15:00Z"
+  },
+  {
+    "reviewId": "REV077",
+    "productId": "NT003",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 4,
+    "reviewTitle": "Crispy nut bars",
+    "reviewText": "These nut crisps are delicious! Crunchy and satisfying. Great healthy snack option. Wish they came in larger packs!",
+    "reviewDate": "2025-10-14T11:45:00Z"
+  },
+  {
+    "reviewId": "REV078",
+    "productId": "NT004",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 4,
+    "reviewTitle": "Classic salted peanuts",
+    "reviewText": "Good quality salted peanuts. Crunchy and well-seasoned. Great for snacking or cooking. Always have a pack at home!",
+    "reviewDate": "2025-10-17T13:25:00Z"
+  },
+  {
+    "reviewId": "REV079",
+    "productId": "NT005",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 5,
+    "reviewTitle": "Best walnuts",
+    "reviewText": "Premium quality walnuts! Fresh and crunchy. Perfect for baking and snacking. Love adding them to my morning oatmeal!",
+    "reviewDate": "2025-10-15T09:50:00Z"
+  },
+  {
+    "reviewId": "REV080",
+    "productId": "EG001",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 5,
+    "reviewTitle": "Best charging cable",
+    "reviewText": "This 3-in-1 cable is a lifesaver! Fast charging and durable. Can charge all my devices with one cable. Highly recommend!",
+    "reviewDate": "2025-10-22T14:40:00Z"
+  },
+  {
+    "reviewId": "REV081",
+    "productId": "EG002",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 5,
+    "reviewTitle": "Convenient wireless charging",
+    "reviewText": "Love this wireless charger! So convenient - just drop my phone on it and it charges. 15W fast charging works great. No more cable mess!",
+    "reviewDate": "2025-10-20T11:15:00Z"
+  },
+  {
+    "reviewId": "REV082",
+    "productId": "EG003",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 5,
+    "reviewTitle": "Amazing tablet",
+    "reviewText": "The iPad Air is fantastic! Beautiful display and powerful performance. Perfect for work and entertainment. Best purchase this year!",
+    "reviewDate": "2025-10-18T16:30:00Z"
+  },
+  {
+    "reviewId": "REV083",
+    "productId": "EG004",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 5,
+    "reviewTitle": "Best iPhone yet",
+    "reviewText": "The iPhone 14 Pro Max is incredible! Amazing camera system and battery life. Performance is top-notch. Worth the investment!",
+    "reviewDate": "2025-10-16T13:45:00Z"
+  },
+  {
+    "reviewId": "REV084",
+    "productId": "EG005",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 4,
+    "reviewTitle": "Luxurious phone case",
+    "reviewText": "This leather phone casing looks and feels premium. Great protection and style. The only downside is it adds some bulk to the phone.",
+    "reviewDate": "2025-10-14T10:20:00Z"
+  },
+  {
+    "reviewId": "REV085",
+    "productId": "EG006",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 5,
+    "reviewTitle": "Excellent gaming laptop",
+    "reviewText": "This MSI GF63 is a beast! Runs all my games smoothly. Great for productivity too. Battery life is decent. Very happy with this laptop!",
+    "reviewDate": "2025-10-19T15:55:00Z"
+  },
+  {
+    "reviewId": "REV086",
+    "productId": "EG007",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 5,
+    "reviewTitle": "Fast charging set",
+    "reviewText": "This PD fast charger set is amazing! Charges my devices so quickly. Multiple connectors make it very versatile. Great value!",
+    "reviewDate": "2025-10-17T12:10:00Z"
+  },
+  {
+    "reviewId": "REV087",
+    "productId": "EG008",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 5,
+    "reviewTitle": "Great wireless earphones",
+    "reviewText": "These TWS earphones are fantastic! Sound quality is excellent and battery lasts all day. Comfortable fit too. Highly recommend!",
+    "reviewDate": "2025-10-21T09:25:00Z"
+  },
+  {
+    "reviewId": "REV088",
+    "productId": "EG009",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 4,
+    "reviewTitle": "Good Type-C earphones",
+    "reviewText": "These Xiaomi earphones have clear audio and comfortable fit. Good for everyday use. Wish they had better bass though.",
+    "reviewDate": "2025-10-13T14:50:00Z"
+  },
+  {
+    "reviewId": "REV089",
+    "productId": "VG001",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 5,
+    "reviewTitle": "Delicious vegan chocolate",
+    "reviewText": "These plant-based chocolate morsels are amazing! Perfect for baking and snacking. Can't believe they're vegan - taste just like regular chocolate!",
+    "reviewDate": "2025-10-20T15:35:00Z"
+  },
+  {
+    "reviewId": "REV090",
+    "productId": "VG002",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 5,
+    "reviewTitle": "Creamy and comforting",
+    "reviewText": "This plant-based tomato soup is so creamy and delicious! Perfect for cold days. Love that it's vegan and healthy!",
+    "reviewDate": "2025-10-18T12:40:00Z"
+  },
+  {
+    "reviewId": "REV091",
+    "productId": "VG003",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 5,
+    "reviewTitle": "Excellent protein powder",
+    "reviewText": "This plant protein powder is top quality! Mixes well and tastes great in smoothies. Perfect for my vegan diet and workout routine!",
+    "reviewDate": "2025-10-16T08:15:00Z"
+  },
+  {
+    "reviewId": "REV092",
+    "productId": "VG004",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 4,
+    "reviewTitle": "Good vegan alternative",
+    "reviewText": "This vegan chicken essence is a nice plant-based alternative. Works well in soups and cooking. Flavor is good though different from traditional chicken essence.",
+    "reviewDate": "2025-10-14T11:30:00Z"
+  },
+  {
+    "reviewId": "REV093",
+    "productId": "VG005",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 5,
+    "reviewTitle": "Premium vegan chocolate",
+    "reviewText": "This vegan chocolate is absolutely delicious! Rich and smooth. Perfect for snacking or baking. My favorite vegan treat!",
+    "reviewDate": "2025-10-19T16:20:00Z"
+  },
+  {
+    "reviewId": "REV094",
+    "productId": "VG006",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 4,
+    "reviewTitle": "Tasty vegan kaya",
+    "reviewText": "This plant-based kaya tastes great on toast! Nice coconut flavor. Good vegan alternative to traditional kaya. Would buy again!",
+    "reviewDate": "2025-10-17T09:45:00Z"
+  },
+  {
+    "reviewId": "REV095",
+    "productId": "VG007",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 5,
+    "reviewTitle": "Beautiful vegan lipstick",
+    "reviewText": "Love this vegan lipstick! Long-lasting color and smooth application. Feels good knowing it's cruelty-free. Great pigmentation!",
+    "reviewDate": "2025-10-21T14:55:00Z"
+  },
+  {
+    "reviewId": "REV096",
+    "productId": "VG008",
+    "userName": "Lisa",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_2.jpg",
+    "rating": 4,
+    "reviewTitle": "Good meat alternative",
+    "reviewText": "This vegan luncheon meat is surprisingly good! Great texture and flavor. Perfect for sandwiches. Nice plant-based protein option!",
+    "reviewDate": "2025-10-15T13:10:00Z"
+  },
+  {
+    "reviewId": "REV097",
+    "productId": "VG009",
+    "userName": "John",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_1.jpg",
+    "rating": 5,
+    "reviewTitle": "Perfect protein bar",
+    "reviewText": "These vegan protein bars are fantastic! Nutritious and tasty. Perfect for post-workout or on-the-go snacking. Keep them in my gym bag!",
+    "reviewDate": "2025-10-22T10:30:00Z"
+  },
+  {
+    "reviewId": "REV098",
+    "productId": "VG010",
+    "userName": "Alice",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_3.jpg",
+    "rating": 5,
+    "reviewTitle": "Great seasoning",
+    "reviewText": "This vegetarian seasoning enhances all my dishes! Natural flavor and plant-based. Use it in almost everything I cook. Highly recommend!",
+    "reviewDate": "2025-10-18T11:40:00Z"
+  },
+  {
+    "reviewId": "REV123",
+    "productId": "CL001",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 5,
+    "reviewTitle": "Perfect fit",
+    "reviewText": "Finally found something that fits me perfectly. So comfortable and looks amazing.",
+    "reviewDate": "2025-10-26T00:00:00Z"
+  },
+  {
+    "reviewId": "REV124",
+    "productId": "CL001",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 3,
+    "reviewTitle": "Mixed feelings",
+    "reviewText": "Love the color, hate the fabric texture. It's a trade-off. Sizing is a bit off too.",
+    "reviewDate": "2025-10-29T00:00:00Z"
+  },
+  {
+    "reviewId": "REV125",
+    "productId": "CL001",
+    "userName": "Nancy",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_12.jpg",
+    "rating": 1,
+    "reviewTitle": "Don't buy this",
+    "reviewText": "Complete waste of money. The stitching is loose and the fabric is scratchy. Returning immediately.",
+    "reviewDate": "2025-10-22T00:00:00Z"
+  },
+  {
+    "reviewId": "REV126",
+    "productId": "CL001",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 2,
+    "reviewTitle": "Button fell off",
+    "reviewText": "Wore it once and a button already popped off. Poor construction for the cost.",
+    "reviewDate": "2025-10-24T00:00:00Z"
+  },
+  {
+    "reviewId": "REV127",
+    "productId": "CL002",
+    "userName": "Karen",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_11.jpg",
+    "rating": 2,
+    "reviewTitle": "Okay but has issues",
+    "reviewText": "The fit is weird. Tight in some places, loose in others. Material is just okay, nothing special. The lining feels very synthetic.",
+    "reviewDate": "2025-10-21T00:00:00Z"
+  },
+  {
+    "reviewId": "REV128",
+    "productId": "CL002",
+    "userName": "Mike",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_5.jpg",
+    "rating": 1,
+    "reviewTitle": "Damaged on arrival",
+    "reviewText": "Package arrived crushed and the item had a tear in the seam. Poor quality control. The lining feels very synthetic.",
+    "reviewDate": "2025-10-25T00:00:00Z"
+  },
+  {
+    "reviewId": "REV129",
+    "productId": "CL002",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 5,
+    "reviewTitle": "Best purchase ever",
+    "reviewText": "Worth every penny. The quality exceeds the price point. Will definitely buy more.",
+    "reviewDate": "2025-10-27T00:00:00Z"
+  },
+  {
+    "reviewId": "REV130",
+    "productId": "CL002",
+    "userName": "Mike",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_5.jpg",
+    "rating": 3,
+    "reviewTitle": "Mixed feelings",
+    "reviewText": "Love the color, hate the fabric texture. It's a trade-off. Sizing is a bit off too.",
+    "reviewDate": "2025-10-22T00:00:00Z"
+  },
+  {
+    "reviewId": "REV131",
+    "productId": "CL003",
+    "userName": "Mike",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_5.jpg",
+    "rating": 4,
+    "reviewTitle": "Almost perfect",
+    "reviewText": "Everything is great except the zipper feels a bit flimsy. Otherwise a solid purchase. Length is perfect for me.",
+    "reviewDate": "2025-10-29T00:00:00Z"
+  },
+  {
+    "reviewId": "REV132",
+    "productId": "CL003",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 3,
+    "reviewTitle": "Mixed feelings",
+    "reviewText": "Love the color, hate the fabric texture. It's a trade-off. Sizing is a bit off too. A bit tight around the waist.",
+    "reviewDate": "2025-10-12T00:00:00Z"
+  },
+  {
+    "reviewId": "REV133",
+    "productId": "CL003",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 1,
+    "reviewTitle": "Not true to size",
+    "reviewText": "Ordered my usual size and it's way too small. The sizing chart is misleading. Very disappointed. A bit tight around the waist.",
+    "reviewDate": "2025-10-29T00:00:00Z"
+  },
+  {
+    "reviewId": "REV134",
+    "productId": "CL003",
+    "userName": "Sarah",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_4.jpg",
+    "rating": 5,
+    "reviewTitle": "Highly recommended",
+    "reviewText": "Great product, fast shipping. The item is exactly as described. Very satisfied. Length is perfect for me.",
+    "reviewDate": "2025-10-20T00:00:00Z"
+  },
+  {
+    "reviewId": "REV135",
+    "productId": "CL004",
+    "userName": "Linda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_16.jpg",
+    "rating": 4,
+    "reviewTitle": "Great style",
+    "reviewText": "Looks exactly like the photos. Very stylish. Only giving 4 stars because it wrinkles easily.",
+    "reviewDate": "2025-10-29T00:00:00Z"
+  },
+  {
+    "reviewId": "REV136",
+    "productId": "CL004",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 5,
+    "reviewTitle": "Excellent!",
+    "reviewText": "Absolutely love this! High quality material and fits like a glove. Highly recommend.",
+    "reviewDate": "2025-10-23T00:00:00Z"
+  },
+  {
+    "reviewId": "REV137",
+    "productId": "CL004",
+    "userName": "Sarah",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_4.jpg",
+    "rating": 2,
+    "reviewTitle": "Shrunk after wash",
+    "reviewText": "Followed the care instructions but it still shrank significantly. Now it doesn't fit.",
+    "reviewDate": "2025-10-18T00:00:00Z"
+  },
+  {
+    "reviewId": "REV138",
+    "productId": "CL004",
+    "userName": "James",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_8.jpg",
+    "rating": 1,
+    "reviewTitle": "Don't buy this",
+    "reviewText": "Complete waste of money. The stitching is loose and the fabric is scratchy. Returning immediately.",
+    "reviewDate": "2025-10-25T00:00:00Z"
+  },
+  {
+    "reviewId": "REV139",
+    "productId": "CL005",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 4,
+    "reviewTitle": "Comfortable",
+    "reviewText": "Very comfortable to wear all day. Good value for money. Would buy again in another color. Length is perfect for me.",
+    "reviewDate": "2025-10-20T00:00:00Z"
+  },
+  {
+    "reviewId": "REV140",
+    "productId": "CL005",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 2,
+    "reviewTitle": "Too expensive",
+    "reviewText": "I like the style but the quality doesn't match the 75.0 price point. You're paying for the brand. A bit tight around the waist.",
+    "reviewDate": "2025-10-30T00:00:00Z"
+  },
+  {
+    "reviewId": "REV141",
+    "productId": "CL005",
+    "userName": "Sarah",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_4.jpg",
+    "rating": 5,
+    "reviewTitle": "Superb quality",
+    "reviewText": "The fabric feels premium and the stitching is perfect. Great value for 75.0. Length is perfect for me.",
+    "reviewDate": "2025-10-26T00:00:00Z"
+  },
+  {
+    "reviewId": "REV142",
+    "productId": "CL005",
+    "userName": "Robert",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_9.jpg",
+    "rating": 3,
+    "reviewTitle": "Good for the price",
+    "reviewText": "Considering it's relatively cheap, the quality is acceptable. Don't expect luxury. A bit tight around the waist.",
+    "reviewDate": "2025-10-30T00:00:00Z"
+  },
+  {
+    "reviewId": "REV143",
+    "productId": "CL006",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 2,
+    "reviewTitle": "Okay but has issues",
+    "reviewText": "The fit is weird. Tight in some places, loose in others. Material is just okay, nothing special.",
+    "reviewDate": "2025-10-18T00:00:00Z"
+  },
+  {
+    "reviewId": "REV144",
+    "productId": "CL006",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 4,
+    "reviewTitle": "Nice fit",
+    "reviewText": "Fits perfectly. The fabric quality is good. Arrived on time and well packaged.",
+    "reviewDate": "2025-10-15T00:00:00Z"
+  },
+  {
+    "reviewId": "REV145",
+    "productId": "CL006",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 1,
+    "reviewTitle": "Terrible quality",
+    "reviewText": "The material feels incredibly cheap for the price. I expected much better. It started pilling after one wash.",
+    "reviewDate": "2025-10-30T00:00:00Z"
+  },
+  {
+    "reviewId": "REV146",
+    "productId": "CL006",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 5,
+    "reviewTitle": "Excellent!",
+    "reviewText": "Absolutely love this! High quality material and fits like a glove. Highly recommend.",
+    "reviewDate": "2025-10-17T00:00:00Z"
+  },
+  {
+    "reviewId": "REV147",
+    "productId": "CL007",
+    "userName": "Linda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_16.jpg",
+    "rating": 2,
+    "reviewTitle": "Disappointed",
+    "reviewText": "It looks nice in the picture but the actual product is dull. Not worth the price tag. A bit tight around the waist.",
+    "reviewDate": "2025-10-30T00:00:00Z"
+  },
+  {
+    "reviewId": "REV148",
+    "productId": "CL007",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 3,
+    "reviewTitle": "Shipping took forever",
+    "reviewText": "Product is fine, but delivery took three weeks. Deducting stars for the service. A bit tight around the waist.",
+    "reviewDate": "2025-10-12T00:00:00Z"
+  },
+  {
+    "reviewId": "REV149",
+    "productId": "CL007",
+    "userName": "James",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_8.jpg",
+    "rating": 5,
+    "reviewTitle": "Highly recommended",
+    "reviewText": "Great product, fast shipping. The item is exactly as described. Very satisfied. Length is perfect for me.",
+    "reviewDate": "2025-10-17T00:00:00Z"
+  },
+  {
+    "reviewId": "REV150",
+    "productId": "CL007",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 4,
+    "reviewTitle": "Comfortable",
+    "reviewText": "Very comfortable to wear all day. Good value for money. Would buy again in another color. Length is perfect for me.",
+    "reviewDate": "2025-10-20T00:00:00Z"
+  },
+  {
+    "reviewId": "REV151",
+    "productId": "CL008",
+    "userName": "James",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_8.jpg",
+    "rating": 1,
+    "reviewTitle": "Not true to size",
+    "reviewText": "Ordered my usual size and it's way too small. The sizing chart is misleading. Very disappointed.",
+    "reviewDate": "2025-10-14T00:00:00Z"
+  },
+  {
+    "reviewId": "REV152",
+    "productId": "CL008",
+    "userName": "Linda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_16.jpg",
+    "rating": 3,
+    "reviewTitle": "Decent basic",
+    "reviewText": "A standard item. Nothing to write home about. Price is fair for what you get.",
+    "reviewDate": "2025-10-11T00:00:00Z"
+  },
+  {
+    "reviewId": "REV153",
+    "productId": "CL008",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 5,
+    "reviewTitle": "Excellent!",
+    "reviewText": "Absolutely love this! High quality material and fits like a glove. Highly recommend.",
+    "reviewDate": "2025-10-13T00:00:00Z"
+  },
+  {
+    "reviewId": "REV154",
+    "productId": "CL008",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 4,
+    "reviewTitle": "Nice fit",
+    "reviewText": "Fits perfectly. The fabric quality is good. Arrived on time and well packaged.",
+    "reviewDate": "2025-10-12T00:00:00Z"
+  },
+  {
+    "reviewId": "REV155",
+    "productId": "CL009",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 3,
+    "reviewTitle": "Good for the price",
+    "reviewText": "Considering it's relatively cheap, the quality is acceptable. Don't expect luxury. The fabric is too sheer.",
+    "reviewDate": "2025-10-25T00:00:00Z"
+  },
+  {
+    "reviewId": "REV156",
+    "productId": "CL009",
+    "userName": "James",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_8.jpg",
+    "rating": 5,
+    "reviewTitle": "Excellent!",
+    "reviewText": "Absolutely love this! High quality material and fits like a glove. Highly recommend. Very flattering cut.",
+    "reviewDate": "2025-10-14T00:00:00Z"
+  },
+  {
+    "reviewId": "REV157",
+    "productId": "CL009",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 1,
+    "reviewTitle": "Don't buy this",
+    "reviewText": "Complete waste of money. The stitching is loose and the fabric is scratchy. Returning immediately. The fabric is too sheer.",
+    "reviewDate": "2025-10-19T00:00:00Z"
+  },
+  {
+    "reviewId": "REV158",
+    "productId": "CL009",
+    "userName": "Mike",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_5.jpg",
+    "rating": 4,
+    "reviewTitle": "Great style",
+    "reviewText": "Looks exactly like the photos. Very stylish. Only giving 4 stars because it wrinkles easily. Very flattering cut.",
+    "reviewDate": "2025-10-13T00:00:00Z"
+  },
+  {
+    "reviewId": "REV159",
+    "productId": "CL010",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 1,
+    "reviewTitle": "Terrible quality",
+    "reviewText": "The material feels incredibly cheap for the price. I expected much better. It started pilling after one wash. A bit tight around the waist.",
+    "reviewDate": "2025-10-11T00:00:00Z"
+  },
+  {
+    "reviewId": "REV160",
+    "productId": "CL010",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 2,
+    "reviewTitle": "Shrunk after wash",
+    "reviewText": "Followed the care instructions but it still shrank significantly. Now it doesn't fit. A bit tight around the waist.",
+    "reviewDate": "2025-10-12T00:00:00Z"
+  },
+  {
+    "reviewId": "REV161",
+    "productId": "CL010",
+    "userName": "Robert",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_9.jpg",
+    "rating": 5,
+    "reviewTitle": "Superb quality",
+    "reviewText": "The fabric feels premium and the stitching is perfect. Great value for 89.0. Length is perfect for me.",
+    "reviewDate": "2025-10-13T00:00:00Z"
+  },
+  {
+    "reviewId": "REV162",
+    "productId": "CL010",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 4,
+    "reviewTitle": "Almost perfect",
+    "reviewText": "Everything is great except the zipper feels a bit flimsy. Otherwise a solid purchase. Length is perfect for me.",
+    "reviewDate": "2025-10-20T00:00:00Z"
+  },
+  {
+    "reviewId": "REV163",
+    "productId": "CL011",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 2,
+    "reviewTitle": "Shrunk after wash",
+    "reviewText": "Followed the care instructions but it still shrank significantly. Now it doesn't fit.",
+    "reviewDate": "2025-10-10T00:00:00Z"
+  },
+  {
+    "reviewId": "REV164",
+    "productId": "CL011",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 5,
+    "reviewTitle": "Perfect fit",
+    "reviewText": "Finally found something that fits me perfectly. So comfortable and looks amazing.",
+    "reviewDate": "2025-10-11T00:00:00Z"
+  },
+  {
+    "reviewId": "REV165",
+    "productId": "CL011",
+    "userName": "Linda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_16.jpg",
+    "rating": 4,
+    "reviewTitle": "Pretty good",
+    "reviewText": "I'm happy with this purchase. The material is soft and fits well. A bit pricey but worth it.",
+    "reviewDate": "2025-10-25T00:00:00Z"
+  },
+  {
+    "reviewId": "REV166",
+    "productId": "CL011",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 3,
+    "reviewTitle": "Mixed feelings",
+    "reviewText": "Love the color, hate the fabric texture. It's a trade-off. Sizing is a bit off too.",
+    "reviewDate": "2025-10-16T00:00:00Z"
+  },
+  {
+    "reviewId": "REV167",
+    "productId": "CL012",
+    "userName": "Mike",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_5.jpg",
+    "rating": 1,
+    "reviewTitle": "Damaged on arrival",
+    "reviewText": "Package arrived crushed and the item had a tear in the seam. Poor quality control.",
+    "reviewDate": "2025-10-10T00:00:00Z"
+  },
+  {
+    "reviewId": "REV168",
+    "productId": "CL012",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 5,
+    "reviewTitle": "Highly recommended",
+    "reviewText": "Great product, fast shipping. The item is exactly as described. Very satisfied.",
+    "reviewDate": "2025-10-16T00:00:00Z"
+  },
+  {
+    "reviewId": "REV169",
+    "productId": "CL012",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 3,
+    "reviewTitle": "Shipping took forever",
+    "reviewText": "Product is fine, but delivery took three weeks. Deducting stars for the service.",
+    "reviewDate": "2025-10-13T00:00:00Z"
+  },
+  {
+    "reviewId": "REV170",
+    "productId": "CL012",
+    "userName": "Robert",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_9.jpg",
+    "rating": 2,
+    "reviewTitle": "Okay but has issues",
+    "reviewText": "The fit is weird. Tight in some places, loose in others. Material is just okay, nothing special.",
+    "reviewDate": "2025-10-11T00:00:00Z"
+  },
+  {
+    "reviewId": "REV171",
+    "productId": "CL013",
+    "userName": "Nancy",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_12.jpg",
+    "rating": 2,
+    "reviewTitle": "Button fell off",
+    "reviewText": "Wore it once and a button already popped off. Poor construction for the cost.",
+    "reviewDate": "2025-10-10T00:00:00Z"
+  },
+  {
+    "reviewId": "REV172",
+    "productId": "CL013",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 4,
+    "reviewTitle": "Almost perfect",
+    "reviewText": "Everything is great except the zipper feels a bit flimsy. Otherwise a solid purchase.",
+    "reviewDate": "2025-10-19T00:00:00Z"
+  },
+  {
+    "reviewId": "REV173",
+    "productId": "CL013",
+    "userName": "Karen",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_11.jpg",
+    "rating": 3,
+    "reviewTitle": "Shipping took forever",
+    "reviewText": "Product is fine, but delivery took three weeks. Deducting stars for the service.",
+    "reviewDate": "2025-10-24T00:00:00Z"
+  },
+  {
+    "reviewId": "REV174",
+    "productId": "CL013",
+    "userName": "James",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_8.jpg",
+    "rating": 1,
+    "reviewTitle": "Don't buy this",
+    "reviewText": "Complete waste of money. The stitching is loose and the fabric is scratchy. Returning immediately.",
+    "reviewDate": "2025-10-13T00:00:00Z"
+  },
+  {
+    "reviewId": "REV175",
+    "productId": "DF001",
+    "userName": "Linda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_16.jpg",
+    "rating": 3,
+    "reviewTitle": "Average",
+    "reviewText": "Nothing special. Tastes like every other generic dairy-free brand. Price is fair I guess.",
+    "reviewDate": "2025-10-23T00:00:00Z"
+  },
+  {
+    "reviewId": "REV176",
+    "productId": "DF001",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 1,
+    "reviewTitle": "Arrived melted",
+    "reviewText": "Ordered online and it arrived completely crumbled. The box was warm. Unacceptable shipping.",
+    "reviewDate": "2025-10-30T00:00:00Z"
+  },
+  {
+    "reviewId": "REV177",
+    "productId": "DF001",
+    "userName": "Robert",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_9.jpg",
+    "rating": 2,
+    "reviewTitle": "Overpriced",
+    "reviewText": "Decent product but I can't justify paying 14.9 regularly. It's just too expensive for what it is.",
+    "reviewDate": "2025-10-12T00:00:00Z"
+  },
+  {
+    "reviewId": "REV178",
+    "productId": "DF001",
+    "userName": "Mike",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_5.jpg",
+    "rating": 5,
+    "reviewTitle": "Absolutely delicious!",
+    "reviewText": "You honestly can't tell it's dairy-free. So creamy and rich. Worth every cent. Perfect with tea.",
+    "reviewDate": "2025-10-28T00:00:00Z"
+  },
+  {
+    "reviewId": "REV179",
+    "productId": "DF002",
+    "userName": "Nancy",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_12.jpg",
+    "rating": 1,
+    "reviewTitle": "Weird texture",
+    "reviewText": "The texture is so chalky and gritty. It ruins the whole experience. Not worth the high price tag. It's just hard oil.",
+    "reviewDate": "2025-10-17T00:00:00Z"
+  },
+  {
+    "reviewId": "REV180",
+    "productId": "DF002",
+    "userName": "Tom",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_13.jpg",
+    "rating": 4,
+    "reviewTitle": "Great for lactose intolerance",
+    "reviewText": "Finally a product that doesn't upset my stomach and actually tastes good. A bit pricey though. Spreads straight out of the fridge.",
+    "reviewDate": "2025-10-28T00:00:00Z"
+  },
+  {
+    "reviewId": "REV181",
+    "productId": "DF002",
+    "userName": "Nancy",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_12.jpg",
+    "rating": 5,
+    "reviewTitle": "Game changer",
+    "reviewText": "Being vegan is so much easier with products like this. It's perfect for my morning routine. Spreads straight out of the fridge.",
+    "reviewDate": "2025-10-15T00:00:00Z"
+  },
+  {
+    "reviewId": "REV182",
+    "productId": "DF002",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 2,
+    "reviewTitle": "Disappointed",
+    "reviewText": "It's edible, but just barely. Has a very strong coconut aftertaste that overpowers everything. It's just hard oil.",
+    "reviewDate": "2025-10-11T00:00:00Z"
+  },
+  {
+    "reviewId": "REV183",
+    "productId": "DF003",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 3,
+    "reviewTitle": "Good for baking",
+    "reviewText": "Works fine in recipes but I wouldn't eat it on its own. Texture is a bit odd raw.",
+    "reviewDate": "2025-10-15T00:00:00Z"
+  },
+  {
+    "reviewId": "REV184",
+    "productId": "DF003",
+    "userName": "Nancy",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_12.jpg",
+    "rating": 2,
+    "reviewTitle": "Greasy",
+    "reviewText": "Very oily mouthfeel. It separates when you try to cook with it. Not a fan. It has a plastic-like texture.",
+    "reviewDate": "2025-10-26T00:00:00Z"
+  },
+  {
+    "reviewId": "REV185",
+    "productId": "DF003",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 5,
+    "reviewTitle": "Game changer",
+    "reviewText": "Being vegan is so much easier with products like this. It's perfect for my morning routine. Great for grilled cheese sandwiches.",
+    "reviewDate": "2025-10-10T00:00:00Z"
+  },
+  {
+    "reviewId": "REV186",
+    "productId": "DF003",
+    "userName": "James",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_8.jpg",
+    "rating": 4,
+    "reviewTitle": "Nice flavor",
+    "reviewText": "Really enjoy the flavor profile. Melts reasonably well. Would buy again on sale. Great for grilled cheese sandwiches.",
+    "reviewDate": "2025-10-12T00:00:00Z"
+  },
+  {
+    "reviewId": "REV187",
+    "productId": "DF004",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 5,
+    "reviewTitle": "Love it!",
+    "reviewText": "My kids even love it and they are picky eaters. Will definitely be a staple in our fridge. The flavor is so rich!",
+    "reviewDate": "2025-10-11T00:00:00Z"
+  },
+  {
+    "reviewId": "REV188",
+    "productId": "DF004",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 2,
+    "reviewTitle": "Greasy",
+    "reviewText": "Very oily mouthfeel. It separates when you try to cook with it. Not a fan. It was icy instead of creamy.",
+    "reviewDate": "2025-10-22T00:00:00Z"
+  },
+  {
+    "reviewId": "REV189",
+    "productId": "DF004",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 3,
+    "reviewTitle": "Mixed feelings",
+    "reviewText": "Taste is good but the consistency is too runny. Fix the texture and it would be perfect.",
+    "reviewDate": "2025-10-10T00:00:00Z"
+  },
+  {
+    "reviewId": "REV190",
+    "productId": "DF004",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 4,
+    "reviewTitle": "Nice flavor",
+    "reviewText": "Really enjoy the flavor profile. Melts reasonably well. Would buy again on sale. The flavor is so rich!",
+    "reviewDate": "2025-10-23T00:00:00Z"
+  },
+  {
+    "reviewId": "REV191",
+    "productId": "DF005",
+    "userName": "Tom",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_13.jpg",
+    "rating": 1,
+    "reviewTitle": "Arrived melted",
+    "reviewText": "Ordered online and it arrived completely melted. The cold pack was warm. Unacceptable shipping.",
+    "reviewDate": "2025-10-30T00:00:00Z"
+  },
+  {
+    "reviewId": "REV192",
+    "productId": "DF005",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 2,
+    "reviewTitle": "Greasy",
+    "reviewText": "Very oily mouthfeel. It separates when you try to cook with it. Not a fan.",
+    "reviewDate": "2025-10-15T00:00:00Z"
+  },
+  {
+    "reviewId": "REV193",
+    "productId": "DF005",
+    "userName": "James",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_8.jpg",
+    "rating": 5,
+    "reviewTitle": "Absolutely delicious!",
+    "reviewText": "You honestly can't tell it's dairy-free. So creamy and rich. Worth every cent. tangy and fresh.",
+    "reviewDate": "2025-10-19T00:00:00Z"
+  },
+  {
+    "reviewId": "REV194",
+    "productId": "DF005",
+    "userName": "Karen",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_11.jpg",
+    "rating": 3,
+    "reviewTitle": "It's okay",
+    "reviewText": "A decent alternative if you have allergies, but don't expect it to taste like dairy. It's passable.",
+    "reviewDate": "2025-10-28T00:00:00Z"
+  },
+  {
+    "reviewId": "REV195",
+    "productId": "DF006",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 5,
+    "reviewTitle": "Love it!",
+    "reviewText": "My kids even love it and they are picky eaters. Will definitely be a staple in our fridge.",
+    "reviewDate": "2025-10-16T00:00:00Z"
+  },
+  {
+    "reviewId": "REV196",
+    "productId": "DF006",
+    "userName": "Robert",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_9.jpg",
+    "rating": 1,
+    "reviewTitle": "Way too expensive",
+    "reviewText": "For the tiny portion you get, 16.9 is robbery. You can find better alternatives for half the price.",
+    "reviewDate": "2025-10-14T00:00:00Z"
+  },
+  {
+    "reviewId": "REV197",
+    "productId": "DF006",
+    "userName": "Mike",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_5.jpg",
+    "rating": 2,
+    "reviewTitle": "Greasy",
+    "reviewText": "Very oily mouthfeel. It separates when you try to cook with it. Not a fan.",
+    "reviewDate": "2025-10-15T00:00:00Z"
+  },
+  {
+    "reviewId": "REV198",
+    "productId": "DF006",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 4,
+    "reviewTitle": "Pretty good substitute",
+    "reviewText": "Surprisingly creamy. It's close to the real thing. A bit sweet but I like it.",
+    "reviewDate": "2025-10-20T00:00:00Z"
+  },
+  {
+    "reviewId": "REV199",
+    "productId": "EF001",
+    "userName": "Mike",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_5.jpg",
+    "rating": 4,
+    "reviewTitle": "Good eco option",
+    "reviewText": "Happy to reduce my waste. This product helps and works well enough. Held up well with hot food.",
+    "reviewDate": "2025-10-15T00:00:00Z"
+  },
+  {
+    "reviewId": "REV200",
+    "productId": "EF001",
+    "userName": "Robert",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_9.jpg",
+    "rating": 3,
+    "reviewTitle": "Decent alternative",
+    "reviewText": "A fair swap for plastic, but texture takes getting used to.",
+    "reviewDate": "2025-10-15T00:00:00Z"
+  },
+  {
+    "reviewId": "REV201",
+    "productId": "EF001",
+    "userName": "Tom",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_13.jpg",
+    "rating": 2,
+    "reviewTitle": "Disappointing",
+    "reviewText": "Smaller than expected and feels flimsy. Not worth the hype. Leaked soup everywhere.",
+    "reviewDate": "2025-10-22T00:00:00Z"
+  },
+  {
+    "reviewId": "REV202",
+    "productId": "EF001",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 1,
+    "reviewTitle": "Does not work",
+    "reviewText": "Simply doesn't do the job. I had to go back to my chemical cleaner/product to get it done. Leaked soup everywhere.",
+    "reviewDate": "2025-10-28T00:00:00Z"
+  },
+  {
+    "reviewId": "REV203",
+    "productId": "EF002",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 1,
+    "reviewTitle": "Does not work",
+    "reviewText": "Simply doesn't do the job. I had to go back to my chemical cleaner/product to get it done. Does not foam at all.",
+    "reviewDate": "2025-10-17T00:00:00Z"
+  },
+  {
+    "reviewId": "REV204",
+    "productId": "EF002",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 3,
+    "reviewTitle": "It's okay",
+    "reviewText": "Does the job but nothing spectacular. Good for the planet, average for me.",
+    "reviewDate": "2025-10-20T00:00:00Z"
+  },
+  {
+    "reviewId": "REV205",
+    "productId": "EF002",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 4,
+    "reviewTitle": "Almost perfect",
+    "reviewText": "Great product, just wish it came in a larger size/pack. Gentle on my sensitive skin.",
+    "reviewDate": "2025-10-15T00:00:00Z"
+  },
+  {
+    "reviewId": "REV206",
+    "productId": "EF002",
+    "userName": "Sarah",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_4.jpg",
+    "rating": 5,
+    "reviewTitle": "Perfect",
+    "reviewText": "Exactly what I was looking for. Sturdy, functional, and good for the earth. Gentle on my sensitive skin.",
+    "reviewDate": "2025-10-13T00:00:00Z"
+  },
+  {
+    "reviewId": "REV207",
+    "productId": "EF003",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 4,
+    "reviewTitle": "Good eco option",
+    "reviewText": "Happy to reduce my waste. This product helps and works well enough.",
+    "reviewDate": "2025-10-29T00:00:00Z"
+  },
+  {
+    "reviewId": "REV208",
+    "productId": "EF003",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 2,
+    "reviewTitle": "Not durable",
+    "reviewText": "It works okay at first but degrades way too fast. I expected it to last longer.",
+    "reviewDate": "2025-10-23T00:00:00Z"
+  },
+  {
+    "reviewId": "REV209",
+    "productId": "EF003",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 3,
+    "reviewTitle": "Mixed feelings",
+    "reviewText": "Love the concept, but the execution needs work. Effectiveness varies.",
+    "reviewDate": "2025-10-20T00:00:00Z"
+  },
+  {
+    "reviewId": "REV210",
+    "productId": "EF003",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 5,
+    "reviewTitle": "Highly recommend",
+    "reviewText": "If you're trying to go zero-waste, this is a must-have. Excellent durability.",
+    "reviewDate": "2025-10-27T00:00:00Z"
+  },
+  {
+    "reviewId": "REV211",
+    "productId": "EF004",
+    "userName": "Tom",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_13.jpg",
+    "rating": 2,
+    "reviewTitle": "Hard to use",
+    "reviewText": "Design is clunky. It's eco-friendly but washr-unfriendly. Does not foam at all.",
+    "reviewDate": "2025-10-18T00:00:00Z"
+  },
+  {
+    "reviewId": "REV212",
+    "productId": "EF004",
+    "userName": "Robert",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_9.jpg",
+    "rating": 3,
+    "reviewTitle": "Pricey",
+    "reviewText": "Good quality but hard to justify the price for daily use. Maybe for special occasions.",
+    "reviewDate": "2025-10-26T00:00:00Z"
+  },
+  {
+    "reviewId": "REV213",
+    "productId": "EF004",
+    "userName": "Linda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_16.jpg",
+    "rating": 4,
+    "reviewTitle": "Almost perfect",
+    "reviewText": "Great product, just wish it came in a larger size/pack. Gentle on my sensitive skin.",
+    "reviewDate": "2025-10-29T00:00:00Z"
+  },
+  {
+    "reviewId": "REV214",
+    "productId": "EF004",
+    "userName": "Mike",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_5.jpg",
+    "rating": 1,
+    "reviewTitle": "Does not work",
+    "reviewText": "Simply doesn't do the job. I had to go back to my chemical cleaner/product to get it done. Does not foam at all.",
+    "reviewDate": "2025-10-27T00:00:00Z"
+  },
+  {
+    "reviewId": "REV215",
+    "productId": "EF005",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 2,
+    "reviewTitle": "Hard to use",
+    "reviewText": "Design is clunky. It's eco-friendly but washr-unfriendly. Does not foam at all.",
+    "reviewDate": "2025-10-28T00:00:00Z"
+  },
+  {
+    "reviewId": "REV216",
+    "productId": "EF005",
+    "userName": "Sarah",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_4.jpg",
+    "rating": 5,
+    "reviewTitle": "Amazing product!",
+    "reviewText": "Finally an eco-friendly product that actually works better than the toxic stuff! Gentle on my sensitive skin.",
+    "reviewDate": "2025-10-11T00:00:00Z"
+  },
+  {
+    "reviewId": "REV217",
+    "productId": "EF005",
+    "userName": "Tom",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_13.jpg",
+    "rating": 1,
+    "reviewTitle": "Arrived damaged",
+    "reviewText": "Item was cracked/leaking upon arrival. Packaging was insufficient. Does not foam at all.",
+    "reviewDate": "2025-10-29T00:00:00Z"
+  },
+  {
+    "reviewId": "REV218",
+    "productId": "EF005",
+    "userName": "Linda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_16.jpg",
+    "rating": 4,
+    "reviewTitle": "Nice design",
+    "reviewText": "Looks great in my kitchen/home. Functional and aesthetic. Gentle on my sensitive skin.",
+    "reviewDate": "2025-10-12T00:00:00Z"
+  },
+  {
+    "reviewId": "REV219",
+    "productId": "EF006",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 2,
+    "reviewTitle": "Hard to use",
+    "reviewText": "Design is clunky. It's eco-friendly but user-unfriendly. It was too rough and scratchy.",
+    "reviewDate": "2025-10-11T00:00:00Z"
+  },
+  {
+    "reviewId": "REV220",
+    "productId": "EF006",
+    "userName": "Sarah",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_4.jpg",
+    "rating": 1,
+    "reviewTitle": "Fell apart instantly",
+    "reviewText": "Quality is terrible. It broke after one use. Not sustainable if I have to replace it immediately. It was too rough and scratchy.",
+    "reviewDate": "2025-10-15T00:00:00Z"
+  },
+  {
+    "reviewId": "REV221",
+    "productId": "EF006",
+    "userName": "David",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_7.jpg",
+    "rating": 4,
+    "reviewTitle": "Sturdy enough",
+    "reviewText": "Surprisingly durable for natural materials. Would recommend. Great exfoliation.",
+    "reviewDate": "2025-10-27T00:00:00Z"
+  },
+  {
+    "reviewId": "REV222",
+    "productId": "EF006",
+    "userName": "James",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_8.jpg",
+    "rating": 3,
+    "reviewTitle": "Mixed feelings",
+    "reviewText": "Love the concept, but the execution needs work. Effectiveness varies.",
+    "reviewDate": "2025-10-14T00:00:00Z"
+  },
+  {
+    "reviewId": "REV223",
+    "productId": "EF007",
+    "userName": "Mike",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_5.jpg",
+    "rating": 1,
+    "reviewTitle": "Fell apart instantly",
+    "reviewText": "Did not cure properly. Stayed sticky for days.",
+    "reviewDate": "2025-10-23T00:00:00Z"
+  },
+  {
+    "reviewId": "REV224",
+    "productId": "EF007",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 5,
+    "reviewTitle": "Highly recommend",
+    "reviewText": "If you're trying to go zero-waste, this is a must-have. Excellent durability. No toxic fumes which is a huge plus.",
+    "reviewDate": "2025-10-26T00:00:00Z"
+  },
+  {
+    "reviewId": "REV225",
+    "productId": "EF007",
+    "userName": "Linda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_16.jpg",
+    "rating": 2,
+    "reviewTitle": "Disappointing",
+    "reviewText": "Did not cure properly. Stayed sticky for days.",
+    "reviewDate": "2025-10-15T00:00:00Z"
+  },
+  {
+    "reviewId": "REV226",
+    "productId": "EF007",
+    "userName": "Tom",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_13.jpg",
+    "rating": 3,
+    "reviewTitle": "Pricey",
+    "reviewText": "Good quality but hard to justify the price for daily use. Maybe for special occasions.",
+    "reviewDate": "2025-10-14T00:00:00Z"
+  },
+  {
+    "reviewId": "REV227",
+    "productId": "EF008",
+    "userName": "Robert",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_9.jpg",
+    "rating": 3,
+    "reviewTitle": "It's okay",
+    "reviewText": "Does the job but nothing spectacular. Good for the planet, average for me.",
+    "reviewDate": "2025-10-19T00:00:00Z"
+  },
+  {
+    "reviewId": "REV228",
+    "productId": "EF008",
+    "userName": "James",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_8.jpg",
+    "rating": 4,
+    "reviewTitle": "Almost perfect",
+    "reviewText": "Great product, just wish it came in a larger size/pack. Very lightweight and easy to clean.",
+    "reviewDate": "2025-10-12T00:00:00Z"
+  },
+  {
+    "reviewId": "REV229",
+    "productId": "EF008",
+    "userName": "David",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_7.jpg",
+    "rating": 1,
+    "reviewTitle": "Arrived damaged",
+    "reviewText": "Item was cracked/leaking upon arrival. Packaging was insufficient. Stained immediately with turmeric/sauce.",
+    "reviewDate": "2025-10-23T00:00:00Z"
+  },
+  {
+    "reviewId": "REV230",
+    "productId": "EF008",
+    "userName": "Robert",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_9.jpg",
+    "rating": 5,
+    "reviewTitle": "Perfect",
+    "reviewText": "Exactly what I was looking for. Sturdy, functional, and good for the earth. Very lightweight and easy to clean.",
+    "reviewDate": "2025-10-25T00:00:00Z"
+  },
+  {
+    "reviewId": "REV231",
+    "productId": "EF009",
+    "userName": "James",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_8.jpg",
+    "rating": 2,
+    "reviewTitle": "Smell is awful",
+    "reviewText": "I appreciate natural ingredients but the smell is off-putting. Can't use it. Stained immediately with turmeric/sauce.",
+    "reviewDate": "2025-10-13T00:00:00Z"
+  },
+  {
+    "reviewId": "REV232",
+    "productId": "EF009",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 4,
+    "reviewTitle": "Gentle and effective",
+    "reviewText": "Works well and feels safe to use. A bit expensive but worth it for health. Very lightweight and easy to clean.",
+    "reviewDate": "2025-10-26T00:00:00Z"
+  },
+  {
+    "reviewId": "REV233",
+    "productId": "EF009",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 3,
+    "reviewTitle": "Mixed feelings",
+    "reviewText": "Love the concept, but the execution needs work. Effectiveness varies.",
+    "reviewDate": "2025-10-25T00:00:00Z"
+  },
+  {
+    "reviewId": "REV234",
+    "productId": "EF009",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 1,
+    "reviewTitle": "Arrived damaged",
+    "reviewText": "Item was cracked/leaking upon arrival. Packaging was insufficient. Stained immediately with turmeric/sauce.",
+    "reviewDate": "2025-10-21T00:00:00Z"
+  },
+  {
+    "reviewId": "REV235",
+    "productId": "FT001",
+    "userName": "Robert",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_9.jpg",
+    "rating": 3,
+    "reviewTitle": "Good for home",
+    "reviewText": "Fine for a quick home workout, but doesn't replace gym equipment.",
+    "reviewDate": "2025-10-20T00:00:00Z"
+  },
+  {
+    "reviewId": "REV236",
+    "productId": "FT001",
+    "userName": "Sarah",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_4.jpg",
+    "rating": 5,
+    "reviewTitle": "Love it!",
+    "reviewText": "Best fitness investment I've made. Sturdy, reliable, and effective. Grip knurling is perfect.",
+    "reviewDate": "2025-10-26T00:00:00Z"
+  },
+  {
+    "reviewId": "REV237",
+    "productId": "FT001",
+    "userName": "Mike",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_5.jpg",
+    "rating": 4,
+    "reviewTitle": "Effective",
+    "reviewText": "Really feel the burn using this. Good addition to my home gym. Grip knurling is perfect.",
+    "reviewDate": "2025-10-16T00:00:00Z"
+  },
+  {
+    "reviewId": "REV238",
+    "productId": "FT001",
+    "userName": "Robert",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_9.jpg",
+    "rating": 2,
+    "reviewTitle": "Wobbly",
+    "reviewText": "Doesn't feel stable/safe to use. I'm afraid to put my full weight on it. The rubber coating is peeling.",
+    "reviewDate": "2025-10-17T00:00:00Z"
+  },
+  {
+    "reviewId": "REV239",
+    "productId": "FT002",
+    "userName": "David",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_7.jpg",
+    "rating": 4,
+    "reviewTitle": "Nice design",
+    "reviewText": "Looks good and works well. Easy to store away. Runs smooth and quiet.",
+    "reviewDate": "2025-10-26T00:00:00Z"
+  },
+  {
+    "reviewId": "REV240",
+    "productId": "FT002",
+    "userName": "Mike",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_5.jpg",
+    "rating": 1,
+    "reviewTitle": "Waste of money",
+    "reviewText": "Cheap materials. It feels like a toy, not gym equipment. Returning it. The motor is extremely loud and belt slips.",
+    "reviewDate": "2025-10-12T00:00:00Z"
+  },
+  {
+    "reviewId": "REV241",
+    "productId": "FT002",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 5,
+    "reviewTitle": "Excellent quality",
+    "reviewText": "Professional gym quality at home. Worth every penny of the 1200.0. Runs smooth and quiet.",
+    "reviewDate": "2025-10-25T00:00:00Z"
+  },
+  {
+    "reviewId": "REV242",
+    "productId": "FT002",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 2,
+    "reviewTitle": "Hard to use",
+    "reviewText": "Instructions were unclear and it's difficult to set up correctly. The motor is extremely loud and belt slips.",
+    "reviewDate": "2025-10-25T00:00:00Z"
+  },
+  {
+    "reviewId": "REV243",
+    "productId": "FT003",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 4,
+    "reviewTitle": "Sturdy",
+    "reviewText": "Surprisingly heavy duty. Feels safe to use. Took a star off for slow shipping.",
+    "reviewDate": "2025-10-22T00:00:00Z"
+  },
+  {
+    "reviewId": "REV244",
+    "productId": "FT003",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 1,
+    "reviewTitle": "Does not work",
+    "reviewText": "Completely useless. Doesn't do what it advertises. 55.0 down the drain.",
+    "reviewDate": "2025-10-19T00:00:00Z"
+  },
+  {
+    "reviewId": "REV245",
+    "productId": "FT003",
+    "userName": "James",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_8.jpg",
+    "rating": 2,
+    "reviewTitle": "Uncomfortable",
+    "reviewText": "The grip is painful to hold. Poor ergonomic design.",
+    "reviewDate": "2025-10-24T00:00:00Z"
+  },
+  {
+    "reviewId": "REV246",
+    "productId": "FT003",
+    "userName": "Mike",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_5.jpg",
+    "rating": 5,
+    "reviewTitle": "Love it!",
+    "reviewText": "Best fitness investment I've made. Sturdy, reliable, and effective.",
+    "reviewDate": "2025-10-30T00:00:00Z"
+  },
+  {
+    "reviewId": "REV247",
+    "productId": "FT004",
+    "userName": "James",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_8.jpg",
+    "rating": 4,
+    "reviewTitle": "Sturdy",
+    "reviewText": "Surprisingly heavy duty. Feels safe to use. Took a star off for slow shipping. Fits my doorframe perfectly.",
+    "reviewDate": "2025-10-21T00:00:00Z"
+  },
+  {
+    "reviewId": "REV248",
+    "productId": "FT004",
+    "userName": "Nancy",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_12.jpg",
+    "rating": 1,
+    "reviewTitle": "Does not work",
+    "reviewText": "Completely useless. Doesn't do what it advertises. 89.0 down the drain. Left black marks/dents on my doorframe.",
+    "reviewDate": "2025-10-21T00:00:00Z"
+  },
+  {
+    "reviewId": "REV249",
+    "productId": "FT004",
+    "userName": "Robert",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_9.jpg",
+    "rating": 5,
+    "reviewTitle": "Game changer",
+    "reviewText": "Took my home workouts to the next level. Very satisfied. Fits my doorframe perfectly.",
+    "reviewDate": "2025-10-28T00:00:00Z"
+  },
+  {
+    "reviewId": "REV250",
+    "productId": "FT004",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 2,
+    "reviewTitle": "Not durable",
+    "reviewText": "Started showing wear after just one week. I don't think it will last. Left black marks/dents on my doorframe.",
+    "reviewDate": "2025-10-25T00:00:00Z"
+  },
+  {
+    "reviewId": "REV251",
+    "productId": "FT005",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 2,
+    "reviewTitle": "Hard to use",
+    "reviewText": "Instructions were unclear and it's difficult to set up correctly. Plastic feels very brittle.",
+    "reviewDate": "2025-10-27T00:00:00Z"
+  },
+  {
+    "reviewId": "REV252",
+    "productId": "FT005",
+    "userName": "Linda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_16.jpg",
+    "rating": 1,
+    "reviewTitle": "Dangerous product",
+    "reviewText": "It broke while I was using it and I almost got hurt. Very poor quality. Plastic feels very brittle.",
+    "reviewDate": "2025-10-24T00:00:00Z"
+  },
+  {
+    "reviewId": "REV253",
+    "productId": "FT005",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 4,
+    "reviewTitle": "Nice design",
+    "reviewText": "Looks good and works well. Easy to store away.",
+    "reviewDate": "2025-10-16T00:00:00Z"
+  },
+  {
+    "reviewId": "REV254",
+    "productId": "FT005",
+    "userName": "Mike",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_5.jpg",
+    "rating": 5,
+    "reviewTitle": "Highly recommend",
+    "reviewText": "Solid build, great grip, and works perfectly. 10/10.",
+    "reviewDate": "2025-10-10T00:00:00Z"
+  },
+  {
+    "reviewId": "REV255",
+    "productId": "FT006",
+    "userName": "Tom",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_13.jpg",
+    "rating": 3,
+    "reviewTitle": "Delivery issues",
+    "reviewText": "Product is fine, but shipping took forever and box was beat up.",
+    "reviewDate": "2025-10-18T00:00:00Z"
+  },
+  {
+    "reviewId": "REV256",
+    "productId": "FT006",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 5,
+    "reviewTitle": "Highly recommend",
+    "reviewText": "Solid build, great grip, and works perfectly. 10/10. Bearings rotate very smoothly.",
+    "reviewDate": "2025-10-25T00:00:00Z"
+  },
+  {
+    "reviewId": "REV257",
+    "productId": "FT006",
+    "userName": "David",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_7.jpg",
+    "rating": 1,
+    "reviewTitle": "Missing parts",
+    "reviewText": "Box arrived damaged and half the screws were missing. Can't even assemble it. The rope keeps tangling.",
+    "reviewDate": "2025-10-24T00:00:00Z"
+  },
+  {
+    "reviewId": "REV258",
+    "productId": "FT006",
+    "userName": "Robert",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_9.jpg",
+    "rating": 4,
+    "reviewTitle": "Effective",
+    "reviewText": "Really feel the burn using this. Good addition to my home gym. Bearings rotate very smoothly.",
+    "reviewDate": "2025-10-13T00:00:00Z"
+  },
+  {
+    "reviewId": "REV259",
+    "productId": "FT007",
+    "userName": "Mike",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_5.jpg",
+    "rating": 4,
+    "reviewTitle": "Sturdy",
+    "reviewText": "Surprisingly heavy duty. Feels safe to use. Took a star off for slow shipping. Great elasticity and hasn't stretched out.",
+    "reviewDate": "2025-10-21T00:00:00Z"
+  },
+  {
+    "reviewId": "REV260",
+    "productId": "FT007",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 2,
+    "reviewTitle": "Not durable",
+    "reviewText": "Snapped in the middle of a workout! Ouch.",
+    "reviewDate": "2025-10-14T00:00:00Z"
+  },
+  {
+    "reviewId": "REV261",
+    "productId": "FT007",
+    "userName": "Linda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_16.jpg",
+    "rating": 3,
+    "reviewTitle": "It's okay",
+    "reviewText": "Good for beginners maybe, but not for serious workouts. Price is fair.",
+    "reviewDate": "2025-10-11T00:00:00Z"
+  },
+  {
+    "reviewId": "REV262",
+    "productId": "FT007",
+    "userName": "Karen",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_11.jpg",
+    "rating": 5,
+    "reviewTitle": "Love it!",
+    "reviewText": "Best fitness investment I've made. Sturdy, reliable, and effective. Great elasticity and hasn't stretched out.",
+    "reviewDate": "2025-10-29T00:00:00Z"
+  },
+  {
+    "reviewId": "REV263",
+    "productId": "FT008",
+    "userName": "Nancy",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_12.jpg",
+    "rating": 4,
+    "reviewTitle": "Effective",
+    "reviewText": "Really feel the burn using this. Good addition to my home gym. Suction is super strong on my tile floor.",
+    "reviewDate": "2025-10-18T00:00:00Z"
+  },
+  {
+    "reviewId": "REV264",
+    "productId": "FT008",
+    "userName": "David",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_7.jpg",
+    "rating": 1,
+    "reviewTitle": "Missing parts",
+    "reviewText": "Suction cup does not stick to the floor at all. Useless.",
+    "reviewDate": "2025-10-30T00:00:00Z"
+  },
+  {
+    "reviewId": "REV265",
+    "productId": "FT008",
+    "userName": "Tom",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_13.jpg",
+    "rating": 3,
+    "reviewTitle": "Average",
+    "reviewText": "Does the job. Nothing special. You get what you pay for.",
+    "reviewDate": "2025-10-14T00:00:00Z"
+  },
+  {
+    "reviewId": "REV266",
+    "productId": "FT008",
+    "userName": "Nancy",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_12.jpg",
+    "rating": 5,
+    "reviewTitle": "Perfect",
+    "reviewText": "Exactly what I needed. Arrived fast and was easy to set up. Suction is super strong on my tile floor.",
+    "reviewDate": "2025-10-21T00:00:00Z"
+  },
+  {
+    "reviewId": "REV267",
+    "productId": "GF001",
+    "userName": "David",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_7.jpg",
+    "rating": 2,
+    "reviewTitle": "Dry and crumbly",
+    "reviewText": "Falls apart instantly. Impossible to bite without making a mess.",
+    "reviewDate": "2025-10-23T00:00:00Z"
+  },
+  {
+    "reviewId": "REV268",
+    "productId": "GF001",
+    "userName": "James",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_8.jpg",
+    "rating": 1,
+    "reviewTitle": "Not gluten-free?",
+    "reviewText": "I got sick after eating this. Cross-contamination risk? Be careful.",
+    "reviewDate": "2025-10-13T00:00:00Z"
+  },
+  {
+    "reviewId": "REV269",
+    "productId": "GF001",
+    "userName": "David",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_7.jpg",
+    "rating": 4,
+    "reviewTitle": "Good GF option",
+    "reviewText": "One of the better gluten-free products I've tried. Happy with it. Perfect with milk/coffee.",
+    "reviewDate": "2025-10-25T00:00:00Z"
+  },
+  {
+    "reviewId": "REV270",
+    "productId": "GF001",
+    "userName": "Tom",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_13.jpg",
+    "rating": 3,
+    "reviewTitle": "Mixed feelings",
+    "reviewText": "Good texture but bland flavor. Needs more seasoning.",
+    "reviewDate": "2025-10-18T00:00:00Z"
+  },
+  {
+    "reviewId": "REV271",
+    "productId": "GF002",
+    "userName": "Sarah",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_4.jpg",
+    "rating": 5,
+    "reviewTitle": "Love it",
+    "reviewText": "My new favorite snack. crunchy, flavorful, and healthy. Makes perfect fluffy pancakes.",
+    "reviewDate": "2025-10-19T00:00:00Z"
+  },
+  {
+    "reviewId": "REV272",
+    "productId": "GF002",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 2,
+    "reviewTitle": "Texture issues",
+    "reviewText": "Gummy and dense. Not like the real thing at all. My cake didn't rise at all.",
+    "reviewDate": "2025-10-13T00:00:00Z"
+  },
+  {
+    "reviewId": "REV273",
+    "productId": "GF002",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 3,
+    "reviewTitle": "Good for baking",
+    "reviewText": "Works fine in recipes but wouldn't eat it plain.",
+    "reviewDate": "2025-10-16T00:00:00Z"
+  },
+  {
+    "reviewId": "REV274",
+    "productId": "GF002",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 1,
+    "reviewTitle": "Broken pieces",
+    "reviewText": "The entire bag was just crumbs. Poor shipping/packaging. My cake didn't rise at all.",
+    "reviewDate": "2025-10-30T00:00:00Z"
+  },
+  {
+    "reviewId": "REV275",
+    "productId": "GF003",
+    "userName": "Sarah",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_4.jpg",
+    "rating": 2,
+    "reviewTitle": "Weird aftertaste",
+    "reviewText": "Has a strange metallic/chemical taste. Couldn't finish it.",
+    "reviewDate": "2025-10-23T00:00:00Z"
+  },
+  {
+    "reviewId": "REV276",
+    "productId": "GF003",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 1,
+    "reviewTitle": "Not gluten-free?",
+    "reviewText": "I got sick after eating this. Cross-contamination risk? Be careful.",
+    "reviewDate": "2025-10-13T00:00:00Z"
+  },
+  {
+    "reviewId": "REV277",
+    "productId": "GF003",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 5,
+    "reviewTitle": "Best I've found",
+    "reviewText": "Finally a GF product that actually tastes good. Highly recommend. Perfect with milk/coffee.",
+    "reviewDate": "2025-10-25T00:00:00Z"
+  },
+  {
+    "reviewId": "REV278",
+    "productId": "GF003",
+    "userName": "Karen",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_11.jpg",
+    "rating": 3,
+    "reviewTitle": "Small portion",
+    "reviewText": "Tastes good but the bag is mostly air.",
+    "reviewDate": "2025-10-25T00:00:00Z"
+  },
+  {
+    "reviewId": "REV279",
+    "productId": "GF004",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 5,
+    "reviewTitle": "Staple in my pantry",
+    "reviewText": "Buy this all the time. Never disappointed. Holds its shape well in soup.",
+    "reviewDate": "2025-10-11T00:00:00Z"
+  },
+  {
+    "reviewId": "REV280",
+    "productId": "GF004",
+    "userName": "Linda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_16.jpg",
+    "rating": 1,
+    "reviewTitle": "Way too expensive",
+    "reviewText": "Turned into mush when I boiled it. Texture is terrible.",
+    "reviewDate": "2025-10-27T00:00:00Z"
+  },
+  {
+    "reviewId": "REV281",
+    "productId": "GF004",
+    "userName": "James",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_8.jpg",
+    "rating": 2,
+    "reviewTitle": "Too salty/sweet",
+    "reviewText": "Turned into mush when I boiled it. Texture is terrible.",
+    "reviewDate": "2025-10-11T00:00:00Z"
+  },
+  {
+    "reviewId": "REV282",
+    "productId": "GF004",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 3,
+    "reviewTitle": "It's okay",
+    "reviewText": "Passable if you have celiac, but don't expect it to taste amazing.",
+    "reviewDate": "2025-10-21T00:00:00Z"
+  },
+  {
+    "reviewId": "REV283",
+    "productId": "GF005",
+    "userName": "Mike",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_5.jpg",
+    "rating": 5,
+    "reviewTitle": "Perfect",
+    "reviewText": "Exactly what I was looking for. Great quality and taste. Makes perfect fluffy pancakes.",
+    "reviewDate": "2025-10-28T00:00:00Z"
+  },
+  {
+    "reviewId": "REV284",
+    "productId": "GF005",
+    "userName": "James",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_8.jpg",
+    "rating": 3,
+    "reviewTitle": "It's okay",
+    "reviewText": "Passable if you have celiac, but don't expect it to taste amazing.",
+    "reviewDate": "2025-10-24T00:00:00Z"
+  },
+  {
+    "reviewId": "REV285",
+    "productId": "GF005",
+    "userName": "Linda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_16.jpg",
+    "rating": 1,
+    "reviewTitle": "Broken pieces",
+    "reviewText": "The entire bag was just crumbs. Poor shipping/packaging. My cake didn't rise at all.",
+    "reviewDate": "2025-10-26T00:00:00Z"
+  },
+  {
+    "reviewId": "REV286",
+    "productId": "GF005",
+    "userName": "Linda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_16.jpg",
+    "rating": 4,
+    "reviewTitle": "Convenient",
+    "reviewText": "Great for a quick snack/meal. Healthy ingredients. Makes perfect fluffy pancakes.",
+    "reviewDate": "2025-10-20T00:00:00Z"
+  },
+  {
+    "reviewId": "REV287",
+    "productId": "GF006",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 2,
+    "reviewTitle": "Too salty/sweet",
+    "reviewText": "Flavor balance is way off. Not enjoyable.",
+    "reviewDate": "2025-10-16T00:00:00Z"
+  },
+  {
+    "reviewId": "REV288",
+    "productId": "GF006",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 4,
+    "reviewTitle": "Convenient",
+    "reviewText": "Great for a quick snack/meal. Healthy ingredients.",
+    "reviewDate": "2025-10-13T00:00:00Z"
+  },
+  {
+    "reviewId": "REV289",
+    "productId": "GF006",
+    "userName": "David",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_7.jpg",
+    "rating": 3,
+    "reviewTitle": "Small portion",
+    "reviewText": "Tastes good but the bag is mostly air.",
+    "reviewDate": "2025-10-19T00:00:00Z"
+  },
+  {
+    "reviewId": "REV290",
+    "productId": "GF006",
+    "userName": "Nancy",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_12.jpg",
+    "rating": 5,
+    "reviewTitle": "Staple in my pantry",
+    "reviewText": "Buy this all the time. Never disappointed.",
+    "reviewDate": "2025-10-30T00:00:00Z"
+  },
+  {
+    "reviewId": "REV291",
+    "productId": "GF007",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 2,
+    "reviewTitle": "Overpriced",
+    "reviewText": "Decent product but not worth 12.5. Paying for the label.",
+    "reviewDate": "2025-10-14T00:00:00Z"
+  },
+  {
+    "reviewId": "REV292",
+    "productId": "GF007",
+    "userName": "Karen",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_11.jpg",
+    "rating": 4,
+    "reviewTitle": "Almost perfect",
+    "reviewText": "Would be 5 stars if it was a bit cheaper.",
+    "reviewDate": "2025-10-17T00:00:00Z"
+  },
+  {
+    "reviewId": "REV293",
+    "productId": "GF007",
+    "userName": "Tom",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_13.jpg",
+    "rating": 3,
+    "reviewTitle": "Average",
+    "reviewText": "Nothing special. There are better brands out there.",
+    "reviewDate": "2025-10-11T00:00:00Z"
+  },
+  {
+    "reviewId": "REV294",
+    "productId": "GF007",
+    "userName": "Nancy",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_12.jpg",
+    "rating": 1,
+    "reviewTitle": "Way too expensive",
+    "reviewText": "Tiny package for the price. 12.5 is ridiculous.",
+    "reviewDate": "2025-10-27T00:00:00Z"
+  },
+  {
+    "reviewId": "REV295",
+    "productId": "GF008",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 4,
+    "reviewTitle": "Tasty",
+    "reviewText": "Good flavor and crunch. A bit pricey but worth it for the quality. Tastes just like regular soy sauce.",
+    "reviewDate": "2025-10-22T00:00:00Z"
+  },
+  {
+    "reviewId": "REV296",
+    "productId": "GF008",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 1,
+    "reviewTitle": "Way too expensive",
+    "reviewText": "Too salty and lacks depth of flavor.",
+    "reviewDate": "2025-10-24T00:00:00Z"
+  },
+  {
+    "reviewId": "REV297",
+    "productId": "GF008",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 5,
+    "reviewTitle": "Perfect",
+    "reviewText": "Exactly what I was looking for. Great quality and taste. Tastes just like regular soy sauce.",
+    "reviewDate": "2025-10-11T00:00:00Z"
+  },
+  {
+    "reviewId": "REV298",
+    "productId": "GF008",
+    "userName": "Robert",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_9.jpg",
+    "rating": 2,
+    "reviewTitle": "Dry and crumbly",
+    "reviewText": "Too salty and lacks depth of flavor.",
+    "reviewDate": "2025-10-13T00:00:00Z"
+  },
+  {
+    "reviewId": "REV299",
+    "productId": "GF009",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 5,
+    "reviewTitle": "Perfect",
+    "reviewText": "Exactly what I was looking for. Great quality and taste. Holds its shape well in soup.",
+    "reviewDate": "2025-10-19T00:00:00Z"
+  },
+  {
+    "reviewId": "REV300",
+    "productId": "GF009",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 3,
+    "reviewTitle": "It's okay",
+    "reviewText": "Passable if you have celiac, but don't expect it to taste amazing.",
+    "reviewDate": "2025-10-17T00:00:00Z"
+  },
+  {
+    "reviewId": "REV301",
+    "productId": "GF009",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 2,
+    "reviewTitle": "Weird aftertaste",
+    "reviewText": "Turned into mush when I boiled it. Texture is terrible.",
+    "reviewDate": "2025-10-18T00:00:00Z"
+  },
+  {
+    "reviewId": "REV302",
+    "productId": "GF009",
+    "userName": "Nancy",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_12.jpg",
+    "rating": 4,
+    "reviewTitle": "Tasty",
+    "reviewText": "Good flavor and crunch. A bit pricey but worth it for the quality. Holds its shape well in soup.",
+    "reviewDate": "2025-10-17T00:00:00Z"
+  },
+  {
+    "reviewId": "REV303",
+    "productId": "GF010",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 4,
+    "reviewTitle": "Good GF option",
+    "reviewText": "One of the better gluten-free products I've tried. Happy with it.",
+    "reviewDate": "2025-10-14T00:00:00Z"
+  },
+  {
+    "reviewId": "REV304",
+    "productId": "GF010",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 1,
+    "reviewTitle": "Tastes awful",
+    "reviewText": "Texture is like cardboard and has no flavor. Very disappointing.",
+    "reviewDate": "2025-10-27T00:00:00Z"
+  },
+  {
+    "reviewId": "REV305",
+    "productId": "GF010",
+    "userName": "Linda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_16.jpg",
+    "rating": 2,
+    "reviewTitle": "Weird aftertaste",
+    "reviewText": "Has a strange metallic/chemical taste. Couldn't finish it.",
+    "reviewDate": "2025-10-17T00:00:00Z"
+  },
+  {
+    "reviewId": "REV306",
+    "productId": "GF010",
+    "userName": "Linda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_16.jpg",
+    "rating": 3,
+    "reviewTitle": "It's okay",
+    "reviewText": "Passable if you have celiac, but don't expect it to taste amazing.",
+    "reviewDate": "2025-10-10T00:00:00Z"
+  },
+  {
+    "reviewId": "REV307",
+    "productId": "GL001",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 4,
+    "reviewTitle": "Good quality",
+    "reviewText": "Fresh and tasty. Happy with the purchase. Crust was perfectly crispy.",
+    "reviewDate": "2025-10-19T00:00:00Z"
+  },
+  {
+    "reviewId": "REV308",
+    "productId": "GL001",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 3,
+    "reviewTitle": "Average",
+    "reviewText": "It's fine. Nothing special but gets the job done.",
+    "reviewDate": "2025-10-27T00:00:00Z"
+  },
+  {
+    "reviewId": "REV309",
+    "productId": "GL001",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 2,
+    "reviewTitle": "Small portion",
+    "reviewText": "Much smaller than expected. Not enough for a meal.",
+    "reviewDate": "2025-10-10T00:00:00Z"
+  },
+  {
+    "reviewId": "REV310",
+    "productId": "GL001",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 5,
+    "reviewTitle": "Delicious!",
+    "reviewText": "Tastes amazing! Fresh and high quality. Highly recommend. Crust was perfectly crispy.",
+    "reviewDate": "2025-10-24T00:00:00Z"
+  },
+  {
+    "reviewId": "REV311",
+    "productId": "GL002",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 4,
+    "reviewTitle": "Almost perfect",
+    "reviewText": "Great product, just wish it was a tiny bit cheaper. Great for sandwiches.",
+    "reviewDate": "2025-10-17T00:00:00Z"
+  },
+  {
+    "reviewId": "REV312",
+    "productId": "GL002",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 2,
+    "reviewTitle": "Dry texture",
+    "reviewText": "Very dry and hard to swallow. Needed a lot of water.",
+    "reviewDate": "2025-10-13T00:00:00Z"
+  },
+  {
+    "reviewId": "REV313",
+    "productId": "GL002",
+    "userName": "Mike",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_5.jpg",
+    "rating": 1,
+    "reviewTitle": "Damaged packaging",
+    "reviewText": "Box was crushed and product was smashed. Poor delivery.",
+    "reviewDate": "2025-10-14T00:00:00Z"
+  },
+  {
+    "reviewId": "REV314",
+    "productId": "GL002",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 3,
+    "reviewTitle": "Mixed feelings",
+    "reviewText": "Taste is good but texture is a bit off. Maybe I cooked it wrong?",
+    "reviewDate": "2025-10-18T00:00:00Z"
+  },
+  {
+    "reviewId": "REV315",
+    "productId": "GL003",
+    "userName": "Sarah",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_4.jpg",
+    "rating": 3,
+    "reviewTitle": "Good in a pinch",
+    "reviewText": "Okay for a quick meal but lacks homemade quality.",
+    "reviewDate": "2025-10-20T00:00:00Z"
+  },
+  {
+    "reviewId": "REV316",
+    "productId": "GL003",
+    "userName": "David",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_7.jpg",
+    "rating": 4,
+    "reviewTitle": "Good quality",
+    "reviewText": "Fresh and tasty. Happy with the purchase. Layers were incredibly flaky.",
+    "reviewDate": "2025-10-17T00:00:00Z"
+  },
+  {
+    "reviewId": "REV317",
+    "productId": "GL003",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 5,
+    "reviewTitle": "Family favorite",
+    "reviewText": "Everyone in the house loved it. Gone in minutes. Layers were incredibly flaky.",
+    "reviewDate": "2025-10-10T00:00:00Z"
+  },
+  {
+    "reviewId": "REV318",
+    "productId": "GL003",
+    "userName": "Sarah",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_4.jpg",
+    "rating": 2,
+    "reviewTitle": "Too salty/sweet",
+    "reviewText": "Did not puff up at all. Stayed flat and oily.",
+    "reviewDate": "2025-10-15T00:00:00Z"
+  },
+  {
+    "reviewId": "REV319",
+    "productId": "GL004",
+    "userName": "Nancy",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_12.jpg",
+    "rating": 3,
+    "reviewTitle": "Decent price",
+    "reviewText": "Fair quality for the price point. Would buy if on sale.",
+    "reviewDate": "2025-10-22T00:00:00Z"
+  },
+  {
+    "reviewId": "REV320",
+    "productId": "GL004",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 4,
+    "reviewTitle": "Flaky/Soft",
+    "reviewText": "Texture is spot on. Very enjoyable. Great for sandwiches.",
+    "reviewDate": "2025-10-30T00:00:00Z"
+  },
+  {
+    "reviewId": "REV321",
+    "productId": "GL004",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 1,
+    "reviewTitle": "Tasteless",
+    "reviewText": "Absolutely no flavor. Like eating air. Waste of money.",
+    "reviewDate": "2025-10-29T00:00:00Z"
+  },
+  {
+    "reviewId": "REV322",
+    "productId": "GL004",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 2,
+    "reviewTitle": "Soggy",
+    "reviewText": "Texture was hard and wet. Didn't bake right.",
+    "reviewDate": "2025-10-23T00:00:00Z"
+  },
+  {
+    "reviewId": "REV323",
+    "productId": "HL001",
+    "userName": "Karen",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_11.jpg",
+    "rating": 1,
+    "reviewTitle": "Not authentic",
+    "reviewText": "Does not taste like the real thing at all. Very artificial flavor.",
+    "reviewDate": "2025-10-14T00:00:00Z"
+  },
+  {
+    "reviewId": "REV324",
+    "productId": "HL001",
+    "userName": "James",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_8.jpg",
+    "rating": 4,
+    "reviewTitle": "Tasty",
+    "reviewText": "Really enjoyed the flavor. Authentic spices. Will buy again. Makes everything smell heavenly.",
+    "reviewDate": "2025-10-27T00:00:00Z"
+  },
+  {
+    "reviewId": "REV325",
+    "productId": "HL001",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 2,
+    "reviewTitle": "Bland",
+    "reviewText": "Lacks seasoning. Tastes like nothing. Disappointing.",
+    "reviewDate": "2025-10-30T00:00:00Z"
+  },
+  {
+    "reviewId": "REV326",
+    "productId": "HL001",
+    "userName": "Mike",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_5.jpg",
+    "rating": 3,
+    "reviewTitle": "Average",
+    "reviewText": "Standard taste. Nothing to rave about, nothing to complain about.",
+    "reviewDate": "2025-10-20T00:00:00Z"
+  },
+  {
+    "reviewId": "REV327",
+    "productId": "HL002",
+    "userName": "Tom",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_13.jpg",
+    "rating": 2,
+    "reviewTitle": "Too oily",
+    "reviewText": "Swimming in oil. Felt heavy and greasy after eating.",
+    "reviewDate": "2025-10-13T00:00:00Z"
+  },
+  {
+    "reviewId": "REV328",
+    "productId": "HL002",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 3,
+    "reviewTitle": "Mixed feelings",
+    "reviewText": "Sauce was good but the meat was tough. Hit or miss.",
+    "reviewDate": "2025-10-24T00:00:00Z"
+  },
+  {
+    "reviewId": "REV329",
+    "productId": "HL002",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 4,
+    "reviewTitle": "Convenient",
+    "reviewText": "Great for busy weeknights. Ready in minutes.",
+    "reviewDate": "2025-10-27T00:00:00Z"
+  },
+  {
+    "reviewId": "REV330",
+    "productId": "HL002",
+    "userName": "James",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_8.jpg",
+    "rating": 5,
+    "reviewTitle": "Delicious",
+    "reviewText": "My family loved it. Plate licked clean. 5 stars.",
+    "reviewDate": "2025-10-27T00:00:00Z"
+  },
+  {
+    "reviewId": "REV331",
+    "productId": "HL003",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 4,
+    "reviewTitle": "Nice aroma",
+    "reviewText": "Smells amazing while cooking. Tastes great too.",
+    "reviewDate": "2025-10-27T00:00:00Z"
+  },
+  {
+    "reviewId": "REV332",
+    "productId": "HL003",
+    "userName": "Karen",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_11.jpg",
+    "rating": 2,
+    "reviewTitle": "Overpriced",
+    "reviewText": "Decent flavor but portion is tiny for 15.9. Not worth it.",
+    "reviewDate": "2025-10-10T00:00:00Z"
+  },
+  {
+    "reviewId": "REV333",
+    "productId": "HL003",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 5,
+    "reviewTitle": "Authentic flavor!",
+    "reviewText": "Tastes just like home cooking. Absolutely delicious.",
+    "reviewDate": "2025-10-22T00:00:00Z"
+  },
+  {
+    "reviewId": "REV334",
+    "productId": "HL003",
+    "userName": "Mike",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_5.jpg",
+    "rating": 1,
+    "reviewTitle": "Tastes spoiled",
+    "reviewText": "Smelled off as soon as I opened it. Had to throw it away. Waste of money.",
+    "reviewDate": "2025-10-13T00:00:00Z"
+  },
+  {
+    "reviewId": "REV335",
+    "productId": "HL004",
+    "userName": "Robert",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_9.jpg",
+    "rating": 3,
+    "reviewTitle": "Delivery issues",
+    "reviewText": "Food is fine but arrived late and box was crushed.",
+    "reviewDate": "2025-10-19T00:00:00Z"
+  },
+  {
+    "reviewId": "REV336",
+    "productId": "HL004",
+    "userName": "Tom",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_13.jpg",
+    "rating": 1,
+    "reviewTitle": "Not authentic",
+    "reviewText": "Does not taste like the real thing at all. Very artificial flavor. Texture was like glue.",
+    "reviewDate": "2025-10-18T00:00:00Z"
+  },
+  {
+    "reviewId": "REV337",
+    "productId": "HL004",
+    "userName": "Sarah",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_4.jpg",
+    "rating": 2,
+    "reviewTitle": "Not fresh",
+    "reviewText": "Meat looked brown and old. Cooked it but didn't taste fresh. Texture was like glue.",
+    "reviewDate": "2025-10-27T00:00:00Z"
+  },
+  {
+    "reviewId": "REV338",
+    "productId": "HL004",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 5,
+    "reviewTitle": "Perfect",
+    "reviewText": "Exactly what I was looking for. Flavor is spot on. smooth and creamy.",
+    "reviewDate": "2025-10-23T00:00:00Z"
+  },
+  {
+    "reviewId": "REV339",
+    "productId": "HL005",
+    "userName": "Tom",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_13.jpg",
+    "rating": 3,
+    "reviewTitle": "Average",
+    "reviewText": "Standard taste. Nothing to rave about, nothing to complain about.",
+    "reviewDate": "2025-10-16T00:00:00Z"
+  },
+  {
+    "reviewId": "REV340",
+    "productId": "HL005",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 2,
+    "reviewTitle": "Weird texture",
+    "reviewText": "Mushy and unappetizing. Texture ruined the meal.",
+    "reviewDate": "2025-10-25T00:00:00Z"
+  },
+  {
+    "reviewId": "REV341",
+    "productId": "HL005",
+    "userName": "Tom",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_13.jpg",
+    "rating": 5,
+    "reviewTitle": "Perfect",
+    "reviewText": "Exactly what I was looking for. Flavor is spot on.",
+    "reviewDate": "2025-10-29T00:00:00Z"
+  },
+  {
+    "reviewId": "REV342",
+    "productId": "HL005",
+    "userName": "James",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_8.jpg",
+    "rating": 1,
+    "reviewTitle": "Tastes spoiled",
+    "reviewText": "Smelled off as soon as I opened it. Had to throw it away. Waste of money.",
+    "reviewDate": "2025-10-12T00:00:00Z"
+  },
+  {
+    "reviewId": "REV343",
+    "productId": "HL006",
+    "userName": "Nancy",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_12.jpg",
+    "rating": 1,
+    "reviewTitle": "Damaged packaging",
+    "reviewText": "Can was dented and leaking. Unsafe to eat. Refund please. Very tough and chewy.",
+    "reviewDate": "2025-10-19T00:00:00Z"
+  },
+  {
+    "reviewId": "REV344",
+    "productId": "HL006",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 5,
+    "reviewTitle": "Premium quality",
+    "reviewText": "You can tell they use high quality ingredients. Worth the extra cost. Meat was tender and juicy.",
+    "reviewDate": "2025-10-10T00:00:00Z"
+  },
+  {
+    "reviewId": "REV345",
+    "productId": "HL006",
+    "userName": "David",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_7.jpg",
+    "rating": 2,
+    "reviewTitle": "Too oily",
+    "reviewText": "Swimming in oil. Felt heavy and greasy after eating. Very tough and chewy.",
+    "reviewDate": "2025-10-19T00:00:00Z"
+  },
+  {
+    "reviewId": "REV346",
+    "productId": "HL006",
+    "userName": "Karen",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_11.jpg",
+    "rating": 3,
+    "reviewTitle": "It's edible",
+    "reviewText": "Okay for a quick meal when you're lazy, but don't expect gourmet.",
+    "reviewDate": "2025-10-25T00:00:00Z"
+  },
+  {
+    "reviewId": "REV347",
+    "productId": "HL007",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 1,
+    "reviewTitle": "Damaged packaging",
+    "reviewText": "Can was dented and leaking. Unsafe to eat. Refund please. Very tough and chewy.",
+    "reviewDate": "2025-10-16T00:00:00Z"
+  },
+  {
+    "reviewId": "REV348",
+    "productId": "HL007",
+    "userName": "Nancy",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_12.jpg",
+    "rating": 2,
+    "reviewTitle": "Weird texture",
+    "reviewText": "Mushy and unappetizing. Texture ruined the meal. Very tough and chewy.",
+    "reviewDate": "2025-10-17T00:00:00Z"
+  },
+  {
+    "reviewId": "REV349",
+    "productId": "HL007",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 3,
+    "reviewTitle": "Mixed feelings",
+    "reviewText": "Sauce was good but the meat was tough. Hit or miss.",
+    "reviewDate": "2025-10-20T00:00:00Z"
+  },
+  {
+    "reviewId": "REV350",
+    "productId": "HL007",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 4,
+    "reviewTitle": "Convenient",
+    "reviewText": "Great for busy weeknights. Ready in minutes. Meat was tender and juicy.",
+    "reviewDate": "2025-10-24T00:00:00Z"
+  },
+  {
+    "reviewId": "REV351",
+    "productId": "HL008",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 4,
+    "reviewTitle": "Good value",
+    "reviewText": "For the price, the quality is surprisingly good. Happy with purchase. Crunchy and clean.",
+    "reviewDate": "2025-10-16T00:00:00Z"
+  },
+  {
+    "reviewId": "REV352",
+    "productId": "HL008",
+    "userName": "Sarah",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_4.jpg",
+    "rating": 3,
+    "reviewTitle": "Mixed feelings",
+    "reviewText": "Sauce was good but the meat was tough. Hit or miss.",
+    "reviewDate": "2025-10-10T00:00:00Z"
+  },
+  {
+    "reviewId": "REV353",
+    "productId": "HL008",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 1,
+    "reviewTitle": "Not authentic",
+    "reviewText": "Does not taste like the real thing at all. Very artificial flavor.",
+    "reviewDate": "2025-10-21T00:00:00Z"
+  },
+  {
+    "reviewId": "REV354",
+    "productId": "HL008",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 2,
+    "reviewTitle": "Overpriced",
+    "reviewText": "Decent flavor but portion is tiny for 10.9. Not worth it.",
+    "reviewDate": "2025-10-20T00:00:00Z"
+  },
+  {
+    "reviewId": "REV355",
+    "productId": "HL009",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 3,
+    "reviewTitle": "Mixed feelings",
+    "reviewText": "Sauce was good but the meat was tough. Hit or miss.",
+    "reviewDate": "2025-10-20T00:00:00Z"
+  },
+  {
+    "reviewId": "REV356",
+    "productId": "HL009",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 1,
+    "reviewTitle": "Not authentic",
+    "reviewText": "Does not taste like the real thing at all. Very artificial flavor. Texture was like glue.",
+    "reviewDate": "2025-10-19T00:00:00Z"
+  },
+  {
+    "reviewId": "REV357",
+    "productId": "HL009",
+    "userName": "Robert",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_9.jpg",
+    "rating": 4,
+    "reviewTitle": "Nice aroma",
+    "reviewText": "Smells amazing while cooking. Tastes great too. smooth and creamy.",
+    "reviewDate": "2025-10-17T00:00:00Z"
+  },
+  {
+    "reviewId": "REV358",
+    "productId": "HL009",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 5,
+    "reviewTitle": "Highly recommend",
+    "reviewText": "Best Halal product I've found online. Will be a regular customer. smooth and creamy.",
+    "reviewDate": "2025-10-26T00:00:00Z"
+  },
+  {
+    "reviewId": "REV359",
+    "productId": "HL010",
+    "userName": "Linda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_16.jpg",
+    "rating": 3,
+    "reviewTitle": "Mixed feelings",
+    "reviewText": "Sauce was good but the meat was tough. Hit or miss.",
+    "reviewDate": "2025-10-14T00:00:00Z"
+  },
+  {
+    "reviewId": "REV360",
+    "productId": "HL010",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 1,
+    "reviewTitle": "Damaged packaging",
+    "reviewText": "Too spicy to eat! No flavor, just heat.",
+    "reviewDate": "2025-10-23T00:00:00Z"
+  },
+  {
+    "reviewId": "REV361",
+    "productId": "HL010",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 2,
+    "reviewTitle": "Weird texture",
+    "reviewText": "Too spicy to eat! No flavor, just heat.",
+    "reviewDate": "2025-10-18T00:00:00Z"
+  },
+  {
+    "reviewId": "REV362",
+    "productId": "HL010",
+    "userName": "Nancy",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_12.jpg",
+    "rating": 4,
+    "reviewTitle": "Convenient",
+    "reviewText": "Great for busy weeknights. Ready in minutes. Perfect balance of spice and savory.",
+    "reviewDate": "2025-10-10T00:00:00Z"
+  },
+  {
+    "reviewId": "REV363",
+    "productId": "HL011",
+    "userName": "David",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_7.jpg",
+    "rating": 2,
+    "reviewTitle": "Too oily",
+    "reviewText": "Too spicy to eat! No flavor, just heat.",
+    "reviewDate": "2025-10-19T00:00:00Z"
+  },
+  {
+    "reviewId": "REV364",
+    "productId": "HL011",
+    "userName": "Linda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_16.jpg",
+    "rating": 3,
+    "reviewTitle": "Mixed feelings",
+    "reviewText": "Sauce was good but the meat was tough. Hit or miss.",
+    "reviewDate": "2025-10-15T00:00:00Z"
+  },
+  {
+    "reviewId": "REV365",
+    "productId": "HL011",
+    "userName": "Mike",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_5.jpg",
+    "rating": 1,
+    "reviewTitle": "Damaged packaging",
+    "reviewText": "Too spicy to eat! No flavor, just heat.",
+    "reviewDate": "2025-10-27T00:00:00Z"
+  },
+  {
+    "reviewId": "REV366",
+    "productId": "HL011",
+    "userName": "Robert",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_9.jpg",
+    "rating": 4,
+    "reviewTitle": "Good value",
+    "reviewText": "For the price, the quality is surprisingly good. Happy with purchase. Perfect balance of spice and savory.",
+    "reviewDate": "2025-10-24T00:00:00Z"
+  },
+  {
+    "reviewId": "REV367",
+    "productId": "NH001",
+    "userName": "Linda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_16.jpg",
+    "rating": 2,
+    "reviewTitle": "Not like the photo",
+    "reviewText": "Looks nothing like the picture. Very unappetizing in person. Way too greasy.",
+    "reviewDate": "2025-10-21T00:00:00Z"
+  },
+  {
+    "reviewId": "REV368",
+    "productId": "NH001",
+    "userName": "Karen",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_11.jpg",
+    "rating": 5,
+    "reviewTitle": "Perfect",
+    "reviewText": "Exactly what I was craving. Will definitely be a regular customer. The fat rendered perfectly. Melt in your mouth.",
+    "reviewDate": "2025-10-10T00:00:00Z"
+  },
+  {
+    "reviewId": "REV369",
+    "productId": "NH001",
+    "userName": "Karen",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_11.jpg",
+    "rating": 4,
+    "reviewTitle": "Tasty",
+    "reviewText": "Good flavor and texture. A bit pricey but worth it occasionally. The fat rendered perfectly. Melt in your mouth.",
+    "reviewDate": "2025-10-11T00:00:00Z"
+  },
+  {
+    "reviewId": "REV370",
+    "productId": "NH001",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 3,
+    "reviewTitle": "Convenient",
+    "reviewText": "Good to have in the freezer/pantry but wouldn't serve to guests.",
+    "reviewDate": "2025-10-16T00:00:00Z"
+  },
+  {
+    "reviewId": "REV371",
+    "productId": "NH002",
+    "userName": "Karen",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_11.jpg",
+    "rating": 4,
+    "reviewTitle": "Good quality",
+    "reviewText": "Fresh and well-packaged. Cooked up nicely. Super crunchy and addictive.",
+    "reviewDate": "2025-10-28T00:00:00Z"
+  },
+  {
+    "reviewId": "REV372",
+    "productId": "NH002",
+    "userName": "Karen",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_11.jpg",
+    "rating": 1,
+    "reviewTitle": "Not fresh",
+    "reviewText": "Not crispy at all. Stale and soft.",
+    "reviewDate": "2025-10-24T00:00:00Z"
+  },
+  {
+    "reviewId": "REV373",
+    "productId": "NH002",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 2,
+    "reviewTitle": "Greasy",
+    "reviewText": "Not crispy at all. Stale and soft.",
+    "reviewDate": "2025-10-17T00:00:00Z"
+  },
+  {
+    "reviewId": "REV374",
+    "productId": "NH002",
+    "userName": "Robert",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_9.jpg",
+    "rating": 5,
+    "reviewTitle": "Highly recommend",
+    "reviewText": "If you love pork, you need to try this. 10/10. Super crunchy and addictive.",
+    "reviewDate": "2025-10-11T00:00:00Z"
+  },
+  {
+    "reviewId": "REV375",
+    "productId": "NH003",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 3,
+    "reviewTitle": "Delivery issues",
+    "reviewText": "Product is fine, but arrived late and slightly thawed.",
+    "reviewDate": "2025-10-15T00:00:00Z"
+  },
+  {
+    "reviewId": "REV376",
+    "productId": "NH003",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 1,
+    "reviewTitle": "Expensive for nothing",
+    "reviewText": "Noodles were soggy and meat was scarce.",
+    "reviewDate": "2025-10-16T00:00:00Z"
+  },
+  {
+    "reviewId": "REV377",
+    "productId": "NH003",
+    "userName": "Sarah",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_4.jpg",
+    "rating": 5,
+    "reviewTitle": "Highly recommend",
+    "reviewText": "If you love pork, you need to try this. 10/10. Sauce coated the noodles perfectly.",
+    "reviewDate": "2025-10-29T00:00:00Z"
+  },
+  {
+    "reviewId": "REV378",
+    "productId": "NH003",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 4,
+    "reviewTitle": "Nice and tender",
+    "reviewText": "Meat fell off the bone. Sauce was delicious. Will buy again. Sauce coated the noodles perfectly.",
+    "reviewDate": "2025-10-15T00:00:00Z"
+  },
+  {
+    "reviewId": "REV379",
+    "productId": "NH004",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 2,
+    "reviewTitle": "Not like the photo",
+    "reviewText": "Looks nothing like the picture. Very unappetizing in person. Nearly broke a tooth.",
+    "reviewDate": "2025-10-16T00:00:00Z"
+  },
+  {
+    "reviewId": "REV380",
+    "productId": "NH004",
+    "userName": "David",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_7.jpg",
+    "rating": 1,
+    "reviewTitle": "Way too salty",
+    "reviewText": "Inedible. I drank a gallon of water after one bite. Dangerous salt levels. Nearly broke a tooth.",
+    "reviewDate": "2025-10-30T00:00:00Z"
+  },
+  {
+    "reviewId": "REV381",
+    "productId": "NH004",
+    "userName": "David",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_7.jpg",
+    "rating": 5,
+    "reviewTitle": "Highly recommend",
+    "reviewText": "If you love pork, you need to try this. 10/10. Nice smoky aroma.",
+    "reviewDate": "2025-10-27T00:00:00Z"
+  },
+  {
+    "reviewId": "REV382",
+    "productId": "NH004",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 4,
+    "reviewTitle": "Good quality",
+    "reviewText": "Fresh and well-packaged. Cooked up nicely. Nice smoky aroma.",
+    "reviewDate": "2025-10-17T00:00:00Z"
+  },
+  {
+    "reviewId": "REV383",
+    "productId": "NH005",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 3,
+    "reviewTitle": "Delivery issues",
+    "reviewText": "Product is fine, but arrived late and slightly thawed.",
+    "reviewDate": "2025-10-28T00:00:00Z"
+  },
+  {
+    "reviewId": "REV384",
+    "productId": "NH005",
+    "userName": "Linda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_16.jpg",
+    "rating": 4,
+    "reviewTitle": "Good quality",
+    "reviewText": "Fresh and well-packaged. Cooked up nicely. Nice smoky aroma.",
+    "reviewDate": "2025-10-13T00:00:00Z"
+  },
+  {
+    "reviewId": "REV385",
+    "productId": "NH005",
+    "userName": "Sarah",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_4.jpg",
+    "rating": 1,
+    "reviewTitle": "Way too salty",
+    "reviewText": "Inedible. I drank a gallon of water after one bite. Dangerous salt levels. Nearly broke a tooth.",
+    "reviewDate": "2025-10-22T00:00:00Z"
+  },
+  {
+    "reviewId": "REV386",
+    "productId": "NH005",
+    "userName": "Robert",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_9.jpg",
+    "rating": 5,
+    "reviewTitle": "Delicious!",
+    "reviewText": "Best pork I've ever bought online. Juicy, flavorful, and tender. Nice smoky aroma.",
+    "reviewDate": "2025-10-23T00:00:00Z"
+  },
+  {
+    "reviewId": "REV387",
+    "productId": "NH006",
+    "userName": "David",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_7.jpg",
+    "rating": 3,
+    "reviewTitle": "Average",
+    "reviewText": "Standard pork product. Nothing special. Decent price.",
+    "reviewDate": "2025-10-26T00:00:00Z"
+  },
+  {
+    "reviewId": "REV388",
+    "productId": "NH006",
+    "userName": "Nancy",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_12.jpg",
+    "rating": 5,
+    "reviewTitle": "Delicious!",
+    "reviewText": "Best pork I've ever bought online. Juicy, flavorful, and tender.",
+    "reviewDate": "2025-10-12T00:00:00Z"
+  },
+  {
+    "reviewId": "REV389",
+    "productId": "NH006",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 4,
+    "reviewTitle": "Nice and tender",
+    "reviewText": "Meat fell off the bone. Sauce was delicious. Will buy again.",
+    "reviewDate": "2025-10-27T00:00:00Z"
+  },
+  {
+    "reviewId": "REV390",
+    "productId": "NH006",
+    "userName": "Mike",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_5.jpg",
+    "rating": 2,
+    "reviewTitle": "Too sweet",
+    "reviewText": "Sauce was cloyingly sweet. Ruined the meat flavor.",
+    "reviewDate": "2025-10-14T00:00:00Z"
+  },
+  {
+    "reviewId": "REV391",
+    "productId": "NH007",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 3,
+    "reviewTitle": "Mixed feelings",
+    "reviewText": "Flavor is good but texture is a bit weird. Maybe processed too much?",
+    "reviewDate": "2025-10-27T00:00:00Z"
+  },
+  {
+    "reviewId": "REV392",
+    "productId": "NH007",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 5,
+    "reviewTitle": "Delicious!",
+    "reviewText": "Best pork I've ever bought online. Juicy, flavorful, and tender.",
+    "reviewDate": "2025-10-21T00:00:00Z"
+  },
+  {
+    "reviewId": "REV393",
+    "productId": "NH007",
+    "userName": "Nancy",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_12.jpg",
+    "rating": 2,
+    "reviewTitle": "Not like the photo",
+    "reviewText": "Looks nothing like the picture. Very unappetizing in person.",
+    "reviewDate": "2025-10-14T00:00:00Z"
+  },
+  {
+    "reviewId": "REV394",
+    "productId": "NH007",
+    "userName": "Robert",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_9.jpg",
+    "rating": 4,
+    "reviewTitle": "Good quality",
+    "reviewText": "Fresh and well-packaged. Cooked up nicely.",
+    "reviewDate": "2025-10-30T00:00:00Z"
+  },
+  {
+    "reviewId": "REV395",
+    "productId": "NH008",
+    "userName": "James",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_8.jpg",
+    "rating": 2,
+    "reviewTitle": "Not like the photo",
+    "reviewText": "Looks nothing like the picture. Very unappetizing in person.",
+    "reviewDate": "2025-10-21T00:00:00Z"
+  },
+  {
+    "reviewId": "REV396",
+    "productId": "NH008",
+    "userName": "David",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_7.jpg",
+    "rating": 1,
+    "reviewTitle": "Expensive for nothing",
+    "reviewText": "Tiny portion for the price. I feel ripped off.",
+    "reviewDate": "2025-10-30T00:00:00Z"
+  },
+  {
+    "reviewId": "REV397",
+    "productId": "NH008",
+    "userName": "Tom",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_13.jpg",
+    "rating": 5,
+    "reviewTitle": "Delicious!",
+    "reviewText": "Best pork I've ever bought online. Juicy, flavorful, and tender.",
+    "reviewDate": "2025-10-21T00:00:00Z"
+  },
+  {
+    "reviewId": "REV398",
+    "productId": "NH008",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 3,
+    "reviewTitle": "Delivery issues",
+    "reviewText": "Product is fine, but arrived late and slightly thawed.",
+    "reviewDate": "2025-10-11T00:00:00Z"
+  },
+  {
+    "reviewId": "REV399",
+    "productId": "NH009",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 5,
+    "reviewTitle": "Highly recommend",
+    "reviewText": "If you love pork, you need to try this. 10/10.",
+    "reviewDate": "2025-10-29T00:00:00Z"
+  },
+  {
+    "reviewId": "REV400",
+    "productId": "NH009",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 4,
+    "reviewTitle": "Authentic taste",
+    "reviewText": "Reminds me of my grandma's cooking. Very comforting.",
+    "reviewDate": "2025-10-26T00:00:00Z"
+  },
+  {
+    "reviewId": "REV401",
+    "productId": "NH009",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 3,
+    "reviewTitle": "Mixed feelings",
+    "reviewText": "Flavor is good but texture is a bit weird. Maybe processed too much?",
+    "reviewDate": "2025-10-13T00:00:00Z"
+  },
+  {
+    "reviewId": "REV402",
+    "productId": "NH009",
+    "userName": "Nancy",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_12.jpg",
+    "rating": 2,
+    "reviewTitle": "Small portion",
+    "reviewText": "Tastes okay but the portion is laughable for 28.9.",
+    "reviewDate": "2025-10-23T00:00:00Z"
+  },
+  {
+    "reviewId": "REV403",
+    "productId": "NT001",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 4,
+    "reviewTitle": "Healthy option",
+    "reviewText": "Love having a healthy snack on hand. Will buy again. Creamy and rich flavor.",
+    "reviewDate": "2025-10-11T00:00:00Z"
+  },
+  {
+    "reviewId": "REV404",
+    "productId": "NT001",
+    "userName": "David",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_7.jpg",
+    "rating": 1,
+    "reviewTitle": "Small pieces",
+    "reviewText": "Mostly broken crumbs and dust. Very poor quality.",
+    "reviewDate": "2025-10-14T00:00:00Z"
+  },
+  {
+    "reviewId": "REV405",
+    "productId": "NT001",
+    "userName": "Linda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_16.jpg",
+    "rating": 3,
+    "reviewTitle": "Good for baking",
+    "reviewText": "Fine for cooking but wouldn't eat them plain.",
+    "reviewDate": "2025-10-12T00:00:00Z"
+  },
+  {
+    "reviewId": "REV406",
+    "productId": "NT001",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 5,
+    "reviewTitle": "Perfect roast",
+    "reviewText": "Roasted to perfection. Not burnt, not raw. Just right. Creamy and rich flavor.",
+    "reviewDate": "2025-10-27T00:00:00Z"
+  },
+  {
+    "reviewId": "REV407",
+    "productId": "NT002",
+    "userName": "David",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_7.jpg",
+    "rating": 3,
+    "reviewTitle": "Mixed feelings",
+    "reviewText": "Taste is good but texture is a bit weird. Maybe roasted too long?",
+    "reviewDate": "2025-10-21T00:00:00Z"
+  },
+  {
+    "reviewId": "REV408",
+    "productId": "NT002",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 4,
+    "reviewTitle": "Healthy option",
+    "reviewText": "Love having a healthy snack on hand. Will buy again. Perfect balance of sweet and salty.",
+    "reviewDate": "2025-10-12T00:00:00Z"
+  },
+  {
+    "reviewId": "REV409",
+    "productId": "NT002",
+    "userName": "Robert",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_9.jpg",
+    "rating": 5,
+    "reviewTitle": "Perfect roast",
+    "reviewText": "Roasted to perfection. Not burnt, not raw. Just right. Perfect balance of sweet and salty.",
+    "reviewDate": "2025-10-30T00:00:00Z"
+  },
+  {
+    "reviewId": "REV410",
+    "productId": "NT002",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 1,
+    "reviewTitle": "Stale nuts",
+    "reviewText": "Just peanuts and raisins. Where are the cashews?",
+    "reviewDate": "2025-10-10T00:00:00Z"
+  },
+  {
+    "reviewId": "REV411",
+    "productId": "NT003",
+    "userName": "Karen",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_11.jpg",
+    "rating": 3,
+    "reviewTitle": "Delivery slow",
+    "reviewText": "Product is fine, but shipping took forever.",
+    "reviewDate": "2025-10-11T00:00:00Z"
+  },
+  {
+    "reviewId": "REV412",
+    "productId": "NT003",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 1,
+    "reviewTitle": "Stale nuts",
+    "reviewText": "Too hard to bite. Hurt my jaw.",
+    "reviewDate": "2025-10-26T00:00:00Z"
+  },
+  {
+    "reviewId": "REV413",
+    "productId": "NT003",
+    "userName": "Tom",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_13.jpg",
+    "rating": 2,
+    "reviewTitle": "Bland flavor",
+    "reviewText": "Too hard to bite. Hurt my jaw.",
+    "reviewDate": "2025-10-20T00:00:00Z"
+  },
+  {
+    "reviewId": "REV414",
+    "productId": "NT003",
+    "userName": "Robert",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_9.jpg",
+    "rating": 5,
+    "reviewTitle": "Love it",
+    "reviewText": "My family finished the bag in one sitting. Will order more. Nice caramel flavor.",
+    "reviewDate": "2025-10-16T00:00:00Z"
+  },
+  {
+    "reviewId": "REV415",
+    "productId": "NT004",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 4,
+    "reviewTitle": "Tasty snack",
+    "reviewText": "Good flavor and crunch. A bit pricey but worth it occasionally.",
+    "reviewDate": "2025-10-12T00:00:00Z"
+  },
+  {
+    "reviewId": "REV416",
+    "productId": "NT004",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 1,
+    "reviewTitle": "Stale nuts",
+    "reviewText": "Tasted rancid and old. Expiry date was fine but the product was bad.",
+    "reviewDate": "2025-10-27T00:00:00Z"
+  },
+  {
+    "reviewId": "REV417",
+    "productId": "NT004",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 2,
+    "reviewTitle": "Bad mix",
+    "reviewText": "The mix was 90% peanuts and barely any expensive nuts.",
+    "reviewDate": "2025-10-29T00:00:00Z"
+  },
+  {
+    "reviewId": "REV418",
+    "productId": "NT004",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 3,
+    "reviewTitle": "It's okay",
+    "reviewText": "Decent snack but nothing special. Price is fair.",
+    "reviewDate": "2025-10-11T00:00:00Z"
+  },
+  {
+    "reviewId": "REV419",
+    "productId": "NT005",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 2,
+    "reviewTitle": "Not crunchy",
+    "reviewText": "Texture was soft and chewy. Expected a nice crunch. Very bitter aftertaste.",
+    "reviewDate": "2025-10-17T00:00:00Z"
+  },
+  {
+    "reviewId": "REV420",
+    "productId": "NT005",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 4,
+    "reviewTitle": "Healthy option",
+    "reviewText": "Love having a healthy snack on hand. Will buy again. Not bitter at all, very mild.",
+    "reviewDate": "2025-10-20T00:00:00Z"
+  },
+  {
+    "reviewId": "REV421",
+    "productId": "NT005",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 5,
+    "reviewTitle": "Delicious!",
+    "reviewText": "Best nuts I've ever had. Fresh, crunchy, and flavorful. Not bitter at all, very mild.",
+    "reviewDate": "2025-10-16T00:00:00Z"
+  },
+  {
+    "reviewId": "REV422",
+    "productId": "NT005",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 3,
+    "reviewTitle": "Delivery slow",
+    "reviewText": "Product is fine, but shipping took forever.",
+    "reviewDate": "2025-10-19T00:00:00Z"
+  },
+  {
+    "reviewId": "REV423",
+    "productId": "EG001",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 5,
+    "reviewTitle": "Amazing!",
+    "reviewText": "Best gadget I've bought all year. Exceeded my expectations. Very durable braided cord.",
+    "reviewDate": "2025-10-19T00:00:00Z"
+  },
+  {
+    "reviewId": "REV424",
+    "productId": "EG001",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 1,
+    "reviewTitle": "Waste of money",
+    "reviewText": "Performance is laggy and slow. Not worth 29.9 at all.",
+    "reviewDate": "2025-10-20T00:00:00Z"
+  },
+  {
+    "reviewId": "REV425",
+    "productId": "EG001",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 2,
+    "reviewTitle": "Not durable",
+    "reviewText": "Started fraying/cracking after a month of normal use. Expected better.",
+    "reviewDate": "2025-10-21T00:00:00Z"
+  },
+  {
+    "reviewId": "REV426",
+    "productId": "EG001",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 3,
+    "reviewTitle": "Okay backup",
+    "reviewText": "Good as a spare, but wouldn't use it as my main device.",
+    "reviewDate": "2025-10-22T00:00:00Z"
+  },
+  {
+    "reviewId": "REV427",
+    "productId": "EG002",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 2,
+    "reviewTitle": "Slow charging",
+    "reviewText": "Does not charge my phone at all. Useless brick.",
+    "reviewDate": "2025-10-11T00:00:00Z"
+  },
+  {
+    "reviewId": "REV428",
+    "productId": "EG002",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 3,
+    "reviewTitle": "It's decent",
+    "reviewText": "Good for basic tasks but struggles with heavy apps/games.",
+    "reviewDate": "2025-10-15T00:00:00Z"
+  },
+  {
+    "reviewId": "REV429",
+    "productId": "EG002",
+    "userName": "David",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_7.jpg",
+    "rating": 1,
+    "reviewTitle": "Fake product?",
+    "reviewText": "Does not charge my phone at all. Useless brick.",
+    "reviewDate": "2025-10-23T00:00:00Z"
+  },
+  {
+    "reviewId": "REV430",
+    "productId": "EG002",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 5,
+    "reviewTitle": "Worth every penny",
+    "reviewText": "Expensive but you get what you pay for. Premium experience. Magnet is strong and aligns perfectly.",
+    "reviewDate": "2025-10-18T00:00:00Z"
+  },
+  {
+    "reviewId": "REV431",
+    "productId": "EG003",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 4,
+    "reviewTitle": "Fast charging",
+    "reviewText": "Charges up really quickly. Very convenient for busy days. Display is stunning.",
+    "reviewDate": "2025-10-13T00:00:00Z"
+  },
+  {
+    "reviewId": "REV432",
+    "productId": "EG003",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 3,
+    "reviewTitle": "Mixed bag",
+    "reviewText": "Great screen, terrible camera. Or vice versa. A trade-off.",
+    "reviewDate": "2025-10-27T00:00:00Z"
+  },
+  {
+    "reviewId": "REV433",
+    "productId": "EG003",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 2,
+    "reviewTitle": "Not durable",
+    "reviewText": "Started fraying/cracking after a month of normal use. Expected better. FaceID stopped working.",
+    "reviewDate": "2025-10-18T00:00:00Z"
+  },
+  {
+    "reviewId": "REV434",
+    "productId": "EG003",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 1,
+    "reviewTitle": "Stopped working",
+    "reviewText": "It just died after a week. Won't turn on or charge. Very disappointed. FaceID stopped working.",
+    "reviewDate": "2025-10-27T00:00:00Z"
+  },
+  {
+    "reviewId": "REV435",
+    "productId": "EG004",
+    "userName": "Linda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_16.jpg",
+    "rating": 5,
+    "reviewTitle": "Perfect",
+    "reviewText": "Exactly what I needed. Everything works flawlessly. 5 stars. Display is stunning.",
+    "reviewDate": "2025-10-17T00:00:00Z"
+  },
+  {
+    "reviewId": "REV436",
+    "productId": "EG004",
+    "userName": "Robert",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_9.jpg",
+    "rating": 3,
+    "reviewTitle": "It's decent",
+    "reviewText": "Good for basic tasks but struggles with heavy apps/games.",
+    "reviewDate": "2025-10-24T00:00:00Z"
+  },
+  {
+    "reviewId": "REV437",
+    "productId": "EG004",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 2,
+    "reviewTitle": "Poor battery life",
+    "reviewText": "Battery drains way too fast. Have to charge it twice a day. FaceID stopped working.",
+    "reviewDate": "2025-10-12T00:00:00Z"
+  },
+  {
+    "reviewId": "REV438",
+    "productId": "EG004",
+    "userName": "Linda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_16.jpg",
+    "rating": 1,
+    "reviewTitle": "Overheating",
+    "reviewText": "Gets dangerously hot while charging/using. Scared it might catch fire. FaceID stopped working.",
+    "reviewDate": "2025-10-11T00:00:00Z"
+  },
+  {
+    "reviewId": "REV439",
+    "productId": "EG005",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 4,
+    "reviewTitle": "Solid performance",
+    "reviewText": "Runs smooth and handles multitasking well. Good battery life. Fits perfectly and feels great.",
+    "reviewDate": "2025-10-29T00:00:00Z"
+  },
+  {
+    "reviewId": "REV440",
+    "productId": "EG005",
+    "userName": "Tom",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_13.jpg",
+    "rating": 5,
+    "reviewTitle": "Amazing!",
+    "reviewText": "Best gadget I've bought all year. Exceeded my expectations. Fits perfectly and feels great.",
+    "reviewDate": "2025-10-29T00:00:00Z"
+  },
+  {
+    "reviewId": "REV441",
+    "productId": "EG005",
+    "userName": "Tom",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_13.jpg",
+    "rating": 1,
+    "reviewTitle": "Overheating",
+    "reviewText": "Peeling after two days. Cheap material.",
+    "reviewDate": "2025-10-19T00:00:00Z"
+  },
+  {
+    "reviewId": "REV442",
+    "productId": "EG005",
+    "userName": "James",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_8.jpg",
+    "rating": 3,
+    "reviewTitle": "Delivery slow",
+    "reviewText": "Product works fine, but shipping took weeks.",
+    "reviewDate": "2025-10-15T00:00:00Z"
+  },
+  {
+    "reviewId": "REV443",
+    "productId": "EG006",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 1,
+    "reviewTitle": "Waste of money",
+    "reviewText": "Performance is laggy and slow. Not worth 3999.0 at all.",
+    "reviewDate": "2025-10-13T00:00:00Z"
+  },
+  {
+    "reviewId": "REV444",
+    "productId": "EG006",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 4,
+    "reviewTitle": "Great accessory",
+    "reviewText": "Works perfectly with my other devices. Seamless connection.",
+    "reviewDate": "2025-10-20T00:00:00Z"
+  },
+  {
+    "reviewId": "REV445",
+    "productId": "EG006",
+    "userName": "David",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_7.jpg",
+    "rating": 3,
+    "reviewTitle": "Average sound",
+    "reviewText": "Audio is okay but lacks bass. Good for calls, not for music.",
+    "reviewDate": "2025-10-18T00:00:00Z"
+  },
+  {
+    "reviewId": "REV446",
+    "productId": "EG006",
+    "userName": "Karen",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_11.jpg",
+    "rating": 2,
+    "reviewTitle": "Poor battery life",
+    "reviewText": "Battery drains way too fast. Have to charge it twice a day.",
+    "reviewDate": "2025-10-29T00:00:00Z"
+  },
+  {
+    "reviewId": "REV447",
+    "productId": "EG007",
+    "userName": "Sarah",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_4.jpg",
+    "rating": 5,
+    "reviewTitle": "Perfect",
+    "reviewText": "Exactly what I needed. Everything works flawlessly. 5 stars. Magnet is strong and aligns perfectly.",
+    "reviewDate": "2025-10-19T00:00:00Z"
+  },
+  {
+    "reviewId": "REV448",
+    "productId": "EG007",
+    "userName": "Tom",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_13.jpg",
+    "rating": 4,
+    "reviewTitle": "Nice design",
+    "reviewText": "Looks sleek and feels premium in hand. Screen is bright. Magnet is strong and aligns perfectly.",
+    "reviewDate": "2025-10-15T00:00:00Z"
+  },
+  {
+    "reviewId": "REV449",
+    "productId": "EG007",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 1,
+    "reviewTitle": "Stopped working",
+    "reviewText": "Does not charge my phone at all. Useless brick.",
+    "reviewDate": "2025-10-18T00:00:00Z"
+  },
+  {
+    "reviewId": "REV450",
+    "productId": "EG007",
+    "userName": "James",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_8.jpg",
+    "rating": 3,
+    "reviewTitle": "Okay backup",
+    "reviewText": "Good as a spare, but wouldn't use it as my main device.",
+    "reviewDate": "2025-10-14T00:00:00Z"
+  },
+  {
+    "reviewId": "REV451",
+    "productId": "EG008",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 3,
+    "reviewTitle": "Okay backup",
+    "reviewText": "Good as a spare, but wouldn't use it as my main device.",
+    "reviewDate": "2025-10-26T00:00:00Z"
+  },
+  {
+    "reviewId": "REV452",
+    "productId": "EG008",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 4,
+    "reviewTitle": "Good value",
+    "reviewText": "For the price, the features are impressive. Happy with purchase. Noise cancellation is excellent.",
+    "reviewDate": "2025-10-24T00:00:00Z"
+  },
+  {
+    "reviewId": "REV453",
+    "productId": "EG008",
+    "userName": "David",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_7.jpg",
+    "rating": 5,
+    "reviewTitle": "Amazing!",
+    "reviewText": "Best gadget I've bought all year. Exceeded my expectations. Noise cancellation is excellent.",
+    "reviewDate": "2025-10-20T00:00:00Z"
+  },
+  {
+    "reviewId": "REV454",
+    "productId": "EG008",
+    "userName": "James",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_8.jpg",
+    "rating": 2,
+    "reviewTitle": "Not durable",
+    "reviewText": "One side stopped working after a day.",
+    "reviewDate": "2025-10-21T00:00:00Z"
+  },
+  {
+    "reviewId": "REV455",
+    "productId": "EG009",
+    "userName": "Tom",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_13.jpg",
+    "rating": 5,
+    "reviewTitle": "Worth every penny",
+    "reviewText": "Expensive but you get what you pay for. Premium experience.",
+    "reviewDate": "2025-10-22T00:00:00Z"
+  },
+  {
+    "reviewId": "REV456",
+    "productId": "EG009",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 1,
+    "reviewTitle": "Terrible quality",
+    "reviewText": "Feels cheap and flimsy. Buttons are loose and screen has dead pixels.",
+    "reviewDate": "2025-10-28T00:00:00Z"
+  },
+  {
+    "reviewId": "REV457",
+    "productId": "EG009",
+    "userName": "Linda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_16.jpg",
+    "rating": 2,
+    "reviewTitle": "Not durable",
+    "reviewText": "Started fraying/cracking after a month of normal use. Expected better.",
+    "reviewDate": "2025-10-17T00:00:00Z"
+  },
+  {
+    "reviewId": "REV458",
+    "productId": "EG009",
+    "userName": "Karen",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_11.jpg",
+    "rating": 3,
+    "reviewTitle": "Mixed bag",
+    "reviewText": "Great screen, terrible camera. Or vice versa. A trade-off.",
+    "reviewDate": "2025-10-26T00:00:00Z"
+  },
+  {
+    "reviewId": "REV459",
+    "productId": "VG001",
+    "userName": "Chris",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_14.jpg",
+    "rating": 4,
+    "reviewTitle": "Nice texture",
+    "reviewText": "Surprisingly good texture for being plant-based. Will buy again. Melts beautifully.",
+    "reviewDate": "2025-10-10T00:00:00Z"
+  },
+  {
+    "reviewId": "REV460",
+    "productId": "VG001",
+    "userName": "Nancy",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_12.jpg",
+    "rating": 1,
+    "reviewTitle": "Tastes awful",
+    "reviewText": "Texture is chalky and flavor is off. Could not finish it.",
+    "reviewDate": "2025-10-19T00:00:00Z"
+  },
+  {
+    "reviewId": "REV461",
+    "productId": "VG001",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 3,
+    "reviewTitle": "Average",
+    "reviewText": "Nothing special. There are better vegan brands out there.",
+    "reviewDate": "2025-10-22T00:00:00Z"
+  },
+  {
+    "reviewId": "REV462",
+    "productId": "VG001",
+    "userName": "Karen",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_11.jpg",
+    "rating": 5,
+    "reviewTitle": "Best I've found",
+    "reviewText": "Finally a vegan product that actually tastes good. Highly recommend. Melts beautifully.",
+    "reviewDate": "2025-10-25T00:00:00Z"
+  },
+  {
+    "reviewId": "REV463",
+    "productId": "VG002",
+    "userName": "David",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_7.jpg",
+    "rating": 3,
+    "reviewTitle": "Mixed feelings",
+    "reviewText": "Good texture but bland flavor. Needs more seasoning.",
+    "reviewDate": "2025-10-25T00:00:00Z"
+  },
+  {
+    "reviewId": "REV464",
+    "productId": "VG002",
+    "userName": "Tom",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_13.jpg",
+    "rating": 5,
+    "reviewTitle": "Love it",
+    "reviewText": "My new favorite. Flavorful, healthy, and cruelty-free. Very creamy and comforting.",
+    "reviewDate": "2025-10-23T00:00:00Z"
+  },
+  {
+    "reviewId": "REV465",
+    "productId": "VG002",
+    "userName": "Mike",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_5.jpg",
+    "rating": 2,
+    "reviewTitle": "Too sweet/salty",
+    "reviewText": "Flavor balance is way off. Not enjoyable.",
+    "reviewDate": "2025-10-26T00:00:00Z"
+  },
+  {
+    "reviewId": "REV466",
+    "productId": "VG002",
+    "userName": "Tom",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_13.jpg",
+    "rating": 4,
+    "reviewTitle": "Almost perfect",
+    "reviewText": "Would be 5 stars if it was a bit cheaper. Very creamy and comforting.",
+    "reviewDate": "2025-10-30T00:00:00Z"
+  },
+  {
+    "reviewId": "REV467",
+    "productId": "VG003",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 5,
+    "reviewTitle": "Perfect",
+    "reviewText": "Exactly what I was looking for. Great quality and taste. Mixes well with water/milk.",
+    "reviewDate": "2025-10-17T00:00:00Z"
+  },
+  {
+    "reviewId": "REV468",
+    "productId": "VG003",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 2,
+    "reviewTitle": "Packaging issue",
+    "reviewText": "Bag/container was damaged upon arrival.",
+    "reviewDate": "2025-10-23T00:00:00Z"
+  },
+  {
+    "reviewId": "REV469",
+    "productId": "VG003",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 1,
+    "reviewTitle": "Weird aftertaste",
+    "reviewText": "Has a very strong chemical/artificial aftertaste. Disappointing.",
+    "reviewDate": "2025-10-28T00:00:00Z"
+  },
+  {
+    "reviewId": "REV470",
+    "productId": "VG003",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 3,
+    "reviewTitle": "Average",
+    "reviewText": "Nothing special. There are better vegan brands out there.",
+    "reviewDate": "2025-10-18T00:00:00Z"
+  },
+  {
+    "reviewId": "REV471",
+    "productId": "VG004",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 5,
+    "reviewTitle": "Love it",
+    "reviewText": "My new favorite. Flavorful, healthy, and cruelty-free. Great energy booster.",
+    "reviewDate": "2025-10-27T00:00:00Z"
+  },
+  {
+    "reviewId": "REV472",
+    "productId": "VG004",
+    "userName": "Robert",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_9.jpg",
+    "rating": 4,
+    "reviewTitle": "Convenient",
+    "reviewText": "Great for a quick snack/meal. Healthy ingredients. Great energy booster.",
+    "reviewDate": "2025-10-15T00:00:00Z"
+  },
+  {
+    "reviewId": "REV473",
+    "productId": "VG004",
+    "userName": "Pat",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_15.jpg",
+    "rating": 2,
+    "reviewTitle": "Small portion",
+    "reviewText": "Tastes nothing like chicken essence. Just mushroom water.",
+    "reviewDate": "2025-10-24T00:00:00Z"
+  },
+  {
+    "reviewId": "REV474",
+    "productId": "VG004",
+    "userName": "Tom",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_13.jpg",
+    "rating": 3,
+    "reviewTitle": "Mixed feelings",
+    "reviewText": "Good texture but bland flavor. Needs more seasoning.",
+    "reviewDate": "2025-10-17T00:00:00Z"
+  },
+  {
+    "reviewId": "REV475",
+    "productId": "VG005",
+    "userName": "David",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_7.jpg",
+    "rating": 4,
+    "reviewTitle": "Nice texture",
+    "reviewText": "Surprisingly good texture for being plant-based. Will buy again. Melts beautifully.",
+    "reviewDate": "2025-10-14T00:00:00Z"
+  },
+  {
+    "reviewId": "REV476",
+    "productId": "VG005",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 3,
+    "reviewTitle": "Average",
+    "reviewText": "Nothing special. There are better vegan brands out there.",
+    "reviewDate": "2025-10-11T00:00:00Z"
+  },
+  {
+    "reviewId": "REV477",
+    "productId": "VG005",
+    "userName": "Karen",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_11.jpg",
+    "rating": 5,
+    "reviewTitle": "Best I've found",
+    "reviewText": "Finally a vegan product that actually tastes good. Highly recommend. Melts beautifully.",
+    "reviewDate": "2025-10-17T00:00:00Z"
+  },
+  {
+    "reviewId": "REV478",
+    "productId": "VG005",
+    "userName": "James",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_8.jpg",
+    "rating": 1,
+    "reviewTitle": "Overpriced",
+    "reviewText": "Tiny package for the price. 15.9 is ridiculous.",
+    "reviewDate": "2025-10-11T00:00:00Z"
+  },
+  {
+    "reviewId": "REV479",
+    "productId": "VG006",
+    "userName": "Jessica",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_10.jpg",
+    "rating": 3,
+    "reviewTitle": "Good for cooking",
+    "reviewText": "Works fine in recipes but wouldn't eat it plain.",
+    "reviewDate": "2025-10-16T00:00:00Z"
+  },
+  {
+    "reviewId": "REV480",
+    "productId": "VG006",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 5,
+    "reviewTitle": "Love it",
+    "reviewText": "My new favorite. Flavorful, healthy, and cruelty-free. Perfect on toast.",
+    "reviewDate": "2025-10-10T00:00:00Z"
+  },
+  {
+    "reviewId": "REV481",
+    "productId": "VG006",
+    "userName": "Nancy",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_12.jpg",
+    "rating": 1,
+    "reviewTitle": "Allergic reaction",
+    "reviewText": "Ingredients list was unclear. Had a mild allergic reaction. Too much coconut oil taste.",
+    "reviewDate": "2025-10-11T00:00:00Z"
+  },
+  {
+    "reviewId": "REV482",
+    "productId": "VG006",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 2,
+    "reviewTitle": "Small portion",
+    "reviewText": "Much smaller than expected. Not enough for a serving. Too much coconut oil taste.",
+    "reviewDate": "2025-10-11T00:00:00Z"
+  },
+  {
+    "reviewId": "REV483",
+    "productId": "VG007",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 5,
+    "reviewTitle": "Staple in my pantry",
+    "reviewText": "Buy this all the time. Never disappointed. Long lasting and moisturizing.",
+    "reviewDate": "2025-10-25T00:00:00Z"
+  },
+  {
+    "reviewId": "REV484",
+    "productId": "VG007",
+    "userName": "Mike",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_5.jpg",
+    "rating": 4,
+    "reviewTitle": "Tasty",
+    "reviewText": "Good flavor and texture. A bit pricey but worth it for the quality. Long lasting and moisturizing.",
+    "reviewDate": "2025-10-26T00:00:00Z"
+  },
+  {
+    "reviewId": "REV485",
+    "productId": "VG007",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 1,
+    "reviewTitle": "Overpriced",
+    "reviewText": "Color payoff is poor. Dried out my lips.",
+    "reviewDate": "2025-10-14T00:00:00Z"
+  },
+  {
+    "reviewId": "REV486",
+    "productId": "VG007",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 2,
+    "reviewTitle": "Expensive for quality",
+    "reviewText": "Color payoff is poor. Dried out my lips.",
+    "reviewDate": "2025-10-15T00:00:00Z"
+  },
+  {
+    "reviewId": "REV487",
+    "productId": "VG008",
+    "userName": "Kevin",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_17.jpg",
+    "rating": 2,
+    "reviewTitle": "Too sweet/salty",
+    "reviewText": "Mushy texture when fried. Not appetizing.",
+    "reviewDate": "2025-10-23T00:00:00Z"
+  },
+  {
+    "reviewId": "REV488",
+    "productId": "VG008",
+    "userName": "Tom",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_13.jpg",
+    "rating": 1,
+    "reviewTitle": "Tastes awful",
+    "reviewText": "Mushy texture when fried. Not appetizing.",
+    "reviewDate": "2025-10-20T00:00:00Z"
+  },
+  {
+    "reviewId": "REV489",
+    "productId": "VG008",
+    "userName": "Tom",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_13.jpg",
+    "rating": 4,
+    "reviewTitle": "Almost perfect",
+    "reviewText": "Would be 5 stars if it was a bit cheaper. Crisps up nicely in the pan.",
+    "reviewDate": "2025-10-25T00:00:00Z"
+  },
+  {
+    "reviewId": "REV490",
+    "productId": "VG008",
+    "userName": "David",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_7.jpg",
+    "rating": 3,
+    "reviewTitle": "Acquired taste",
+    "reviewText": "Takes some getting used to. Not for everyone.",
+    "reviewDate": "2025-10-19T00:00:00Z"
+  },
+  {
+    "reviewId": "REV491",
+    "productId": "VG009",
+    "userName": "Sarah",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_4.jpg",
+    "rating": 2,
+    "reviewTitle": "Expensive for quality",
+    "reviewText": "Decent product but not worth 12.9. Paying for the label.",
+    "reviewDate": "2025-10-28T00:00:00Z"
+  },
+  {
+    "reviewId": "REV492",
+    "productId": "VG009",
+    "userName": "Sarah",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_4.jpg",
+    "rating": 5,
+    "reviewTitle": "Love it",
+    "reviewText": "My new favorite. Flavorful, healthy, and cruelty-free. Mixes well with water/milk.",
+    "reviewDate": "2025-10-23T00:00:00Z"
+  },
+  {
+    "reviewId": "REV493",
+    "productId": "VG009",
+    "userName": "Emily",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_6.jpg",
+    "rating": 4,
+    "reviewTitle": "Good vegan option",
+    "reviewText": "One of the better vegan products I've tried. Happy with it. Mixes well with water/milk.",
+    "reviewDate": "2025-10-10T00:00:00Z"
+  },
+  {
+    "reviewId": "REV494",
+    "productId": "VG009",
+    "userName": "Sarah",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_4.jpg",
+    "rating": 1,
+    "reviewTitle": "Overpriced",
+    "reviewText": "Tiny package for the price. 12.9 is ridiculous.",
+    "reviewDate": "2025-10-26T00:00:00Z"
+  },
+  {
+    "reviewId": "REV495",
+    "productId": "VG010",
+    "userName": "Nancy",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_12.jpg",
+    "rating": 3,
+    "reviewTitle": "Average",
+    "reviewText": "Nothing special. There are better vegan brands out there.",
+    "reviewDate": "2025-10-21T00:00:00Z"
+  },
+  {
+    "reviewId": "REV496",
+    "productId": "VG010",
+    "userName": "James",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_8.jpg",
+    "rating": 5,
+    "reviewTitle": "Perfect",
+    "reviewText": "Exactly what I was looking for. Great quality and taste. Adds great umami flavor.",
+    "reviewDate": "2025-10-19T00:00:00Z"
+  },
+  {
+    "reviewId": "REV497",
+    "productId": "VG010",
+    "userName": "Amanda",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_18.jpg",
+    "rating": 4,
+    "reviewTitle": "Convenient",
+    "reviewText": "Great for a quick snack/meal. Healthy ingredients. Adds great umami flavor.",
+    "reviewDate": "2025-10-30T00:00:00Z"
+  },
+  {
+    "reviewId": "REV498",
+    "productId": "VG010",
+    "userName": "Karen",
+    "userProfileUrl": "assets/images/User Profile/User_ProfilePic_11.jpg",
+    "rating": 1,
+    "reviewTitle": "Allergic reaction",
+    "reviewText": "Too salty. Ruined my dish.",
+    "reviewDate": "2025-10-29T00:00:00Z"
+  }
+]
