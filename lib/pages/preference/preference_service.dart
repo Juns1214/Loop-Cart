@@ -5,264 +5,122 @@ class PreferenceService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Get current user's preferences
-  Future<Map<String, dynamic>?> getUserPreferences() async {
-    try {
-      User? user = _auth.currentUser;
-      if (user == null) {
-        print('No authenticated user found');
-        return null;
-      }
 
-      DocumentSnapshot doc = await _firestore
-          .collection('user_preferences')
-          .doc(user.uid)
-          .get();
-
-      if (doc.exists) {
-        print('User preferences found for ${user.uid}');
-        return doc.data() as Map<String, dynamic>;
-      } else {
-        print('No preferences set for user ${user.uid}');
-        return null;
-      }
-    } catch (e) {
-      print('Error getting user preferences: $e');
-      return null;
-    }
-  }
-
-  // Save user preferences
   Future<bool> saveUserPreferences({
     required List<String> dietaryPreferences,
     required List<String> lifestyleInterests,
   }) async {
     try {
-      User? user = _auth.currentUser;
-      if (user == null) {
-        print('No authenticated user found');
-        return false;
-      }
+      final user = _auth.currentUser;
+      if (user == null) return false;
 
-      await _firestore
-          .collection('user_preferences')
-          .doc(user.uid)
-          .set({
+      await _firestore.collection('user_preferences').doc(user.uid).set({
+        'user_id': user.uid, 
         'dietary_preferences': dietaryPreferences,
         'lifestyle_interests': lifestyleInterests,
         'updated_at': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
 
-      print('Preferences saved successfully for ${user.uid}');
       return true;
     } catch (e) {
-      print('Error saving user preferences: $e');
+      print('Error saving preferences: $e');
       return false;
     }
   }
 
-  // Get products filtered by preferences (or shuffled if no preferences)
+  Future<Map<String, dynamic>?> getUserPreferences() async {
+    try {
+      final user = _auth.currentUser;
+      if (user == null) return null;
+
+      final doc = await _firestore.collection('user_preferences').doc(user.uid).get();
+      return doc.exists ? doc.data() : null;
+    } catch (e) {
+      print('Error fetching preferences: $e');
+      return null;
+    }
+  }
+
+
   Future<List<Map<String, dynamic>>> getFilteredProducts() async {
     try {
-      // Get user preferences
-      Map<String, dynamic>? prefs = await getUserPreferences();
+      final prefs = await getUserPreferences();
+      final productsSnapshot = await _firestore.collection('products').get();
+      
+      // Normalize product data immediately
+      var allProducts = productsSnapshot.docs.map((doc) => _normalizeProductData(doc)).toList();
 
-      // Fetch all products from Firestore
-      QuerySnapshot productsSnapshot = await _firestore
-          .collection('products')
-          .get();
-
-      List<Map<String, dynamic>> allProducts = productsSnapshot.docs
-          .map((doc) {
-            Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-            return {
-              'id': doc.id,
-              'name': data['name'] ?? data['productName'] ?? 'Unknown Product',
-              'price': (data['price'] ?? data['productPrice'] ?? 0).toDouble(),
-              'rating': (data['rating'] ?? data['bestValue'] ?? 0).toDouble(),
-              'category': data['category'] ?? '',
-              'description': data['description'] ?? '',
-              'imageUrl': data['imageUrl'] ?? data['image_url'] ?? '',
-              'tags': data['tags'] ?? [],
-              ...data, // Include all other fields
-            };
-          })
-          .toList();
-
-      print('Fetched ${allProducts.length} products from Firestore');
-
-      // No preferences -> return all products shuffled
-      if (prefs == null ||
-          ((prefs['dietary_preferences']?.isEmpty ?? true) &&
-              (prefs['lifestyle_interests']?.isEmpty ?? true))) {
-        print('No preferences found, returning shuffled products');
+      // If no preferences, just return shuffled list
+      if (prefs == null || _arePreferencesEmpty(prefs)) {
         allProducts.shuffle();
         return allProducts;
       }
 
-      List<String> dietaryPrefs =
-          List<String>.from(prefs['dietary_preferences'] ?? []);
-      List<String> lifestylePrefs =
-          List<String>.from(prefs['lifestyle_interests'] ?? []);
-
-      print('Filtering with dietary: $dietaryPrefs, lifestyle: $lifestylePrefs');
-
-      // Filter products based on preferences
-      List<Map<String, dynamic>> filteredProducts = allProducts.where((product) {
-        String category = (product['category'] ?? '').toString().toLowerCase();
-        String name = (product['name'] ?? '').toString().toLowerCase();
-        List<dynamic> tags = product['tags'] ?? [];
-        String allText = '$category $name ${tags.join(' ')}'.toLowerCase();
-
-        // Exclusion rules for dietary preferences
-        for (String pref in dietaryPrefs) {
-          String prefLower = pref.toLowerCase();
-          
-          if (prefLower == 'halal' && (
-              allText.contains('non-halal') || 
-              allText.contains('pork') || 
-              allText.contains('alcohol'))) {
-            print('Excluding ${product['name']} - not halal');
-            return false;
-          }
-          
-          if (prefLower == 'non-halal' && 
-              allText.contains('halal') && 
-              !allText.contains('non-halal')) {
-            print('Excluding ${product['name']} - halal only');
-            return false;
-          }
-          
-          if (prefLower == 'vegan' && (
-              allText.contains('meat') || 
-              allText.contains('chicken') || 
-              allText.contains('beef') || 
-              allText.contains('lamb') ||
-              allText.contains('fish') ||
-              allText.contains('dairy') ||
-              allText.contains('egg'))) {
-            print('Excluding ${product['name']} - not vegan');
-            return false;
-          }
-          
-          if (prefLower == 'vegetarian' && (
-              allText.contains('meat') || 
-              allText.contains('chicken') || 
-              allText.contains('beef') || 
-              allText.contains('lamb') ||
-              allText.contains('fish'))) {
-            print('Excluding ${product['name']} - not vegetarian');
-            return false;
-          }
-          
-          if (prefLower == 'gluten-free' && allText.contains('gluten')) {
-            print('Excluding ${product['name']} - contains gluten');
-            return false;
-          }
-          
-          if (prefLower == 'nut-free' && (
-              allText.contains('nut') || 
-              allText.contains('peanut') || 
-              allText.contains('almond'))) {
-            print('Excluding ${product['name']} - contains nuts');
-            return false;
-          }
-        }
-
-        // Inclusion boost for lifestyle interests (optional - for future ranking)
-        // For now, we just exclude restricted items and include everything else
-        return true;
+      final dietary = List<String>.from(prefs['dietary_preferences'] ?? []);
+      
+      // Filter logic
+      var filteredProducts = allProducts.where((product) {
+        return _isProductAllowed(product, dietary);
       }).toList();
 
-      print('Filtered to ${filteredProducts.length} products');
-
-      // Randomize order to keep it fresh
       filteredProducts.shuffle();
-      
       return filteredProducts;
     } catch (e) {
-      print('Error getting filtered products: $e');
-      print('Stack trace: ${StackTrace.current}');
+      print('Error filtering products: $e');
       return [];
     }
   }
 
-  // Search products with preference-aware filtering
-  Future<List<Map<String, dynamic>>> searchProducts(String query) async {
-    List<Map<String, dynamic>> products = await getFilteredProducts();
-    if (query.isEmpty) return products;
+  // --- Helper Methods (Private) ---
 
-    String lowerQuery = query.toLowerCase();
-    
-    List<Map<String, dynamic>> results = products.where((product) {
-      String name = (product['name'] ?? '').toLowerCase();
-      String category = (product['category'] ?? '').toLowerCase();
-      String description = (product['description'] ?? '').toLowerCase();
-      List<dynamic> tags = product['tags'] ?? [];
-
-      return name.contains(lowerQuery) ||
-          category.contains(lowerQuery) ||
-          description.contains(lowerQuery) ||
-          tags.any((tag) => tag.toString().toLowerCase().contains(lowerQuery));
-    }).toList();
-
-    print('Search for "$query" returned ${results.length} results');
-    return results;
+  // Standardize product data structure
+  Map<String, dynamic> _normalizeProductData(QueryDocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return {
+      'id': doc.id,
+      'name': data['name'] ?? data['productName'] ?? 'Unknown',
+      'category': (data['category'] ?? '').toString().toLowerCase(),
+      'tags': data['tags'] ?? [],
+      'searchText': _generateSearchText(data),
+      ...data,
+    };
   }
 
-  // Get products by category with preference filtering
-  Future<List<Map<String, dynamic>>> getProductsByCategory(String category) async {
-    List<Map<String, dynamic>> products = await getFilteredProducts();
-    
-    if (category.isEmpty || category.toLowerCase() == 'all') {
-      return products;
+  // Combine text fields for easier searching/filtering
+  String _generateSearchText(Map<String, dynamic> data) {
+    final name = (data['name'] ?? data['productName'] ?? '').toString();
+    final cat = (data['category'] ?? '').toString();
+    final tags = (data['tags'] ?? []).join(' ');
+    final desc = (data['description'] ?? '').toString();
+    return '$name $cat $tags $desc'.toLowerCase();
+  }
+
+  bool _arePreferencesEmpty(Map<String, dynamic> prefs) {
+    return (prefs['dietary_preferences']?.isEmpty ?? true) &&
+           (prefs['lifestyle_interests']?.isEmpty ?? true);
+  }
+
+  // The core logic for checking if a product matches dietary needs
+  bool _isProductAllowed(Map<String, dynamic> product, List<String> dietaryPrefs) {
+    final text = product['searchText'] as String;
+
+    for (final pref in dietaryPrefs) {
+      final p = pref.toLowerCase();
+      
+      // Exclusion Rules
+      if (p == 'halal' && (text.contains('non-halal') || text.contains('pork') || text.contains('alcohol'))) return false;
+      if (p == 'non-halal' && text.contains('halal') && !text.contains('non-halal')) return false; // Strictly non-halal eater? Rare, but keeping logic.
+      if (p == 'vegan' && _containsAnimalProduct(text)) return false;
+      if (p == 'vegetarian' && _containsMeat(text)) return false;
+      if (p == 'gluten-free' && text.contains('gluten')) return false;
+      if (p == 'nut-free' && (text.contains('nut') || text.contains('peanut') || text.contains('almond'))) return false;
     }
-
-    return products.where((product) {
-      String productCategory = (product['category'] ?? '').toLowerCase();
-      return productCategory.contains(category.toLowerCase());
-    }).toList();
+    return true;
   }
 
-  // Get user preferences summary
-  Future<String> getUserPreferencesSummary() async {
-    Map<String, dynamic>? prefs = await getUserPreferences();
-    if (prefs == null) return 'No preferences set';
+  bool _containsAnimalProduct(String text) => 
+      _containsMeat(text) || text.contains('dairy') || text.contains('egg') || text.contains('cheese');
 
-    List<String> dietary = List<String>.from(prefs['dietary_preferences'] ?? []);
-    List<String> lifestyle = List<String>.from(prefs['lifestyle_interests'] ?? []);
-    List<String> allPrefs = [...dietary, ...lifestyle];
-
-    return allPrefs.isEmpty ? 'No preferences set' : allPrefs.join(', ');
-  }
-
-  // Check if user has set preferences
-  Future<bool> hasPreferences() async {
-    Map<String, dynamic>? prefs = await getUserPreferences();
-    if (prefs == null) return false;
-
-    List<String> dietary = List<String>.from(prefs['dietary_preferences'] ?? []);
-    List<String> lifestyle = List<String>.from(prefs['lifestyle_interests'] ?? []);
-
-    return dietary.isNotEmpty || lifestyle.isNotEmpty;
-  }
-
-  // Clear user preferences
-  Future<bool> clearUserPreferences() async {
-    try {
-      User? user = _auth.currentUser;
-      if (user == null) return false;
-
-      await _firestore
-          .collection('user_preferences')
-          .doc(user.uid)
-          .delete();
-
-      print('Preferences cleared for ${user.uid}');
-      return true;
-    } catch (e) {
-      print('Error clearing user preferences: $e');
-      return false;
-    }
-  }
+  bool _containsMeat(String text) => 
+      text.contains('meat') || text.contains('chicken') || text.contains('beef') || text.contains('lamb') || text.contains('fish');
 }

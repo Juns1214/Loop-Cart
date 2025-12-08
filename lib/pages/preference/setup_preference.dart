@@ -1,32 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'preference_tile.dart';
-import '../../utils/router.dart';
 import 'preference_model.dart';
+import 'preference_service.dart'; // Import your service
+import '../../widget/custom_button.dart'; // Import your custom button
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      initialRoute: "/setup-preference",
-      onGenerateRoute: onGenerateRoute,
-      home: const SetupPreferencePage(),
-    );
-  }
-}
+// Removed 'main' and 'MyApp' - this file should just be the Page widget.
 
 class SetupPreferencePage extends StatefulWidget {
   const SetupPreferencePage({super.key});
@@ -36,82 +14,38 @@ class SetupPreferencePage extends StatefulWidget {
 }
 
 class _SetupPreferencePageState extends State<SetupPreferencePage> {
+  final PreferenceService _preferenceService = PreferenceService();
   bool _isLoading = false;
 
-  List<Preference> dietaryPreferences = [
-    Preference('Halal', icon: Icons.mosque),
-    Preference('Vegan', icon: Icons.eco),
-    Preference('Gluten-Free', icon: Icons.local_dining),
-    Preference('Dairy-Free', icon: Icons.no_food),
-    Preference('Nut-Free', icon: Icons.no_food),
-  ];
+  // Load data from Model
+  late final List<Preference> dietaryPreferences = Preference.defaultDietaryOptions;
+  late final List<Preference> lifestyleChoices = Preference.defaultLifestyleOptions;
 
-  List<Preference> lifestyleChoices = [
-    Preference('Eco-Friendly', icon: Icons.nature),
-    Preference('Fitness Enthusiast', icon: Icons.fitness_center),
-    Preference('Tech Savvy', icon: Icons.computer),
-    Preference('Traveler', icon: Icons.flight),
-    Preference('Book Lover', icon: Icons.book),
-  ];
-
-  Future<void> _savePreferences() async {
+  Future<void> _handleSave() async {
     setState(() => _isLoading = true);
 
-    try {
-      // Get current user ID
-      final userId = FirebaseAuth.instance.currentUser?.uid;
+    // Extract selected names
+    final selectedDietary = dietaryPreferences
+        .where((p) => p.isSelected).map((p) => p.name).toList();
+    
+    final selectedLifestyle = lifestyleChoices
+        .where((p) => p.isSelected).map((p) => p.name).toList();
 
-      if (userId == null) {
-        throw Exception('User not logged in');
-      }
+    // Use the Service - Don't write Firestore logic in UI!
+    final success = await _preferenceService.saveUserPreferences(
+      dietaryPreferences: selectedDietary,
+      lifestyleInterests: selectedLifestyle,
+    );
 
-      // Get selected preferences
-      final selectedDietary = dietaryPreferences
-          .where((pref) => pref.isSelected)
-          .map((pref) => pref.name)
-          .toList();
-
-      final selectedLifestyle = lifestyleChoices
-          .where((pref) => pref.isSelected)
-          .map((pref) => pref.name)
-          .toList();
-
-      // Save to Firestore
-      await FirebaseFirestore.instance
-          .collection('user_preferences')
-          .doc(userId)
-          .set({
-            'user_id': userId,
-            'dietary_preferences': selectedDietary,
-            'lifestyle_interests': selectedLifestyle,
-            'updated_at': FieldValue.serverTimestamp(),
-          });
-
-      if (mounted) {
+    if (mounted) {
+      setState(() => _isLoading = false);
+      
+      if (success) {
+        Navigator.pushNamedAndRemoveUntil(context, "/mainpage", (route) => false);
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Preferences saved successfully!'),
-            backgroundColor: Colors.green,
-          ),
+          const SnackBar(content: Text('Error saving preferences'), backgroundColor: Colors.red),
         );
-        Navigator.pushNamedAndRemoveUntil(
-          context,
-          "/mainpage",
-          (route) => false,
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error saving preferences: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
       }
     }
   }
@@ -127,16 +61,17 @@ class _SetupPreferencePageState extends State<SetupPreferencePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                const SizedBox(height: 40), // Safe area spacing
                 Center(
                   child: Image.asset(
                     'assets/images/icon/LogoIcon.png',
                     height: 80,
                     width: 80,
-                    fit: BoxFit.fill,
+                    fit: BoxFit.contain,
                   ),
                 ),
                 const SizedBox(height: 10),
-                Text(
+                const Text(
                   'Set Up Your Preferences',
                   style: TextStyle(
                     fontFamily: 'Manrope',
@@ -146,7 +81,7 @@ class _SetupPreferencePageState extends State<SetupPreferencePage> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                Text(
+                const Text(
                   'Help us personalize your shopping experience by selecting your dietary and lifestyle/ interests preferences.',
                   style: TextStyle(
                     fontFamily: 'Manrope',
@@ -155,67 +90,43 @@ class _SetupPreferencePageState extends State<SetupPreferencePage> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                _buildPreferenceSection(
-                  'Dietary Preferences',
-                  dietaryPreferences,
-                ),
+                
+                _buildSection('Dietary Preferences', dietaryPreferences),
                 const SizedBox(height: 24),
-                _buildPreferenceSection(
-                  'Lifestyle/ Interests',
-                  lifestyleChoices,
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: _isLoading ? null : _savePreferences,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF388E3C),
+                _buildSection('Lifestyle/ Interests', lifestyleChoices),
+                
+                const SizedBox(height: 30),
+                
+                // Refactored: Using CustomButton to reduce code and maintain consistency
+                Center(
+                  child: CustomButton(
+                    text: 'Continue',
+                    onPressed: _handleSave,
                     minimumSize: const Size.fromHeight(48),
+                    // If you want to show loading indicator inside button, CustomButton needs an update, 
+                    // otherwise, the Stack overlay handles the UI blocking.
                   ),
-                  child: _isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : const Text(
-                          'Continue',
-                          style: TextStyle(
-                            fontFamily: 'Manrope',
-                            fontSize: 15,
-                            color: Colors.white,
-                          ),
-                        ),
                 ),
+                
+                const SizedBox(height: 10),
                 Center(
                   child: TextButton(
-                    onPressed: _isLoading
-                        ? null
-                        : () {
-                            Navigator.pushNamedAndRemoveUntil(
-                              context,
-                              "/mainpage",
-                              (route) => false,
-                            );
-                          },
+                    onPressed: _isLoading ? null : () => 
+                      Navigator.pushNamedAndRemoveUntil(context, "/mainpage", (r) => false),
                     child: const Text(
                       'Skip',
-                      style: TextStyle(
-                        fontFamily: 'Manrope',
-                        fontSize: 15,
-                        color: Color(0xFF1B5E20),
-                      ),
+                      style: TextStyle(fontFamily: 'Manrope', fontSize: 15, color: Color(0xFF1B5E20)),
                     ),
                   ),
                 ),
+                const SizedBox(height: 20),
               ],
             ),
           ),
+          
           if (_isLoading)
             Container(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black12, // Lighter overlay
               child: const Center(child: CircularProgressIndicator()),
             ),
         ],
@@ -223,13 +134,13 @@ class _SetupPreferencePageState extends State<SetupPreferencePage> {
     );
   }
 
-  Widget _buildPreferenceSection(String title, List<Preference> preferences) {
+  Widget _buildSection(String title, List<Preference> items) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
             fontFamily: 'Manrope',
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -246,12 +157,13 @@ class _SetupPreferencePageState extends State<SetupPreferencePage> {
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
           ),
-          itemCount: preferences.length,
+          itemCount: items.length,
           itemBuilder: (context, index) {
-            final preference = preferences[index];
+            final item = items[index];
+            // Note: In a stateless widget list, we need to rebuild the state on tap.
             return PreferenceTile(
-              preference: preference,
-              onTap: () => setState(() => preference.toggleSelection()),
+              preference: item,
+              onTap: () => setState(() => item.toggleSelection()),
             );
           },
         ),
