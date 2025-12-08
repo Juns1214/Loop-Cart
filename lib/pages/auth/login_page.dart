@@ -7,6 +7,10 @@ import 'package:flutter/gestures.dart';
 import '../../utils/router.dart';
 import 'auth_method.dart';
 import 'package:flutter_application_1/utils/firebase_options.dart';
+import '../../widget/custom_text_field.dart';
+import '../../widget/custom_button.dart';
+import '../../widget/logo_widget.dart';
+import '../../widget/social_signin_button.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,7 +18,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -25,7 +29,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       initialRoute: "/login",
-      onGenerateRoute: onGenerateRoute,    );
+      onGenerateRoute: onGenerateRoute,
+    );
   }
 }
 
@@ -37,249 +42,176 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
-  final formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     super.dispose();
   }
 
-  Future<bool> userLogin() async {
+  Future<bool> _userLogin() async {
     try {
-      print("Attempting login...");
       await AuthMethod(FirebaseAuth.instance).loginWithEmail(
-        email: emailController.text,
-        password: passwordController.text,
-        context: context,
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
       );
-      print("Login successful!"); 
       Fluttertoast.showToast(msg: "Login successful");
       return true;
     } on FirebaseAuthException catch (e) {
       Fluttertoast.showToast(msg: e.message ?? "An error occurred");
+      return false;
     }
-    return false;
+  }
+
+  Future<void> _handleGoogleSignIn() async {
+    try {
+      // No context passed here anymore
+      final userCredential = await AuthMethod(
+        FirebaseAuth.instance,
+      ).signInWithGoogle();
+
+      if (userCredential != null) {
+        Fluttertoast.showToast(msg: "Google sign-in successful");
+        if (mounted) {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            "/mainpage",
+            (route) => false,
+          );
+        }
+      }
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString());
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: Colors.white,
-        height: double.infinity,
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: Column(
-          children: [
-            SizedBox(height: 10),
-            Image.asset(
-              'assets/images/icon/LogoIcon.png',
-              height: 250,
-              width: 250,
-              fit: BoxFit.contain,
-            ),
-            SizedBox(height: 20),
-
-            Text(
-              "Hi, Welcome Back!👋",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Manrope',
-                fontSize: 25,
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
+      body: SingleChildScrollView(
+        child: Container(
+          color: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Column(
+            children: [
+              const SizedBox(height: 10),
+              const LogoWidget(size: 250),
+              const SizedBox(height: 20),
+              const Text(
+                "Hi, Welcome Back! 👋",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize: 25,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-
-            Text(
-              "Hello again, you’ve been missed!",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Manrope',
-                fontSize: 15,
-                color: Colors.grey,
+              const Text(
+                "Hello again, you've been missed!",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize: 15,
+                  color: Colors.grey,
+                ),
               ),
-            ),
-
-            SizedBox(height: 40),
-
-            Form(
-              key: formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Email",
-                      style: TextStyle(
-                        fontFamily: 'Manrope',
-                        fontSize: 15,
-                        color: Color(0xFF1B5E20),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  TextFormField(
-                    controller: emailController,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: "Please enter your email",
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Please enter email";
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 20.0),
-
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      "Password",
-                      style: TextStyle(
-                        fontFamily: 'Manrope',
-                        fontSize: 15,
-                        color: Color(0xFF1B5E20),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-
-                  TextFormField(
-                    controller: passwordController,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: "Please enter your password",
-                    ),
-                    obscureText: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Please enter password";
-                      }
-                      return null;
-                    },
-                  ),
-                  const SizedBox(height: 20.0),
-
-                  ElevatedButton(
-                    onPressed: () async {
-                      if (formKey.currentState!.validate()) {
-                        bool loginSuccess = await userLogin();
-                        if (loginSuccess) {
-                          Navigator.pushNamedAndRemoveUntil(context, "/mainpage", (route) => false);
+              const SizedBox(height: 40),
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    CustomTextField(
+                      controller: _emailController,
+                      label: "Email",
+                      hintText: "Please enter your email",
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Please enter email";
                         }
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 50,
-                        vertical: 15,
-                      ),
-                      backgroundColor: Color(0xFF388E3C),
-                      minimumSize: Size(250, 30),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
+                        return null;
+                      },
                     ),
-                    child: const Text(
-                      "Login",
+                    const SizedBox(height: 20),
+                    CustomTextField(
+                      controller: _passwordController,
+                      label: "Password",
+                      hintText: "Please enter your password",
+                      obscureText: true,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Please enter password";
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    CustomButton(
+                      text: "Login",
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          bool loginSuccess = await _userLogin();
+                          if (loginSuccess && mounted) {
+                            Navigator.pushNamedAndRemoveUntil(
+                              context,
+                              "/mainpage",
+                              (route) => false,
+                            );
+                          }
+                        }
+                      },
+                    ),
+                    const SizedBox(height: 30),
+                    const Text(
+                      "Other sign in options",
                       style: TextStyle(
                         fontFamily: 'Manrope',
-                        fontSize: 20,
-                        color: Colors.white,
+                        fontSize: 17,
+                        color: Colors.black87,
                       ),
                     ),
-                  ),
-
-                  SizedBox(height: 30.0),
-
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Other sign in options",
-                        style: TextStyle(
+                    const SizedBox(height: 20),
+                    SocialSignInButton(
+                      iconPath: 'assets/images/icon/google_icon.png',
+                      onTap: _handleGoogleSignIn,
+                    ),
+                    const SizedBox(height: 40),
+                    RichText(
+                      text: TextSpan(
+                        text: "Don't have an account yet? ",
+                        style: const TextStyle(
                           fontFamily: 'Manrope',
-                          fontSize: 17,
-                          color: Colors.black87,
+                          color: Colors.black,
+                          fontSize: 17.0,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ),
-                      SizedBox(height: 20.0),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          InkWell(
-                            onTap: () async {
-                              final userCredential = await AuthMethod(FirebaseAuth.instance).signInWithGoogle(context);
-                              if (userCredential != null) {
-                                Fluttertoast.showToast(msg: "Google sign-in successful");
-                                Navigator.pushNamedAndRemoveUntil(context, "/mainpage", (route) => false);
-
-                              }
-                            },
-
-                            customBorder: const CircleBorder(),
-                            child: Container(
-                              height: 40,
-                              width: 40,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[200],
-                                shape: BoxShape.circle,
-                              ),
-                              child: Center(
-                                child: Image.asset(
-                                  'assets/images/icon/google_icon.png',
-                                  height: 30,
-                                  width: 30,
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
+                          TextSpan(
+                            text: "Sign Up",
+                            style: const TextStyle(
+                              fontFamily: 'Manrope',
+                              color: Color(0xFF1B5E20),
+                              fontSize: 17.0,
+                              fontWeight: FontWeight.bold,
                             ),
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                Navigator.pushNamed(context, '/signup');
+                              },
                           ),
                         ],
                       ),
-
-                      SizedBox(height: 40.0),
-
-                      RichText(
-                        text: TextSpan(
-                          text: "Don't have an account yet? ",
-                          style: TextStyle(
-                            fontFamily: 'Manrope',
-                            color: Colors.black,
-                            fontSize: 17.0,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          children: [
-                            TextSpan(
-                              text: "Sign Up",
-                              style: TextStyle(
-                                fontFamily: 'Manrope',
-                                color: Color(0xFF1B5E20),
-                                fontSize: 17.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () {
-                                  Navigator.pushNamed(context, '/signup');
-                                },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

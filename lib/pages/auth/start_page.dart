@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_application_1/utils/firebase_options.dart';
 import '../../utils/router.dart';
+import '../../widget/logo_widget.dart'; 
+import '../../widget/custom_button.dart'; 
 
-void main() {
+void main()  async{
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -18,7 +25,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: "/start",
       onGenerateRoute: onGenerateRoute,
-      home: const GetStartedPage(),
+      home: GetStartedPage(),
     );
   }
 }
@@ -34,16 +41,14 @@ class GetStartedPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.asset(
-              'assets/images/icon/LogoIcon.png',
-              width: 150,
-              height: 200,
-            ),
+            // REPLACED: Image.asset with LogoWidget
+            const LogoWidget(size: 150), 
 
             const SizedBox(height: 20),
 
-            Text(
+            const Text(
               "Shop Smart,\nLoop Forever.",
+              textAlign: TextAlign.center, // Good practice for multiline
               style: TextStyle(
                 fontFamily: 'AbhayaLibre',
                 fontSize: 45,
@@ -65,30 +70,17 @@ class GetStartedPage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            ElevatedButton(
+            // REPLACED: ElevatedButton with CustomButton
+            CustomButton(
+              text: "Get Started",
               onPressed: () {
                 Navigator.pushReplacementNamed(context, "/onboarding");
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF7CB342),
-                minimumSize: Size(200, 50),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 40,
-                  vertical: 15,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-              ),
-              child: const Text(
-                "Get Started",
-                style: TextStyle(
-                  fontFamily: 'AbhayaLibre',
-                  fontSize: 30,
-                  color: Color(0xFF1B5E20),
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              backgroundColor: const Color(0xFF7CB342),
+              textColor: const Color(0xFF1B5E20),
+              fontFamily: 'AbhayaLibre', // Preserving your font choice
+              fontSize: 30,
+              minimumSize: const Size(200, 50),
             ),
           ],
         ),
