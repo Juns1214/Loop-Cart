@@ -13,7 +13,6 @@ import '../../utils/repair_option.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../utils/router.dart';
 import '../checkout/payment.dart';
-import '../../utils/delivery_fee_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -58,16 +57,35 @@ class _RepairServicePageState extends State<RepairServicePage> {
 
   bool _isPickerActive = false;
   bool _isLoadingAddress = true;
-  bool _isCalculatingFee = false;
+  bool _isDeliveryFeesExpanded = false; // NEW: For expandable section
   File? _image;
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = const TimeOfDay(hour: 14, minute: 0);
   Map<String, String>? selectedRepair;
   
-  // Delivery fee related
-  Map<String, dynamic>? deliveryFeeResult;
   double? calculatedDeliveryFee;
-  double? calculatedDistance;
+
+  // STATE-BASED DELIVERY FEES (Malaysian Ringgit)
+  static const Map<String, double> STATE_DELIVERY_FEES = {
+    'Kuala Lumpur': 10.0,
+    'Selangor': 15.0,
+    'Putrajaya': 12.0,
+    'Negeri Sembilan': 25.0,
+    'Melaka': 30.0,
+    'Johor': 35.0,
+    'Pahang': 40.0,
+    'Terengganu': 45.0,
+    'Kelantan': 50.0,
+    'Perak': 35.0,
+    'Penang': 40.0,
+    'Kedah': 45.0,
+    'Perlis': 50.0,
+    'Sabah': 60.0,
+    'Sarawak': 60.0,
+  };
+
+  // NEW: Get list of valid states
+  static List<String> get validStates => STATE_DELIVERY_FEES.keys.toList();
 
   @override
   void initState() {
@@ -101,6 +119,8 @@ class _RepairServicePageState extends State<RepairServicePage> {
             _cityController.text = address['city'] ?? '';
             _postalController.text = address['postal'] ?? '';
             _stateController.text = address['state'] ?? '';
+            // Auto-calculate fee when state is loaded
+            _calculateDeliveryFee();
           });
         }
       }
@@ -167,73 +187,68 @@ class _RepairServicePageState extends State<RepairServicePage> {
         selectedRepair!['Repair'] == 'Custom Repair';
   }
 
-  /// Calculate delivery fee based on current address
-  Future<void> _calculateDeliveryFee() async {
-    if (!_addressFormKey.currentState!.validate()) {
+  // NEW: Validate if state is in the valid list
+  bool _isValidState(String state) {
+    return validStates.any(
+      (validState) => validState.toLowerCase() == state.trim().toLowerCase(),
+    );
+  }
+
+  /// Simple state-based delivery fee calculation with validation
+  void _calculateDeliveryFee() {
+    String state = _stateController.text.trim();
+    
+    if (state.isEmpty) {
+      setState(() {
+        calculatedDeliveryFee = null;
+      });
+      return;
+    }
+
+    // Validate state
+    if (!_isValidState(state)) {
+      setState(() {
+        calculatedDeliveryFee = null;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please complete the address first'),
+        SnackBar(
+          content: Text('⚠️ "$state" is not a valid Malaysian state. Please select from the list.'),
           backgroundColor: Colors.orange,
+          duration: const Duration(seconds: 3),
+          action: SnackBarAction(
+            label: 'View States',
+            textColor: Colors.white,
+            onPressed: () {
+              setState(() {
+                _isDeliveryFeesExpanded = true;
+              });
+            },
+          ),
         ),
       );
       return;
     }
 
-    setState(() {
-      _isCalculatingFee = true;
-      deliveryFeeResult = null;
-      calculatedDeliveryFee = null;
-      calculatedDistance = null;
+    // Find matching state (case-insensitive)
+    double? fee;
+    STATE_DELIVERY_FEES.forEach((stateName, price) {
+      if (stateName.toLowerCase() == state.toLowerCase()) {
+        fee = price;
+      }
     });
 
-    try {
-      Map<String, dynamic> addressData = 
-          _addressFormKey.currentState!.getAddressData();
-      
-      Map<String, dynamic> result = 
-          await DeliveryFeeService.calculateDeliveryFee(addressData);
+    setState(() {
+      calculatedDeliveryFee = fee;
+    });
 
-      if (mounted) {
-        setState(() {
-          deliveryFeeResult = result;
-          if (result['success']) {
-            calculatedDeliveryFee = result['deliveryFee'].toDouble();
-            calculatedDistance = result['distance'].toDouble();
-          }
-          _isCalculatingFee = false;
-        });
-
-        if (result['success']) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                '✓ Delivery fee calculated: RM ${result['deliveryFee'].toStringAsFixed(2)}',
-              ),
-              backgroundColor: Colors.green,
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(result['error']),
-              backgroundColor: Colors.red,
-              duration: const Duration(seconds: 5),
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _isCalculatingFee = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error calculating delivery fee: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+    if (fee != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('✓ Delivery fee for $state: RM ${fee!.toStringAsFixed(2)}'),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 2),
+        ),
+      );
     }
   }
 
@@ -249,6 +264,17 @@ class _RepairServicePageState extends State<RepairServicePage> {
     if (!_addressFormKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please complete the address')),
+      );
+      return;
+    }
+
+    // NEW: Validate state before proceeding
+    if (!_isValidState(_stateController.text)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a valid Malaysian state'),
+          backgroundColor: Colors.orange,
+        ),
       );
       return;
     }
@@ -282,8 +308,7 @@ class _RepairServicePageState extends State<RepairServicePage> {
         "created_at": FieldValue.serverTimestamp(),
         "status": "Pending Review",
         "paymentStatus": "Pending",
-        "deliveryFee": calculatedDeliveryFee,
-        "distance": calculatedDistance,
+        "deliveryFee": calculatedDeliveryFee ?? 15.0,
       });
 
       if (mounted) {
@@ -322,6 +347,17 @@ class _RepairServicePageState extends State<RepairServicePage> {
       return;
     }
 
+    // NEW: Validate state before proceeding
+    if (!_isValidState(_stateController.text)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter a valid Malaysian state'),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
     if (selectedRepair == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please select a repair option')),
@@ -336,11 +372,10 @@ class _RepairServicePageState extends State<RepairServicePage> {
       return;
     }
 
-    // Validate delivery fee is calculated
     if (calculatedDeliveryFee == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Please calculate delivery fee first'),
+          content: Text('Please select a valid state to calculate delivery fee'),
           backgroundColor: Colors.orange,
         ),
       );
@@ -365,7 +400,6 @@ class _RepairServicePageState extends State<RepairServicePage> {
             "created_at": FieldValue.serverTimestamp(),
             "status": "Pending Payment",
             "deliveryFee": calculatedDeliveryFee,
-            "distance": calculatedDistance,
           });
 
       String repairRecordId = repairRef.id;
@@ -380,7 +414,6 @@ class _RepairServicePageState extends State<RepairServicePage> {
                 'repair_option': selectedRepair!,
                 'repairRecordId': repairRecordId,
                 'deliveryFee': calculatedDeliveryFee,
-                'distance': calculatedDistance,
               },
             ),
           ),
@@ -596,44 +629,14 @@ class _RepairServicePageState extends State<RepairServicePage> {
                         cityController: _cityController,
                         postalController: _postalController,
                         stateController: _stateController,
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Calculate Delivery Fee Button
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton.icon(
-                          onPressed: _isCalculatingFee ? null : _calculateDeliveryFee,
-                          icon: _isCalculatingFee
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.white,
-                                    ),
-                                  ),
-                                )
-                              : const Icon(Icons.calculate_outlined),
-                          label: Text(
-                            _isCalculatingFee
-                                ? "Calculating..."
-                                : "Calculate Delivery Fee",
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF2E5BFF),
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                        ),
+                        onStateChanged: (state) {
+                          // Auto-calculate when state changes
+                          _calculateDeliveryFee();
+                        },
                       ),
 
                       // Delivery Fee Display
-                      if (deliveryFeeResult != null && deliveryFeeResult!['success'])
+                      if (calculatedDeliveryFee != null)
                         Container(
                           margin: const EdgeInsets.only(top: 16),
                           padding: const EdgeInsets.all(16),
@@ -642,19 +645,19 @@ class _RepairServicePageState extends State<RepairServicePage> {
                             borderRadius: BorderRadius.circular(8),
                             border: Border.all(color: Colors.green.shade200),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Row(
                                 children: [
                                   Icon(
-                                    Icons.check_circle,
+                                    Icons.local_shipping_outlined,
                                     color: Colors.green.shade700,
                                     size: 24,
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
-                                    "Delivery Fee Calculated",
+                                    "Delivery Fee",
                                     style: TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
@@ -663,141 +666,180 @@ class _RepairServicePageState extends State<RepairServicePage> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 12),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
-                                    "Distance:",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                  Text(
-                                    "${calculatedDistance!.toStringAsFixed(1)} km",
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
-                                    "Category:",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                  Text(
-                                    deliveryFeeResult!['tierLabel'],
-                                    style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const Divider(height: 24),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Text(
-                                    "Delivery Fee:",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  Text(
-                                    "RM ${calculatedDeliveryFee!.toStringAsFixed(2)}",
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.green.shade700,
-                                    ),
-                                  ),
-                                ],
+                              Text(
+                                "RM ${calculatedDeliveryFee!.toStringAsFixed(2)}",
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.green.shade700,
+                                ),
                               ),
                             ],
                           ),
                         ),
 
-                      // Pricing Info Card
+                      // NEW: Expandable Pricing Info Card
                       Container(
                         margin: const EdgeInsets.only(top: 16),
-                        padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: Colors.blue.shade50,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(color: Colors.blue.shade200),
                         ),
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  Icons.info_outline,
-                                  color: Colors.blue.shade700,
-                                  size: 20,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  "Delivery Fee Rates",
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.blue.shade900,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 12),
-                            ...DeliveryFeeService.getPricingTiersInfo()
-                                .map((tier) {
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 6),
+                            // Header with expand button
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _isDeliveryFeesExpanded = !_isDeliveryFeesExpanded;
+                                });
+                              },
+                              borderRadius: BorderRadius.circular(8),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
                                 child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(
-                                      tier['label'],
-                                      style: const TextStyle(
-                                        fontSize: 13,
-                                        color: Colors.black87,
-                                      ),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.info_outline,
+                                          color: Colors.blue.shade700,
+                                          size: 20,
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          "Delivery Fees by State",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.blue.shade900,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    Text(
-                                      "RM ${tier['fee'].toStringAsFixed(0)}",
-                                      style: const TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.black87,
+                                    Row(
+                                      children: [
+                                        Text(
+                                          _isDeliveryFeesExpanded ? "Hide" : "View All",
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w600,
+                                            color: Colors.blue.shade700,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Icon(
+                                          _isDeliveryFeesExpanded
+                                              ? Icons.expand_less
+                                              : Icons.expand_more,
+                                          color: Colors.blue.shade700,
+                                          size: 24,
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            
+                            // Expandable content
+                            if (_isDeliveryFeesExpanded)
+                              Container(
+                                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                                child: Column(
+                                  children: [
+                                    const Divider(height: 1),
+                                    const SizedBox(height: 12),
+                                    ...STATE_DELIVERY_FEES.entries.map((entry) {
+                                      bool isSelected = _stateController.text.trim().toLowerCase() == 
+                                                        entry.key.toLowerCase();
+                                      return Container(
+                                        margin: const EdgeInsets.only(bottom: 6),
+                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                        decoration: BoxDecoration(
+                                          color: isSelected 
+                                              ? Colors.green.shade100 
+                                              : Colors.white,
+                                          borderRadius: BorderRadius.circular(6),
+                                          border: Border.all(
+                                            color: isSelected 
+                                                ? Colors.green.shade300 
+                                                : Colors.grey.shade200,
+                                            width: isSelected ? 2 : 1,
+                                          ),
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                if (isSelected)
+                                                  Icon(
+                                                    Icons.check_circle,
+                                                    size: 16,
+                                                    color: Colors.green.shade700,
+                                                  ),
+                                                if (isSelected) const SizedBox(width: 8),
+                                                Text(
+                                                  entry.key,
+                                                  style: TextStyle(
+                                                    fontSize: 13,
+                                                    color: Colors.black87,
+                                                    fontWeight: isSelected 
+                                                        ? FontWeight.bold 
+                                                        : FontWeight.normal,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            Text(
+                                              "RM ${entry.value.toStringAsFixed(0)}",
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                                color: isSelected 
+                                                    ? Colors.green.shade900 
+                                                    : Colors.black87,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }).toList(),
+                                    const SizedBox(height: 8),
+                                    Container(
+                                      padding: const EdgeInsets.all(10),
+                                      decoration: BoxDecoration(
+                                        color: Colors.amber.shade50,
+                                        borderRadius: BorderRadius.circular(6),
+                                        border: Border.all(color: Colors.amber.shade200),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.warning_amber_rounded,
+                                            size: 16,
+                                            color: Colors.amber.shade800,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                            child: Text(
+                                              "Please enter the state name exactly as shown above",
+                                              style: TextStyle(
+                                                fontSize: 11,
+                                                color: Colors.amber.shade900,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
                                   ],
                                 ),
-                              );
-                            }).toList(),
-                            const SizedBox(height: 8),
-                            Text(
-                              "Maximum service radius: 50 km from KL",
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey.shade700,
-                                fontStyle: FontStyle.italic,
                               ),
-                            ),
                           ],
                         ),
                       ),

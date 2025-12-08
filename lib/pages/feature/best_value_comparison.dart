@@ -1,548 +1,390 @@
-// ====================================================================
-// FILE 1: lib/feature/best_value_comparison.dart
-// FOR REGULAR PRODUCTS
-// ====================================================================
-
+// lib/feature/smart_value_analyzer.dart
+import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-class HonestAssessmentService {
-  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  
-  // Category benchmark prices for regular products
-  static const Map<String, double> categoryBenchmarks = {
-    'Clothing': 120.0,
-    'Dairy-Free': 20.0,
-    'Eco-Friendly': 15.0,
-    'Fitness': 200.0,
-    'Gluten-Free': 15.0,
-    'Gluten': 12.0,
-    'Halal Products': 18.0,
-    'Non-Halal Products': 22.0,
-    'Nut': 18.0,
-    'Electronic & Gadget': 1000.0,
-    'Vegan Products': 25.0,
-  };
+class SmartValueDisplay extends StatefulWidget {
+  final String productId;
+  final bool isPreowned;
 
-  /// Main method: Get or generate honest assessment for regular products
-  static Future<Map<String, dynamic>?> getHonestAssessment({
-    required String productId,
-  }) async {
+  const SmartValueDisplay({
+    super.key,
+    required this.productId,
+    required this.isPreowned,
+  });
+
+  @override
+  State<SmartValueDisplay> createState() => _SmartValueDisplayState();
+}
+
+class _SmartValueDisplayState extends State<SmartValueDisplay> {
+  String? analysisResult;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAnalysis();
+  }
+
+  Future<void> _loadAnalysis() async {
     try {
-      // 1. Get product data from products collection
-      DocumentSnapshot productDoc = await _firestore
-          .collection('products')
-          .doc(productId)
+      String collection = widget.isPreowned ? 'preowned_products' : 'products';
+      String reviewCollection = widget.isPreowned
+          ? 'preowned_reviews'
+          : 'reviews';
+
+      print('🔍 Searching in collection: $collection');
+      print('🔍 Looking for productId: ${widget.productId}');
+
+      // 1. Get product data - TRY MULTIPLE FIELD NAMES
+      QuerySnapshot query;
+
+      // First try with 'id' field
+      query = await FirebaseFirestore.instance
+          .collection(collection)
+          .where('id', isEqualTo: widget.productId)
+          .limit(1)
           .get();
 
-      if (!productDoc.exists) {
-        print('Product not found: $productId');
-        return null;
+      // If not found, try with 'productId' field
+      if (query.docs.isEmpty) {
+        print('⚠️ Not found with "id" field, trying "productId"...');
+        query = await FirebaseFirestore.instance
+            .collection(collection)
+            .where('productId', isEqualTo: widget.productId)
+            .limit(1)
+            .get();
       }
 
-      Map<String, dynamic> productData = productDoc.data() as Map<String, dynamic>;
-
-      // 2. Check if assessment exists and is still valid
-      if (productData.containsKey('honestAssessment')) {
-        Map<String, dynamic> existingAssessment = 
-            Map<String, dynamic>.from(productData['honestAssessment']);
-        
-        // Check if new reviews were added since last generation
-        bool hasNewReviews = await _hasNewReviews(
-          productId: productId,
-          lastReviewDate: existingAssessment['lastReviewDate'] as Timestamp?,
+      // If still not found, try direct document fetch (if productId IS the document ID)
+      if (query.docs.isEmpty) {
+        print(
+          '⚠️ Not found with "productId" field, trying direct document fetch...',
         );
+        var docSnapshot = await FirebaseFirestore.instance
+            .collection(collection)
+            .doc(widget.productId)
+            .get();
 
-        if (!hasNewReviews) {
-          // Return cached assessment
-          print('Returning cached assessment for: $productId');
-          return existingAssessment;
+        if (docSnapshot.exists) {
+          // Convert to QuerySnapshot format for consistency
+          query = await FirebaseFirestore.instance
+              .collection(collection)
+              .where(FieldPath.documentId, isEqualTo: widget.productId)
+              .get();
         }
       }
 
-      // 3. Generate new assessment
-      print('Generating new assessment for: $productId');
-      return await _generateNewAssessment(
-        productId: productId,
-        productData: productData,
-      );
-
-    } catch (e) {
-      print('Error getting honest assessment: $e');
-      return null;
-    }
-  }
-
-  /// Check if there are new reviews since last assessment
-  static Future<bool> _hasNewReviews({
-    required String productId,
-    required Timestamp? lastReviewDate,
-  }) async {
-    if (lastReviewDate == null) return true;
-
-    QuerySnapshot newReviews = await _firestore
-        .collection('reviews')
-        .where('productId', isEqualTo: productId)
-        .where('reviewDate', isGreaterThan: lastReviewDate.toDate().toIso8601String())
-        .limit(1)
-        .get();
-
-    return newReviews.docs.isNotEmpty;
-  }
-
-  /// Generate new assessment with AI and formula
-  static Future<Map<String, dynamic>?> _generateNewAssessment({
-    required String productId,
-    required Map<String, dynamic> productData,
-  }) async {
-    try {
-      // 1. Fetch all reviews for this product
-      QuerySnapshot reviewsSnapshot = await _firestore
-          .collection('reviews')
-          .where('productId', isEqualTo: productId)
-          .get();
-
-      if (reviewsSnapshot.docs.isEmpty) {
-        print('No reviews found for product: $productId');
-        return null;
+      if (query.docs.isEmpty) {
+        print('❌ Product not found in $collection');
+        setState(() {
+          analysisResult = 'Product info unavailable';
+          isLoading = false;
+        });
+        return;
       }
 
-      List<Map<String, dynamic>> reviews = reviewsSnapshot.docs
-          .map((doc) => doc.data() as Map<String, dynamic>)
+      print('✅ Product found in $collection');
+      var doc = query.docs.first;
+      var data = doc.data() as Map<String, dynamic>;
+      print('📦 Product data: ${data.keys}');
+
+      // 2. Get ALL reviews to check count
+      var reviewsSnapshot = await FirebaseFirestore.instance
+          .collection(reviewCollection)
+          .where('productId', isEqualTo: widget.productId)
+          .get();
+
+      int currentReviewCount = reviewsSnapshot.docs.length;
+      print('📊 Found $currentReviewCount reviews in $reviewCollection');
+
+      if (currentReviewCount == 0) {
+        setState(() {
+          analysisResult = 'No reviews yet. Be the first to review!';
+          isLoading = false;
+        });
+        return;
+      }
+
+      // 3. CHECK CACHE - compare review count
+      int cachedReviewCount = (data['lastReviewCount'] ?? 0) as int;
+      bool hasNewReviews = currentReviewCount != cachedReviewCount;
+
+      if (data.containsKey('aiSummary') &&
+          data['aiSummary'] != null &&
+          (data['aiSummary'] as String).isNotEmpty &&
+          !hasNewReviews) {
+        print('✓ Using cached summary (no new reviews)');
+        setState(() {
+          analysisResult = data['aiSummary'];
+          isLoading = false;
+        });
+        return;
+      }
+
+      print(
+        '⟳ Generating new analysis (review count changed: $cachedReviewCount → $currentReviewCount)',
+      );
+
+      // 4. Get product details with fallback field names
+      String name = data['name'] ?? data['productName'] ?? 'Item';
+      double price = ((data['price'] ?? 0) as num).toDouble();
+
+      print('💰 Product: $name, Price: RM$price');
+
+      // 5. Build ALL review texts for AI
+      List<Map<String, dynamic>> allReviews = reviewsSnapshot.docs
+          .map((d) => d.data())
           .toList();
 
-      print('Found ${reviews.length} reviews for product: $productId');
+      String reviewTexts = allReviews
+          .map(
+            (r) =>
+                '${r['rating']}/5: "${r['reviewText'] ?? r['reviewTitle'] ?? ''}"',
+          )
+          .join('\n');
 
-      // 2. Calculate formula-based metrics
-      double avgRating = _calculateAverageRating(reviews);
-      double productPrice = (productData['price'] ?? 0).toDouble();
-      String category = productData['category'] ?? '';
-      double benchmarkPrice = categoryBenchmarks[category] ?? productPrice;
-      
-      double valueScore = _calculateValueScore(
-        avgRating: avgRating,
-        productPrice: productPrice,
-        benchmarkPrice: benchmarkPrice,
-        totalReviews: reviews.length,
-      );
+      print('📝 Processing ${allReviews.length} reviews');
 
-      String priceCategory = _getPriceCategory(productPrice, benchmarkPrice);
+      // 6. Enhanced prompt focusing on price-quality comparison
+      String conditionNote = widget.isPreowned ? 'pre-owned/used' : 'brand new';
 
-      // 3. Generate AI summary using Gemini
-      String? aiSummary = await _generateGeminiSummary(
-        productData: productData,
-        reviews: reviews,
-        avgRating: avgRating,
-        priceCategory: priceCategory,
-        isPreowned: false,
-      );
+      String prompt =
+          '''
+You're a smart shopping assistant. Analyze this $conditionNote product:
 
-      if (aiSummary == null) {
-        print('AI summary generation failed');
-        return null;
-      }
+Product: "$name"
+Price: RM${price.toStringAsFixed(0)}
 
-      // 4. Find newest review date
-      Timestamp? newestReviewDate = _getNewestReviewDate(reviews);
+ALL Customer Reviews:
+$reviewTexts
 
-      // 5. Create assessment object
-      Map<String, dynamic> assessment = {
-        'summary': aiSummary,
-        'valueScore': double.parse(valueScore.toStringAsFixed(1)),
-        'priceCategory': priceCategory,
-        'totalReviews': reviews.length,
-        'lastGenerated': FieldValue.serverTimestamp(),
-        'lastReviewDate': newestReviewDate,
-      };
+Task: Compare price vs quality based ONLY on these reviews. Write 2-3 SHORT sentences that:
+1. Mention if it's worth the price or overpriced based on review quality
+2. Give honest advice (e.g., "Great value despite higher price" or "Cheaper but quality concerns mentioned")
 
-      // 6. Save to Firestore
-      await _firestore.collection('products').doc(productId).update({
-        'honestAssessment': assessment,
-      });
+Be direct and specific. No fluff.
+''';
 
-      print('Assessment saved successfully for: $productId');
-      return assessment;
+      // 7. Call AI
+      const String apiKey = 'AIzaSyAyK99yDMqz2IBwrr4KqrVnVmfEdq9atbA';
 
-    } catch (e) {
-      print('Error generating assessment: $e');
-      return null;
-    }
-  }
+      try {
+        final response = await http
+            .post(
+              Uri.parse(
+                'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$apiKey',
+              ),
+              headers: {'Content-Type': 'application/json'},
+              body: json.encode({
+                'contents': [
+                  {
+                    'parts': [
+                      {'text': prompt},
+                    ],
+                  },
+                ],
+                'generationConfig': {
+                  'temperature': 0.7,
+                  'maxOutputTokens': 120,
+                },
+              }),
+            )
+            .timeout(const Duration(seconds: 15));
 
-  static double _calculateAverageRating(List<Map<String, dynamic>> reviews) {
-    if (reviews.isEmpty) return 0.0;
-    double total = 0.0;
-    for (var review in reviews) {
-      total += (review['rating'] ?? 0).toDouble();
-    }
-    return total / reviews.length;
-  }
+        if (response.statusCode == 200) {
+          var result = json.decode(response.body);
+          String aiResponse =
+              result['candidates'][0]['content']['parts'][0]['text'].trim();
 
-  static double _calculateValueScore({
-    required double avgRating,
-    required double productPrice,
-    required double benchmarkPrice,
-    required int totalReviews,
-  }) {
-    double ratingScore = avgRating * 10;
-    double priceRatio = productPrice / benchmarkPrice;
-    double priceScore = 0;
-    
-    if (priceRatio < 0.6) {
-      priceScore = 20;
-    } else if (priceRatio >= 0.6 && priceRatio <= 1.2) {
-      priceScore = 30;
-    } else if (priceRatio > 1.2 && priceRatio <= 1.5) {
-      priceScore = 20;
-    } else {
-      priceScore = 10;
-    }
+          print('✅ AI Response received');
 
-    double volumeScore = 0;
-    if (totalReviews >= 20) {
-      volumeScore = 20;
-    } else if (totalReviews >= 10) {
-      volumeScore = 15;
-    } else if (totalReviews >= 5) {
-      volumeScore = 10;
-    } else {
-      volumeScore = 5;
-    }
+          // 8. Save summary + review count to product collection
+          await FirebaseFirestore.instance
+              .collection(collection)
+              .doc(doc.id)
+              .update({
+                'aiSummary': aiResponse,
+                'lastReviewCount': currentReviewCount,
+                'lastAnalyzedAt': FieldValue.serverTimestamp(),
+              });
 
-    return ((ratingScore + priceScore + volumeScore) / 100) * 10;
-  }
+          print('✓ Saved summary to Firestore');
 
-  static String _getPriceCategory(double productPrice, double benchmarkPrice) {
-    double ratio = productPrice / benchmarkPrice;
-    if (ratio < 0.7) return 'Budget-Friendly';
-    if (ratio < 0.9) return 'Good Value';
-    if (ratio <= 1.1) return 'Fair Price';
-    if (ratio <= 1.3) return 'Slightly Premium';
-    return 'Premium Price';
-  }
-
-  static Timestamp? _getNewestReviewDate(List<Map<String, dynamic>> reviews) {
-    if (reviews.isEmpty) return null;
-    DateTime? newest;
-    for (var review in reviews) {
-      String? dateStr = review['reviewDate'];
-      if (dateStr != null) {
-        DateTime date = DateTime.parse(dateStr);
-        if (newest == null || date.isAfter(newest)) {
-          newest = date;
+          setState(() {
+            analysisResult = aiResponse;
+            isLoading = false;
+          });
+        } else {
+          throw Exception('AI API failed: ${response.statusCode}');
         }
-      }
-    }
-    return newest != null ? Timestamp.fromDate(newest) : null;
-  }
-
-  static Future<String?> _generateGeminiSummary({
-    required Map<String, dynamic> productData,
-    required List<Map<String, dynamic>> reviews,
-    required double avgRating,
-    required String priceCategory,
-    required bool isPreowned,
-  }) async {
-    try {
-      String productName = productData['name'] ?? 'Unknown Product';
-      double productPrice = (productData['price'] ?? 0).toDouble();
-      String description = productData['description'] ?? '';
-      String category = productData['category'] ?? '';
-
-      StringBuffer reviewsText = StringBuffer();
-      for (int i = 0; i < reviews.length; i++) {
-        var review = reviews[i];
-        reviewsText.writeln('Review ${i + 1}:');
-        reviewsText.writeln('Rating: ${review['rating']}/5');
-        reviewsText.writeln('Title: ${review['reviewTitle']}');
-        reviewsText.writeln('Comment: ${review['reviewText']}');
-        reviewsText.writeln('Reviewer: ${review['userName']}');
-        reviewsText.writeln('---');
-      }
-
-      String prompt = '''
-You are an honest product reviewer. Analyze this product and its reviews to generate a brief, honest summary.
-
-PRODUCT DETAILS:
-- Name: $productName
-- Price: RM $productPrice
-- Category: $category
-- Type: NEW PRODUCT
-- Description: $description
-- Average Rating: ${avgRating.toStringAsFixed(1)}/5
-- Price Category: $priceCategory
-
-CUSTOMER REVIEWS:
-$reviewsText
-
-IMPORTANT INSTRUCTIONS:
-1. Write ONLY 2-3 sentences maximum
-2. Be honest and balanced - mention both positives and concerns if present
-3. This is a NEW product, so evaluate quality, features, and value accordingly
-4. Focus on: quality, value for money, common themes in reviews
-5. Start with what users generally say (e.g., "Users praise...", "Most customers note...", "Buyers appreciate...")
-6. DO NOT mention sustainability or environmental benefits
-7. Be concise and direct
-
-Generate the honest summary now:''';
-
-      const String GEMINI_API_KEY = 'YOUR_API_KEY_HERE';
-
-      final response = await http.post(
-        Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=$GEMINI_API_KEY'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({
-          'contents': [
-            {
-              'parts': [
-                {'text': prompt}
-              ]
-            }
-          ],
-          'generationConfig': {
-            'temperature': 0.7,
-            'maxOutputTokens': 150,
-          }
-        }),
-      );
-
-      if (response.statusCode == 200) {
-        Map<String, dynamic> data = json.decode(response.body);
-        String summary = data['candidates'][0]['content']['parts'][0]['text'];
-        return summary.trim();
-      } else {
-        print('Gemini API error: ${response.statusCode}');
-        return null;
+      } catch (e) {
+        print('❌ AI Error: $e');
+        setState(() {
+          analysisResult =
+              'Analysis temporarily unavailable. Please check reviews manually.';
+          isLoading = false;
+        });
       }
     } catch (e) {
-      print('Error calling Gemini API: $e');
-      return null;
+      print('❌ Fatal Error: $e');
+      setState(() {
+        analysisResult = 'Unable to load analysis.';
+        isLoading = false;
+      });
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (isLoading) {
+      return Container(
+        margin: EdgeInsets.symmetric(vertical: 12),
+        padding: EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFF388E3C).withOpacity(0.05),
+              Color(0xFF388E3C).withOpacity(0.1),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: Color(0xFF388E3C).withOpacity(0.3),
+            width: 1.5,
+          ),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Color(0xFF388E3C).withOpacity(0.2),
+                shape: BoxShape.circle,
+              ),
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF388E3C)),
+                ),
+              ),
+            ),
+            SizedBox(width: 12),
+            Text(
+              'Analyzing value...',
+              style: TextStyle(
+                fontSize: 14,
+                color: Color(0xFF388E3C),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 12),
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            Color(0xFF388E3C).withOpacity(0.05),
+            Color(0xFF388E3C).withOpacity(0.1),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Color(0xFF388E3C).withOpacity(0.3),
+          width: 1.5,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Color(0xFF388E3C).withOpacity(0.2),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.verified_outlined,
+                  color: Color(0xFF388E3C),
+                  size: 20,
+                ),
+              ),
+              SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Value Analysis',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF388E3C),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 12),
+          Container(
+            padding: EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              analysisResult ?? 'No analysis available',
+              style: TextStyle(
+                fontSize: 14,
+                height: 1.5,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+          SizedBox(height: 8),
+          Row(
+            children: [
+              Icon(Icons.auto_awesome, size: 11, color: Colors.grey[500]),
+              SizedBox(width: 4),
+              Expanded(
+                child: Text(
+                  'AI-powered price vs quality insight',
+                  style: TextStyle(
+                    fontSize: 10,
+                    color: Colors.grey[500],
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
 
-// ====================================================================
-// FILE 2: lib/feature/best_value_comparison_preowned.dart
-// FOR PRE-OWNED PRODUCTS
-// ====================================================================
+// Backward compatibility wrapper
+class SmartValueButton extends StatelessWidget {
+  final String productId;
+  final bool isPreowned;
 
-class BestValueComparisonService {
-  static final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  
-  // Category benchmark prices for pre-owned products
-  static const Map<String, double> categoryBenchmarks = {
-    'Electronics': 800.0,
-    'Home Appliances': 250.0,
-    'Furniture': 400.0,
-    'Vehicles': 35000.0,
-    'Baby and Kids': 80.0,
-    'Musical Instruments': 1500.0,
-    'Books & Stationery': 40.0,
-  };
+  const SmartValueButton({
+    super.key,
+    required this.productId,
+    required this.isPreowned,
+  });
 
-  /// Main method: Get or generate best value comparison for pre-owned products
-  static Future<Map<String, dynamic>?> getBestValueComparison({
-    required String productId,
-  }) async {
-    try {
-      // 1. Get product data from preowned_products collection
-      DocumentSnapshot productDoc = await _firestore
-          .collection('preowned_products')
-          .doc(productId)
-          .get();
-
-      if (!productDoc.exists) {
-        print('Pre-owned product not found: $productId');
-        return null;
-      }
-
-      Map<String, dynamic> productData = productDoc.data() as Map<String, dynamic>;
-
-      // 2. Check if assessment exists and is still valid
-      if (productData.containsKey('honestAssessment')) {
-        Map<String, dynamic> existingAssessment = 
-            Map<String, dynamic>.from(productData['honestAssessment']);
-        
-        bool hasNewReviews = await _hasNewReviews(
-          productId: productId,
-          lastReviewDate: existingAssessment['lastReviewDate'] as Timestamp?,
-        );
-
-        if (!hasNewReviews) {
-          print('Returning cached assessment for pre-owned: $productId');
-          return existingAssessment;
-        }
-      }
-
-      // 3. Generate new assessment
-      print('Generating new assessment for pre-owned: $productId');
-      return await _generateNewAssessment(
-        productId: productId,
-        productData: productData,
-      );
-
-    } catch (e) {
-      print('Error getting pre-owned assessment: $e');
-      return null;
-    }
-  }
-
-  static Future<bool> _hasNewReviews({
-    required String productId,
-    required Timestamp? lastReviewDate,
-  }) async {
-    if (lastReviewDate == null) return true;
-
-    QuerySnapshot newReviews = await _firestore
-        .collection('preowned_reviews')
-        .where('productId', isEqualTo: productId)
-        .where('reviewDate', isGreaterThan: lastReviewDate.toDate().toIso8601String())
-        .limit(1)
-        .get();
-
-    return newReviews.docs.isNotEmpty;
-  }
-
-  static Future<Map<String, dynamic>?> _generateNewAssessment({
-    required String productId,
-    required Map<String, dynamic> productData,
-  }) async {
-    try {
-      // 1. Fetch all reviews from preowned_reviews collection
-      QuerySnapshot reviewsSnapshot = await _firestore
-          .collection('preowned_reviews')
-          .where('productId', isEqualTo: productId)
-          .get();
-
-      if (reviewsSnapshot.docs.isEmpty) {
-        print('No reviews found for pre-owned product: $productId');
-        return null;
-      }
-
-      List<Map<String, dynamic>> reviews = reviewsSnapshot.docs
-          .map((doc) => doc.data() as Map<String, dynamic>)
-          .toList();
-
-      print('Found ${reviews.length} reviews for pre-owned product: $productId');
-
-      // 2. Calculate metrics (adjusted for pre-owned)
-      double avgRating = _calculateAverageRating(reviews);
-      double productPrice = (productData['price'] ?? 0).toDouble();
-      String category = productData['category'] ?? '';
-      double benchmarkPrice = categoryBenchmarks[category] ?? productPrice;
-      
-      double valueScore = _calculateValueScorePreowned(
-        avgRating: avgRating,
-        productPrice: productPrice,
-        benchmarkPrice: benchmarkPrice,
-        totalReviews: reviews.length,
-      );
-
-      String priceCategory = _getPriceCategoryPreowned(productPrice, benchmarkPrice);
-
-      // 3. Generate AI summary
-      String? aiSummary = await HonestAssessmentService._generateGeminiSummary(
-        productData: productData,
-        reviews: reviews,
-        avgRating: avgRating,
-        priceCategory: priceCategory,
-        isPreowned: true,
-      );
-
-      if (aiSummary == null) {
-        print('AI summary generation failed for pre-owned');
-        return null;
-      }
-
-      // 4. Find newest review date
-      Timestamp? newestReviewDate = _getNewestReviewDate(reviews);
-
-      // 5. Create assessment object
-      Map<String, dynamic> assessment = {
-        'summary': aiSummary,
-        'valueScore': double.parse(valueScore.toStringAsFixed(1)),
-        'priceCategory': priceCategory,
-        'totalReviews': reviews.length,
-        'lastGenerated': FieldValue.serverTimestamp(),
-        'lastReviewDate': newestReviewDate,
-      };
-
-      // 6. Save to Firestore
-      await _firestore.collection('preowned_products').doc(productId).update({
-        'honestAssessment': assessment,
-      });
-
-      print('Assessment saved for pre-owned: $productId');
-      return assessment;
-
-    } catch (e) {
-      print('Error generating pre-owned assessment: $e');
-      return null;
-    }
-  }
-
-  static double _calculateAverageRating(List<Map<String, dynamic>> reviews) {
-    if (reviews.isEmpty) return 0.0;
-    double total = 0.0;
-    for (var review in reviews) {
-      total += (review['rating'] ?? 0).toDouble();
-    }
-    return total / reviews.length;
-  }
-
-  // Pre-owned scoring - adjusted for used items
-  static double _calculateValueScorePreowned({
-    required double avgRating,
-    required double productPrice,
-    required double benchmarkPrice,
-    required int totalReviews,
-  }) {
-    double ratingScore = avgRating * 10;
-    double priceRatio = productPrice / benchmarkPrice;
-    double priceScore = 0;
-    
-    // Pre-owned items should be cheaper
-    if (priceRatio < 0.4) {
-      priceScore = 30; // Great deal
-    } else if (priceRatio >= 0.4 && priceRatio <= 0.7) {
-      priceScore = 25; // Good value
-    } else if (priceRatio > 0.7 && priceRatio <= 0.9) {
-      priceScore = 20; // Fair
-    } else {
-      priceScore = 10; // Too expensive for used
-    }
-
-    double volumeScore = 0;
-    if (totalReviews >= 20) volumeScore = 20;
-    else if (totalReviews >= 10) volumeScore = 15;
-    else if (totalReviews >= 5) volumeScore = 10;
-    else volumeScore = 5;
-
-    return ((ratingScore + priceScore + volumeScore) / 100) * 10;
-  }
-
-  static String _getPriceCategoryPreowned(double productPrice, double benchmarkPrice) {
-    double ratio = productPrice / benchmarkPrice;
-    if (ratio < 0.4) return 'Excellent Deal';
-    if (ratio < 0.6) return 'Great Value';
-    if (ratio <= 0.8) return 'Fair Price';
-    if (ratio <= 0.95) return 'Slightly High';
-    return 'Near New Price';
-  }
-
-  static Timestamp? _getNewestReviewDate(List<Map<String, dynamic>> reviews) {
-    if (reviews.isEmpty) return null;
-    DateTime? newest;
-    for (var review in reviews) {
-      String? dateStr = review['reviewDate'];
-      if (dateStr != null) {
-        DateTime date = DateTime.parse(dateStr);
-        if (newest == null || date.isAfter(newest)) {
-          newest = date;
-        }
-      }
-    }
-    return newest != null ? Timestamp.fromDate(newest) : null;
+  @override
+  Widget build(BuildContext context) {
+    return SmartValueDisplay(productId: productId, isPreowned: isPreowned);
   }
 }

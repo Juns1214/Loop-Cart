@@ -8,6 +8,7 @@ class AddressForm extends StatefulWidget {
   final TextEditingController? postalController;
   final TextEditingController? stateController;
   final GlobalKey<FormState>? formKey;
+  final ValueChanged<String>? onStateChanged;
 
   const AddressForm({
     super.key,
@@ -17,6 +18,7 @@ class AddressForm extends StatefulWidget {
     this.postalController,
     this.stateController,
     this.formKey,
+    this.onStateChanged,
   });
 
   @override
@@ -30,14 +32,14 @@ class AddressFormState extends State<AddressForm> {
   late final TextEditingController postalController;
   late final TextEditingController stateController;
   late final GlobalKey<FormState> _formKey;
-  
+
   bool _isInternalController = false;
 
   @override
   void initState() {
     super.initState();
     _isInternalController = widget.line1Controller == null;
-    
+
     line1Controller = widget.line1Controller ?? TextEditingController();
     line2Controller = widget.line2Controller ?? TextEditingController();
     cityController = widget.cityController ?? TextEditingController();
@@ -96,7 +98,8 @@ class AddressFormState extends State<AddressForm> {
 
   bool validate() {
     // Check if at least one field is filled
-    bool hasAnyData = line1Controller.text.isNotEmpty ||
+    bool hasAnyData =
+        line1Controller.text.isNotEmpty ||
         cityController.text.isNotEmpty ||
         postalController.text.isNotEmpty ||
         stateController.text.isNotEmpty;
@@ -136,7 +139,8 @@ class AddressFormState extends State<AddressForm> {
             ),
             validator: (value) {
               // Only validate if any address field has data
-              bool hasAnyData = line1Controller.text.isNotEmpty ||
+              bool hasAnyData =
+                  line1Controller.text.isNotEmpty ||
                   cityController.text.isNotEmpty ||
                   postalController.text.isNotEmpty ||
                   stateController.text.isNotEmpty;
@@ -148,10 +152,13 @@ class AddressFormState extends State<AddressForm> {
             },
           ),
           const SizedBox(height: 18),
-          
+
           TextFormField(
             controller: line2Controller,
-            decoration: _inputDecoration('Address Line 2 (Optional)', isOptional: true),
+            decoration: _inputDecoration(
+              'Address Line 2 (Optional)',
+              isOptional: true,
+            ),
             style: TextStyle(
               fontFamily: 'Manrope',
               fontSize: 16,
@@ -159,7 +166,7 @@ class AddressFormState extends State<AddressForm> {
             ),
           ),
           const SizedBox(height: 18),
-          
+
           TextFormField(
             controller: cityController,
             decoration: _inputDecoration('City'),
@@ -169,7 +176,8 @@ class AddressFormState extends State<AddressForm> {
               fontWeight: FontWeight.w500,
             ),
             validator: (value) {
-              bool hasAnyData = line1Controller.text.isNotEmpty ||
+              bool hasAnyData =
+                  line1Controller.text.isNotEmpty ||
                   cityController.text.isNotEmpty ||
                   postalController.text.isNotEmpty ||
                   stateController.text.isNotEmpty;
@@ -181,7 +189,7 @@ class AddressFormState extends State<AddressForm> {
             },
           ),
           const SizedBox(height: 18),
-          
+
           TextFormField(
             controller: postalController,
             decoration: _inputDecoration('Postal Code'),
@@ -196,7 +204,8 @@ class AddressFormState extends State<AddressForm> {
               LengthLimitingTextInputFormatter(5),
             ],
             validator: (value) {
-              bool hasAnyData = line1Controller.text.isNotEmpty ||
+              bool hasAnyData =
+                  line1Controller.text.isNotEmpty ||
                   cityController.text.isNotEmpty ||
                   postalController.text.isNotEmpty ||
                   stateController.text.isNotEmpty;
@@ -211,7 +220,7 @@ class AddressFormState extends State<AddressForm> {
             },
           ),
           const SizedBox(height: 18),
-          
+
           TextFormField(
             controller: stateController,
             decoration: _inputDecoration('State'),
@@ -220,8 +229,13 @@ class AddressFormState extends State<AddressForm> {
               fontSize: 16,
               fontWeight: FontWeight.w500,
             ),
+            onChanged: (value) {
+              // Call the callback when state changes
+              widget.onStateChanged?.call(value);
+            },
             validator: (value) {
-              bool hasAnyData = line1Controller.text.isNotEmpty ||
+              bool hasAnyData =
+                  line1Controller.text.isNotEmpty ||
                   cityController.text.isNotEmpty ||
                   postalController.text.isNotEmpty ||
                   stateController.text.isNotEmpty;

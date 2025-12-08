@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 import '../feature/best_value_comparison.dart';
-import '../feature/best_value_comparison_widget.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ProductPage extends StatefulWidget {
   final Map<String, dynamic> product;
@@ -34,32 +34,6 @@ class _ProductPageState extends State<ProductPage> {
   void initState() {
     super.initState();
     _loadProductDetails();
-    _loadHonestAssessment();
-  }
-
-  // Load honest assessment
-  Future<void> _loadHonestAssessment() async {
-    setState(() {
-      isLoadingAssessment = true;
-    });
-
-    try {
-      String productId = widget.product['id'] ?? '';
-      Map<String, dynamic>? assessment = 
-          await HonestAssessmentService.getHonestAssessment(
-        productId: productId,
-      );
-
-      setState(() {
-        honestAssessment = assessment;
-        isLoadingAssessment = false;
-      });
-    } catch (e) {
-      print('Error loading honest assessment: $e');
-      setState(() {
-        isLoadingAssessment = false;
-      });
-    }
   }
 
   // UPDATED: Load product details including reviews from 'reviews' collection
@@ -98,23 +72,23 @@ class _ProductPageState extends State<ProductPage> {
             .where('productId', isEqualTo: productId)
             .get();
 
-        List<Map<String, dynamic>> loadedReviews = reviewSnapshot.docs
-            .map((doc) {
-              Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-              
-              // Ensure all required fields exist with new structure
-              return {
-                'reviewId': data['reviewId'] ?? doc.id,
-                'productId': data['productId'] ?? '',
-                'rating': data['rating'] ?? 0,
-                'reviewTitle': data['reviewTitle'] ?? '',
-                'reviewText': data['reviewText'] ?? '',
-                'userName': data['userName'] ?? 'Anonymous',
-                'userProfileUrl': data['userProfileUrl'] ?? '',
-                'reviewDate': data['reviewDate'] ?? '',
-              };
-            })
-            .toList();
+        List<Map<String, dynamic>> loadedReviews = reviewSnapshot.docs.map((
+          doc,
+        ) {
+          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+
+          // Ensure all required fields exist with new structure
+          return {
+            'reviewId': data['reviewId'] ?? doc.id,
+            'productId': data['productId'] ?? '',
+            'rating': data['rating'] ?? 0,
+            'reviewTitle': data['reviewTitle'] ?? '',
+            'reviewText': data['reviewText'] ?? '',
+            'userName': data['userName'] ?? 'Anonymous',
+            'userProfileUrl': data['userProfileUrl'] ?? '',
+            'reviewDate': data['reviewDate'] ?? '',
+          };
+        }).toList();
 
         // Sort by date (newest first)
         loadedReviews.sort((a, b) {
@@ -134,6 +108,59 @@ class _ProductPageState extends State<ProductPage> {
       setState(() {
         isLoading = false;
       });
+    }
+  }
+
+  Future<void> _shareAndEarnCoins() async {
+    if (currentUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please login to earn Green Coins for sharing!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
+    try {
+      // 1. Trigger Native Share
+      String productName = widget.product['name'] ?? 'Product';
+      double price = (widget.product['price'] ?? 0).toDouble();
+
+      final shareParams = ShareParams(
+        text:
+            'Check out $productName for RM ${price.toStringAsFixed(2)} on our App!',
+        subject: 'Check out this eco-friendly find!',
+      );
+
+      await SharePlus.instance.share(shareParams);
+      // 2. Update Firestore Green Coins
+      await FirebaseFirestore.instance
+          .collection('user_profile')
+          .doc(currentUser!.uid)
+          .update({'greenCoins': FieldValue.increment(5)});
+
+      // 3. Show Success Message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.monetization_on, color: Colors.white),
+                SizedBox(width: 10),
+                Expanded(child: Text('Shared! You earned 5 Green Coins!')),
+              ],
+            ),
+            backgroundColor: Color(0xFF388E3C),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error sharing: $e');
     }
   }
 
@@ -434,7 +461,7 @@ class _ProductPageState extends State<ProductPage> {
               ),
             ],
           ),
-          
+
           if (reviewTitle.isNotEmpty) ...[
             SizedBox(height: 12),
             Text(
@@ -446,7 +473,7 @@ class _ProductPageState extends State<ProductPage> {
               ),
             ),
           ],
-          
+
           if (reviewText.isNotEmpty) ...[
             SizedBox(height: 8),
             Text(
@@ -527,6 +554,32 @@ class _ProductPageState extends State<ProductPage> {
                                 child: IconButton(
                                   icon: Icon(Icons.arrow_back),
                                   onPressed: () => Navigator.pop(context),
+                                ),
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: 16,
+                            right: 16,
+                            child: SafeArea(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.1),
+                                      blurRadius: 8,
+                                    ),
+                                  ],
+                                ),
+                                child: IconButton(
+                                  icon: Icon(
+                                    Icons.share,
+                                    color: Color(0xFF388E3C),
+                                  ),
+                                  tooltip: 'Share & Earn 5 Coins',
+                                  onPressed: _shareAndEarnCoins,
                                 ),
                               ),
                             ),
@@ -758,9 +811,9 @@ class _ProductPageState extends State<ProductPage> {
                             SizedBox(height: 16),
 
                             // Honest Assessment Widget
-                            HonestAssessmentWidget(
-                              assessment: honestAssessment,
-                              isLoading: isLoadingAssessment,
+                            SmartValueButton(
+                              productId: widget.product['id'] ?? '',
+                              isPreowned: false,
                             ),
 
                             // Reviews List

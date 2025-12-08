@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_application_1/utils/swiper.dart';
 import '../feature/best_value_comparison.dart';
-import '../feature/best_value_comparison_widget.dart';
+import 'package:share_plus/share_plus.dart';
 
 class PreownedProductPage extends StatefulWidget {
   final Map<String, dynamic> product;
@@ -31,32 +31,59 @@ class _PreownedProductPageState extends State<PreownedProductPage> {
   @override
   void initState() {
     super.initState();
-    _loadHonestAssessment();
     _loadReviews();
   }
 
-  // Load honest assessment
-  Future<void> _loadHonestAssessment() async {
-    setState(() {
-      isLoadingAssessment = true;
-    });
+  Future<void> _shareAndEarnCoins() async {
+    if (currentUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please login to earn Green Coins for sharing!'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
     try {
-      String productId = widget.product['id'] ?? '';
-      Map<String, dynamic>? assessment =
-          await BestValueComparisonService.getBestValueComparison(
-            productId: productId,
-          );
+      // 1. Trigger Native Share
+      String productName = widget.product['name'] ?? 'Product';
+      double price = (widget.product['price'] ?? 0).toDouble();
 
-      setState(() {
-        honestAssessment = assessment;
-        isLoadingAssessment = false;
-      });
+      final shareParams = ShareParams(
+        text:
+            'Check out $productName for RM ${price.toStringAsFixed(2)} on our App!',
+        subject: 'Check out this eco-friendly find!',
+      );
+
+      await SharePlus.instance.share(shareParams);
+      // 2. Update Firestore Green Coins
+      await FirebaseFirestore.instance
+          .collection('user_profile')
+          .doc(currentUser!.uid)
+          .update({'greenCoins': FieldValue.increment(5)});
+
+      // 3. Show Success Message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.monetization_on, color: Colors.white),
+                SizedBox(width: 10),
+                Expanded(child: Text('Shared! You earned 5 Green Coins!')),
+              ],
+            ),
+            backgroundColor: Color(0xFF388E3C),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
+          ),
+        );
+      }
     } catch (e) {
-      print('Error loading honest assessment: $e');
-      setState(() {
-        isLoadingAssessment = false;
-      });
+      print('Error sharing: $e');
     }
   }
 
@@ -524,6 +551,30 @@ class _PreownedProductPageState extends State<PreownedProductPage> {
                       ),
                     ),
 
+                    Positioned(
+                      top: 16,
+                      right: 16,
+                      child: SafeArea(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 8,
+                              ),
+                            ],
+                          ),
+                          child: IconButton(
+                            icon: Icon(Icons.share, color: Color(0xFF388E3C)),
+                            tooltip: 'Share & Earn 5 Coins',
+                            onPressed: _shareAndEarnCoins,
+                          ),
+                        ),
+                      ),
+                    ),
+
                     // Image counter (if multiple images)
                     if (imagePages.length > 1)
                       Positioned(
@@ -869,9 +920,9 @@ class _PreownedProductPageState extends State<PreownedProductPage> {
                       SizedBox(height: 16),
 
                       // Honest Assessment Widget
-                      PreownedHonestAssessmentWidget(
-                        assessment: honestAssessment,
-                        isLoading: isLoadingAssessment,
+                      SmartValueButton(
+                        productId: widget.product['id'] ?? '',
+                        isPreowned: true,
                       ),
 
                       // Reviews List
