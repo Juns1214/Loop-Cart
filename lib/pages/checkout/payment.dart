@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../checkout/payment_confirmation.dart';
+import '../../widget/custom_button.dart'; 
 
 class Payment extends StatefulWidget {
   final Map<String, dynamic> orderData;
@@ -18,6 +19,7 @@ class _PaymentState extends State<Payment> {
 
   User? get currentUser => FirebaseAuth.instance.currentUser;
 
+  // --- ID Generators ---
   String _generateTransactionId() {
     final timestamp = DateTime.now().millisecondsSinceEpoch;
     final random = (timestamp % 10000).toString().padLeft(4, '0');
@@ -26,12 +28,8 @@ class _PaymentState extends State<Payment> {
 
   String _generateOrderId() {
     final now = DateTime.now();
-    final dateStr =
-        '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
-    final random = (now.millisecondsSinceEpoch % 10000).toString().padLeft(
-      4,
-      '0',
-    );
+    final dateStr = '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
+    final random = (now.millisecondsSinceEpoch % 10000).toString().padLeft(4, '0');
     return 'ORD$dateStr$random';
   }
 
@@ -41,367 +39,70 @@ class _PaymentState extends State<Payment> {
     return 'TRK$random';
   }
 
-  // Record green coin transaction
-  Future<void> _recordGreenCoinTransaction({
-    required String transactionId,
-    required int amount,
-    required String activity,
-    required String description,
-    Map<String, dynamic>? activityDetails,
-  }) async {
-    if (currentUser == null) return;
-
-    try {
-      // Get current balance
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('user_profile')
-          .doc(currentUser!.uid)
-          .get();
-
-      int currentBalance = 0;
-      if (userDoc.exists) {
-        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-        currentBalance = userData['greenCoins'] ?? 0;
-      }
-
-      int newBalance = currentBalance + amount;
-
-      // Record transaction
-      await FirebaseFirestore.instance
-          .collection('green_coin_transactions')
-          .doc(transactionId)
-          .set({
-            'transactionId': transactionId,
-            'userId': currentUser!.uid,
-            'amount': amount,
-            'balanceAfter': newBalance,
-            'activity': activity,
-            'activityDetails': activityDetails ?? {},
-            'description': description,
-            'createdAt': FieldValue.serverTimestamp(),
-            'status': 'completed',
-          });
-
-      print(
-        'Green coin transaction recorded: $amount coins, activity: $activity',
-      );
-    } catch (e) {
-      print('Error recording green coin transaction: $e');
+  // --- Logic: Processing ---
+  
+  // Routes to specific payment handler
+  Future<void> _processPayment() async {
+    if (widget.orderData.containsKey('category') && 
+        widget.orderData.containsKey('amount') && 
+        !widget.orderData.containsKey('items') && 
+        !widget.orderData.containsKey('repair_option')) {
+      await _processDonationPayment();
+    } else if (widget.orderData.containsKey('repair_option')) {
+      await _processRepairPayment();
+    } else {
+      await _processOrderPayment();
     }
   }
-
-  // Process donation payment
-  Future<void> _processDonationPayment() async {
-    if (currentUser == null) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please login to continue'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    setState(() {
-      isProcessing = true;
-    });
-
-    try {
-      final transactionId = _generateTransactionId();
-      final now = DateTime.now();
-
-      final double donationAmount = widget.orderData['amount'] ?? 0.0;
-      final String donationCategory = widget.orderData['category'] ?? 'General';
-
-      // Calculate green coins earned: RM1 = 1 coin
-      final int greenCoinsEarned = donationAmount.floor();
-
-      // Create donation record
-      Map<String, dynamic> donationDocument = {
-        'userId': currentUser!.uid,
-        'createdAt': Timestamp.fromDate(now),
-        'paymentMadeAt': Timestamp.fromDate(now),
-        'amount': donationAmount,
-        'donationCategory': donationCategory,
-        'greenCoinsEarned': greenCoinsEarned,
-        'paymentMethod': selectedPayment,
-        'transactionId': transactionId,
-        'status': 'Completed',
-      };
-
-      await FirebaseFirestore.instance
-          .collection('donation_record')
-          .doc(transactionId)
-          .set(donationDocument);
-
-      // Update user's green coins
-      await FirebaseFirestore.instance
-          .collection('user_profile')
-          .doc(currentUser!.uid)
-          .update({'greenCoins': FieldValue.increment(greenCoinsEarned)});
-
-      // Record green coin transaction
-      await _recordGreenCoinTransaction(
-        transactionId: transactionId,
-        amount: greenCoinsEarned,
-        activity: 'donation',
-        description:
-            'Earned $greenCoinsEarned Green Coins from $donationCategory donation',
-        activityDetails: {
-          'donationAmount': donationAmount,
-          'category': donationCategory,
-        },
-      );
-
-      if (!mounted) return;
-
-      setState(() {
-        isProcessing = false;
-      });
-
-      // Navigate to payment confirmation
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PaymentConfirmation(
-            orderData: {
-              'type': 'donation',
-              'amount': donationAmount,
-              'category': donationCategory,
-              'greenCoinsEarned': greenCoinsEarned,
-            },
-            orderId: '',
-            transactionId: transactionId,
-            paymentMethod: selectedPayment,
-          ),
-        ),
-      );
-    } catch (e) {
-      print('Error processing donation payment: $e');
-
-      if (!mounted) return;
-
-      setState(() {
-        isProcessing = false;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to process donation. Please try again.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-
-  Future<void> _processRepairPayment() async {
-    if (currentUser == null) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please login to continue'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    setState(() {
-      isProcessing = true;
-    });
-
-    try {
-      final transactionId = _generateTransactionId();
-      final now = DateTime.now();
-
-      final Map<String, String> repairOption = Map<String, String>.from(
-        widget.orderData['repair_option'],
-      );
-      final String repairType = repairOption['Repair'] ?? 'Custom Repair';
-      final String priceStr = repairOption['Price'] ?? 'RM0';
-
-      // Extract price
-      final matches = RegExp(r'\d+').allMatches(priceStr);
-      final numbers = matches.map((m) => int.parse(m.group(0)!)).toList();
-      final int repairPrice = numbers.isNotEmpty
-          ? numbers.reduce((a, b) => a > b ? a : b)
-          : 0;
-
-      final int greenCoinsEarned = repairPrice;
-
-      // Get repair record ID from orderData
-      String repairRecordId = widget.orderData['repairRecordId'];
-
-      // Update specific repair record
-      await FirebaseFirestore.instance
-          .collection('repair_record')
-          .doc(repairRecordId)
-          .update({
-            'paymentStatus': 'Completed',
-            'paymentMethod': selectedPayment,
-            'transactionId': transactionId,
-            'paymentMadeAt': Timestamp.fromDate(now),
-            'greenCoinsEarned': greenCoinsEarned,
-          });
-
-      // Update user's green coins
-      await FirebaseFirestore.instance
-          .collection('user_profile')
-          .doc(currentUser!.uid)
-          .update({'greenCoins': FieldValue.increment(greenCoinsEarned)});
-
-      // Record green coin transaction
-      await _recordGreenCoinTransaction(
-        transactionId: transactionId,
-        amount: greenCoinsEarned,
-        activity: 'repair_service',
-        description:
-            'Earned $greenCoinsEarned Green Coins from $repairType service',
-        activityDetails: {'repairType': repairType, 'repairPrice': repairPrice},
-      );
-
-      if (!mounted) return;
-
-      setState(() {
-        isProcessing = false;
-      });
-
-      // Navigate to payment confirmation
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PaymentConfirmation(
-            orderData: {
-              'type': 'repair',
-              'repairType': repairType,
-              'amount': repairPrice.toDouble(),
-              'greenCoinsEarned': greenCoinsEarned,
-            },
-            orderId: '',
-            transactionId: transactionId,
-            paymentMethod: selectedPayment,
-          ),
-        ),
-      );
-    } catch (e) {
-      print('Error processing repair payment: $e');
-      print('Stack trace: ${StackTrace.current}');
-
-      if (!mounted) return;
-
-      setState(() {
-        isProcessing = false;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Payment failed: ${e.toString()}'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-
-  // Update the _processOrderPayment method in payment.dart
-  // Replace the existing method with this updated version
 
   Future<void> _processOrderPayment() async {
-    if (currentUser == null) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please login to continue'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    setState(() {
-      isProcessing = true;
-    });
+    if (!_validateUser()) return;
+    setState(() => isProcessing = true);
 
     try {
+      final now = DateTime.now();
       final orderId = _generateOrderId();
       final transactionId = _generateTransactionId();
       final trackingNumber = _generateTrackingNumber();
-      final now = DateTime.now();
 
+      // 1. Prepare Items with Seller Data
       List<Map<String, dynamic>> itemsWithSeller = [];
-
       for (var item in widget.orderData['items']) {
         String sellerName = item['seller'] ?? 'Unknown Seller';
+        String sellerId = '';
+        String sellerProfileImage = '';
 
-        QuerySnapshot sellerQuery = await FirebaseFirestore.instance
+        // Fetch seller details (Optimized: could be batched, but keeping logic safe)
+        var sellerQuery = await FirebaseFirestore.instance
             .collection('seller')
             .where('name', isEqualTo: sellerName)
             .limit(1)
             .get();
 
-        String sellerId = '';
-        String sellerProfileImage = '';
-
         if (sellerQuery.docs.isNotEmpty) {
-          var sellerData =
-              sellerQuery.docs.first.data() as Map<String, dynamic>;
-          sellerId = sellerData['sellerId'] ?? '';
-          sellerProfileImage = sellerData['profileImage'] ?? '';
+          final data = sellerQuery.docs.first.data();
+          sellerId = data['sellerId'] ?? '';
+          sellerProfileImage = data['profileImage'] ?? '';
         }
 
         itemsWithSeller.add({
-          'productId': item['productId'] ?? '',
-          'productName': item['productName'] ?? '',
-          'productPrice': item['productPrice'] ?? 0,
-          'quantity': item['quantity'] ?? 1,
-          'imageUrl': item['imageUrl'] ?? '',
-          'seller': sellerName,
+          ...item, // Copy existing item data
           'sellerId': sellerId,
           'sellerProfileImage': sellerProfileImage,
-          'isPreowned': item['isPreowned'] ?? false,
         });
       }
 
-      // Create complete status history for all stages
-      List<Map<String, dynamic>> completeStatusHistory = [
-        {
-          'status': 'Order Placed',
-          'timestamp': Timestamp.fromDate(now),
-          'description': 'Your order has been placed successfully.',
-        },
-        {
-          'status': 'Processing',
-          'timestamp': Timestamp.fromDate(now),
-          'description': 'Your order is being processed.',
-        },
-        {
-          'status': 'Shipped',
-          'timestamp': Timestamp.fromDate(now),
-          'description': 'Your order has been shipped.',
-        },
-        {
-          'status': 'Out for Delivery',
-          'timestamp': Timestamp.fromDate(now),
-          'description': 'Your order is out for delivery.',
-        },
-        {
-          'status': 'Delivered',
-          'timestamp': Timestamp.fromDate(now),
-          'description': 'Your order has been delivered.',
-        },
-      ];
-
-      Map<String, dynamic> orderDocument = {
+      // 2. Create Order Document
+      final orderDoc = {
         'orderId': orderId,
         'userId': currentUser!.uid,
         'orderDate': Timestamp.fromDate(now),
-        'status': 'Delivered', // Set as delivered immediately
-        'currentStatusIndex': 4, // Index 4 = Delivered
+        'status': 'Delivered', // Immediate delivery as per logic
+        'currentStatusIndex': 4,
         'items': itemsWithSeller,
         'shippingAddress': widget.orderData['shippingAddress'],
         'shippingMethod': widget.orderData['shippingMethod'],
         'shippingCost': widget.orderData['shippingCost'],
-        'packagingType': widget.orderData['packagingType'],
         'packagingCost': widget.orderData['packagingCost'],
         'paymentMethod': selectedPayment,
         'paymentStatus': 'Completed',
@@ -412,191 +113,223 @@ class _PaymentState extends State<Payment> {
         'grandTotal': widget.orderData['grandTotal'],
         'greenCoinsToEarn': widget.orderData['greenCoinsToEarn'] ?? 0,
         'trackingNumber': trackingNumber,
-        'estimatedDelivery': {
-          'from': Timestamp.fromDate(now),
-          'to': Timestamp.fromDate(now),
-        },
-        'deliveredAt': Timestamp.fromDate(now), // Add delivery timestamp
-        'statusHistory': completeStatusHistory, // Complete history
-        'lastStatusUpdate': Timestamp.fromDate(now),
-        'isReceived': false, // Track if user confirmed receipt
-        'hasFeedback': false, // Track if user provided feedback
+        'estimatedDelivery': {'from': Timestamp.fromDate(now), 'to': Timestamp.fromDate(now)},
+        'statusHistory': _getCompleteStatusHistory(now),
+        'isReceived': false,
+        'hasFeedback': false,
       };
 
-      await FirebaseFirestore.instance
-          .collection('orders')
-          .doc(orderId)
-          .set(orderDocument);
+      await FirebaseFirestore.instance.collection('orders').doc(orderId).set(orderDoc);
 
-      // Deduct green coins if used
+      // 3. Handle Green Coins (Deduct Used)
       if (widget.orderData['greenCoinsUsed'] > 0) {
-        await FirebaseFirestore.instance
-            .collection('user_profile')
-            .doc(currentUser!.uid)
-            .update({
-              'greenCoins': FieldValue.increment(
-                -widget.orderData['greenCoinsUsed'],
-              ),
-            });
-
-        await _recordGreenCoinTransaction(
+        await _updateGreenCoins(-widget.orderData['greenCoinsUsed']);
+        await _recordTransaction(
           transactionId: '${transactionId}_used',
           amount: -widget.orderData['greenCoinsUsed'],
           activity: 'purchase',
-          description:
-              'Used ${widget.orderData['greenCoinsUsed']} Green Coins for order discount',
-          activityDetails: {
-            'orderId': orderId,
-            'discountAmount': widget.orderData['discount'],
-          },
+          description: 'Used coins for discount',
         );
       }
 
-      // Add green coins for pre-owned purchases
-      int greenCoinsToEarn = widget.orderData['greenCoinsToEarn'] ?? 0;
-      if (greenCoinsToEarn > 0) {
-        await FirebaseFirestore.instance
-            .collection('user_profile')
-            .doc(currentUser!.uid)
-            .update({'greenCoins': FieldValue.increment(greenCoinsToEarn)});
-
-        await _recordGreenCoinTransaction(
+      // 4. Handle Green Coins (Add Earned)
+      int earnedCoins = widget.orderData['greenCoinsToEarn'] ?? 0;
+      if (earnedCoins > 0) {
+        await _updateGreenCoins(earnedCoins);
+        await _recordTransaction(
           transactionId: '${transactionId}_earned',
-          amount: greenCoinsToEarn,
+          amount: earnedCoins,
           activity: 'purchase_preowned_product',
-          description:
-              'Earned $greenCoinsToEarn Green Coins from purchasing pre-owned items',
-          activityDetails: {
-            'orderId': orderId,
-            'itemsTotal': widget.orderData['itemsTotal'],
-            'grandTotal': widget.orderData['grandTotal'],
-          },
+          description: 'Earned coins from purchase',
         );
       }
 
-      // Delete items from cart
+      // 5. Clear Cart
       for (var item in widget.orderData['items']) {
-        QuerySnapshot cartQuery = await FirebaseFirestore.instance
+        var cartQuery = await FirebaseFirestore.instance
             .collection('cart_items')
             .where('userId', isEqualTo: currentUser!.uid)
             .where('productId', isEqualTo: item['productId'])
             .get();
-
-        for (var doc in cartQuery.docs) {
-          await doc.reference.delete();
-        }
+        for (var doc in cartQuery.docs) await doc.reference.delete();
       }
 
       if (!mounted) return;
+      _navigateToConfirmation(orderId: orderId, transactionId: transactionId);
 
-      setState(() {
-        isProcessing = false;
+    } catch (e) {
+      _handleError(e);
+    }
+  }
+
+  Future<void> _processDonationPayment() async {
+    if (!_validateUser()) return;
+    setState(() => isProcessing = true);
+
+    try {
+      final transactionId = _generateTransactionId();
+      final double amount = widget.orderData['amount'];
+      final String category = widget.orderData['category'];
+      final int earnedCoins = amount.floor();
+
+      await FirebaseFirestore.instance.collection('donation_record').doc(transactionId).set({
+        'userId': currentUser!.uid,
+        'createdAt': FieldValue.serverTimestamp(),
+        'amount': amount,
+        'donationCategory': category,
+        'greenCoinsEarned': earnedCoins,
+        'paymentMethod': selectedPayment,
+        'transactionId': transactionId,
+        'status': 'Completed',
       });
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => PaymentConfirmation(
-            orderData: widget.orderData,
-            orderId: orderId,
-            transactionId: transactionId,
-            paymentMethod: selectedPayment,
-          ),
-        ),
+      await _updateGreenCoins(earnedCoins);
+      await _recordTransaction(
+        transactionId: transactionId,
+        amount: earnedCoins,
+        activity: 'donation',
+        description: 'Earned coins from $category donation',
       );
-    } catch (e) {
-      print('Error processing payment: $e');
 
       if (!mounted) return;
+      _navigateToConfirmation(
+        transactionId: transactionId,
+        extraData: {'greenCoinsEarned': earnedCoins}
+      );
 
-      setState(() {
-        isProcessing = false;
-      });
+    } catch (e) {
+      _handleError(e);
+    }
+  }
 
+  Future<void> _processRepairPayment() async {
+    if (!_validateUser()) return;
+    setState(() => isProcessing = true);
+
+    try {
+      final transactionId = _generateTransactionId();
+      final repairOption = Map<String, String>.from(widget.orderData['repair_option']);
+      final repairType = repairOption['Repair'] ?? 'Repair';
+      
+      // Parse price safely
+      final priceStr = repairOption['Price'] ?? '0';
+      final matches = RegExp(r'\d+').allMatches(priceStr);
+      final int price = matches.isNotEmpty ? int.parse(matches.first.group(0)!) : 0;
+      final int earnedCoins = price;
+
+      await FirebaseFirestore.instance
+          .collection('repair_record')
+          .doc(widget.orderData['repairRecordId'])
+          .update({
+            'paymentStatus': 'Completed',
+            'paymentMethod': selectedPayment,
+            'transactionId': transactionId,
+            'greenCoinsEarned': earnedCoins,
+            'paymentMadeAt': FieldValue.serverTimestamp(),
+          });
+
+      await _updateGreenCoins(earnedCoins);
+      await _recordTransaction(
+        transactionId: transactionId,
+        amount: earnedCoins,
+        activity: 'repair_service',
+        description: 'Earned coins from $repairType',
+      );
+
+      if (!mounted) return;
+      _navigateToConfirmation(
+        transactionId: transactionId,
+        extraData: {
+          'type': 'repair',
+          'repairType': repairType,
+          'amount': price.toDouble(),
+          'greenCoinsEarned': earnedCoins,
+        }
+      );
+
+    } catch (e) {
+      _handleError(e);
+    }
+  }
+
+  // --- Logic: Helpers ---
+
+  bool _validateUser() {
+    if (currentUser == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to process payment. Please try again.'),
-          backgroundColor: Colors.red,
-        ),
+        const SnackBar(content: Text('Please login to continue'), backgroundColor: Colors.red),
+      );
+      return false;
+    }
+    return true;
+  }
+
+  Future<void> _updateGreenCoins(int amount) async {
+    await FirebaseFirestore.instance
+        .collection('user_profile')
+        .doc(currentUser!.uid)
+        .update({'greenCoins': FieldValue.increment(amount)});
+  }
+
+  Future<void> _recordTransaction({
+    required String transactionId,
+    required int amount,
+    required String activity,
+    required String description,
+  }) async {
+    await FirebaseFirestore.instance.collection('green_coin_transactions').doc(transactionId).set({
+      'transactionId': transactionId,
+      'userId': currentUser!.uid,
+      'amount': amount,
+      'activity': activity,
+      'description': description,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  void _handleError(dynamic e) {
+    debugPrint('Payment Error: $e');
+    if (mounted) {
+      setState(() => isProcessing = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Payment failed: $e'), backgroundColor: Colors.red),
       );
     }
   }
 
-  // Main payment processing method
-  Future<void> _processPayment() async {
-    // Check payment type and route accordingly
-    if (widget.orderData.containsKey('category') &&
-        widget.orderData.containsKey('amount') &&
-        !widget.orderData.containsKey('items') &&
-        !widget.orderData.containsKey('repair_option')) {
-      // Donation
-      await _processDonationPayment();
-    } else if (widget.orderData.containsKey('repair_option')) {
-      // Repair service
-      await _processRepairPayment();
-    } else {
-      // Regular order
-      await _processOrderPayment();
-    }
-  }
+  void _navigateToConfirmation({
+    String orderId = '',
+    required String transactionId,
+    Map<String, dynamic>? extraData,
+  }) {
+    // Merge existing data with new confirmation data
+    final finalOrderData = Map<String, dynamic>.from(widget.orderData);
+    if (extraData != null) finalOrderData.addAll(extraData);
 
-  Widget paymentMethodContainer(
-    String paymentLogo,
-    String paymentMethod,
-    bool isSelected,
-  ) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          selectedPayment = paymentMethod;
-        });
-      },
-      child: Container(
-        height: 60,
-        width: 350,
-        margin: const EdgeInsets.only(bottom: 12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.3),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            const SizedBox(width: 20),
-            Image.asset(paymentLogo, height: 50, width: 55, fit: BoxFit.fill),
-            const SizedBox(width: 40),
-            Text(paymentMethod),
-            const Spacer(),
-            Container(
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isSelected ? const Color(0xFF2E5BFF) : Colors.white,
-                border: Border.all(
-                  color: isSelected
-                      ? const Color(0xFF2E5BFF)
-                      : Colors.grey[400]!,
-                  width: 2,
-                ),
-              ),
-              child: isSelected
-                  ? const Icon(Icons.check, color: Colors.white, size: 16)
-                  : null,
-            ),
-            const SizedBox(width: 20),
-          ],
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PaymentConfirmation(
+          orderData: finalOrderData,
+          orderId: orderId,
+          transactionId: transactionId,
+          paymentMethod: selectedPayment,
         ),
       ),
     );
   }
+
+  List<Map<String, dynamic>> _getCompleteStatusHistory(DateTime now) {
+    return [
+      {'status': 'Order Placed', 'timestamp': Timestamp.fromDate(now), 'description': 'Order placed successfully.'},
+      {'status': 'Processing', 'timestamp': Timestamp.fromDate(now), 'description': 'Order is being processed.'},
+      {'status': 'Shipped', 'timestamp': Timestamp.fromDate(now), 'description': 'Order has been shipped.'},
+      {'status': 'Out for Delivery', 'timestamp': Timestamp.fromDate(now), 'description': 'Order is out for delivery.'},
+      {'status': 'Delivered', 'timestamp': Timestamp.fromDate(now), 'description': 'Order has been delivered.'},
+    ];
+  }
+
+  // --- UI Build ---
 
   @override
   Widget build(BuildContext context) {
@@ -609,112 +342,141 @@ class _PaymentState extends State<Payment> {
           icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Payment',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-        ),
+        title: const Text('Payment', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
         centerTitle: true,
       ),
       body: Stack(
         children: [
           SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Select Payment Method',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                ),
+                const Text('Select Payment Method', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                 const SizedBox(height: 20),
-                Center(
-                  child: Column(
-                    children: [
-                      paymentMethodContainer(
-                        'assets/images/icon/VISA.png',
-                        'Visa',
-                        selectedPayment == 'Visa',
-                      ),
-                      paymentMethodContainer(
-                        'assets/images/icon/Paypal.png',
-                        'PayPal',
-                        selectedPayment == 'PayPal',
-                      ),
-                      paymentMethodContainer(
-                        'assets/images/icon/Online_Transfer.png',
-                        'Bank Transfer',
-                        selectedPayment == 'Bank Transfer',
-                      ),
-                      paymentMethodContainer(
-                        'assets/images/icon/TNG.png',
-                        'Touch n Go',
-                        selectedPayment == 'Touch n Go',
-                      ),
-                    ],
-                  ),
+                
+                _PaymentMethodTile(
+                  icon: 'assets/images/icon/VISA.png',
+                  label: 'Visa',
+                  isSelected: selectedPayment == 'Visa',
+                  onTap: () => setState(() => selectedPayment = 'Visa'),
                 ),
-                const SizedBox(height: 40),
-                const Text(
-                  'Other Methods',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                _PaymentMethodTile(
+                  icon: 'assets/images/icon/Paypal.png',
+                  label: 'PayPal',
+                  isSelected: selectedPayment == 'PayPal',
+                  onTap: () => setState(() => selectedPayment = 'PayPal'),
                 ),
+                _PaymentMethodTile(
+                  icon: 'assets/images/icon/Online_Transfer.png',
+                  label: 'Bank Transfer',
+                  isSelected: selectedPayment == 'Bank Transfer',
+                  onTap: () => setState(() => selectedPayment = 'Bank Transfer'),
+                ),
+                _PaymentMethodTile(
+                  icon: 'assets/images/icon/TNG.png',
+                  label: 'Touch n Go',
+                  isSelected: selectedPayment == 'Touch n Go',
+                  onTap: () => setState(() => selectedPayment = 'Touch n Go'),
+                ),
+
+                const SizedBox(height: 30),
+                const Text('Other Methods', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
                 const SizedBox(height: 16),
-                Center(
-                  child: paymentMethodContainer(
-                    'assets/images/icon/cash-on-delivery-icon.png',
-                    'Cash on Delivery',
-                    selectedPayment == 'Cash on Delivery',
-                  ),
+                
+                // Group 2
+                _PaymentMethodTile(
+                  icon: 'assets/images/icon/cash-on-delivery-icon.png',
+                  label: 'Cash on Delivery',
+                  isSelected: selectedPayment == 'Cash on Delivery',
+                  onTap: () => setState(() => selectedPayment = 'Cash on Delivery'),
+                ),
+
+                const SizedBox(height: 30),
+                
+                // Action Button using CustomButton
+                CustomButton(
+                  text: isProcessing ? "Processing..." : "Make Payment",
+                  onPressed: isProcessing ? () {} : _processPayment, // Disable press if processing
+                  isLoading: isProcessing,
+                  backgroundColor: const Color(0xFF2E5BFF),
+                  minimumSize: const Size(double.infinity, 54),
                 ),
                 const SizedBox(height: 20),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: isProcessing ? null : _processPayment,
-                    icon: const Icon(Icons.payments_outlined),
-                    label: Text(
-                      isProcessing ? "Processing..." : "Make Payment",
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF2E5BFF),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),
-
+          
+          // Optional overlay for extra safety during processing
           if (isProcessing)
             Container(
-              color: Colors.black.withOpacity(0.5),
-              child: Center(
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: const [
-                        CircularProgressIndicator(color: Color(0xFF2E5BFF)),
-                        SizedBox(height: 16),
-                        Text(
-                          'Processing Payment...',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+              color: Colors.black12,
+              child: const Center(child: CircularProgressIndicator()),
+            )
+        ],
+      ),
+    );
+  }
+}
+
+// Helper Widget for Payment Options
+class _PaymentMethodTile extends StatelessWidget {
+  final String icon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _PaymentMethodTile({
+    required this.icon,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF2E5BFF) : Colors.transparent,
+            width: 1.5,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 5,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Image.asset(icon, height: 40, width: 50, fit: BoxFit.contain),
+            const SizedBox(width: 20),
+            Text(label, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+            const Spacer(),
+            Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: isSelected ? const Color(0xFF2E5BFF) : Colors.white,
+                border: Border.all(
+                  color: isSelected ? const Color(0xFF2E5BFF) : Colors.grey[300]!,
+                  width: 2,
                 ),
               ),
+              child: isSelected ? const Icon(Icons.check, color: Colors.white, size: 16) : null,
             ),
-        ],
+          ],
+        ),
       ),
     );
   }

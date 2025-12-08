@@ -334,7 +334,7 @@ class _ProductPageState extends State<ProductPage> {
 
   // UPDATED: Build review card with new structure
   Widget _buildReviewCard(Map<String, dynamic> review) {
-    int rating = review['rating'] ?? 0;
+    double rating = (review['rating'] ?? 0).toDouble();
     String reviewTitle = review['reviewTitle'] ?? '';
     String reviewText = review['reviewText'] ?? '';
     String userName = review['userName'] ?? 'Anonymous';

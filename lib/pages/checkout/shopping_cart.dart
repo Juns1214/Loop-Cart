@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../checkout/checkout.dart';
+import '../../widget/custom_button.dart'; 
 
 class ShoppingCart extends StatefulWidget {
   const ShoppingCart({super.key});
@@ -23,37 +24,39 @@ class _ShoppingCartState extends State<ShoppingCart> {
     _loadCartItems();
   }
 
+  // --- Logic Methods ---
+
   Future<void> _loadCartItems() async {
     if (currentUser == null) {
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) setState(() => isLoading = false);
       return;
     }
 
     try {
-      QuerySnapshot cartSnapshot = await FirebaseFirestore.instance
+      final snapshot = await FirebaseFirestore.instance
           .collection('cart_items')
           .where('userId', isEqualTo: currentUser!.uid)
           .get();
 
-      List<Map<String, dynamic>> loadedItems = [];
-      
-      for (var doc in cartSnapshot.docs) {
-        Map<String, dynamic> itemData = doc.data() as Map<String, dynamic>;
-        itemData['docId'] = doc.id;
-        loadedItems.add(itemData);
-      }
+      List<Map<String, dynamic>> loadedItems = snapshot.docs.map((doc) {
+        final data = doc.data();
+        data['docId'] = doc.id;
+        return data;
+      }).toList();
 
-      setState(() {
-        cartItems = loadedItems;
-        isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          cartItems = loadedItems;
+          isLoading = false;
+          // Reset selection if items change significantly, or keep valid ones
+          selectedItems = selectedItems.intersection(
+            loadedItems.map((e) => e['docId'] as String).toSet()
+          );
+        });
+      }
     } catch (e) {
-      print('Error loading cart: $e');
-      setState(() {
-        isLoading = false;
-      });
+      debugPrint('Error loading cart: $e');
+      if (mounted) setState(() => isLoading = false);
     }
   }
 
@@ -70,69 +73,63 @@ class _ShoppingCartState extends State<ShoppingCart> {
       });
 
       setState(() {
-        int index = cartItems.indexWhere((item) => item['docId'] == docId);
+        final index = cartItems.indexWhere((item) => item['docId'] == docId);
         if (index != -1) {
           cartItems[index]['quantity'] = newQuantity;
         }
       });
     } catch (e) {
-      print('Error updating quantity: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to update quantity'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      debugPrint('Error updating quantity: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to update quantity'), backgroundColor: Colors.red),
+        );
+      }
     }
   }
 
   Future<void> _removeItem(String docId) async {
     try {
-      await FirebaseFirestore.instance
-          .collection('cart_items')
-          .doc(docId)
-          .delete();
+      await FirebaseFirestore.instance.collection('cart_items').doc(docId).delete();
 
       setState(() {
         cartItems.removeWhere((item) => item['docId'] == docId);
         selectedItems.remove(docId);
+        if (cartItems.isEmpty) selectAll = false;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Item removed from cart'),
-          backgroundColor: Color(0xFF388E3C),
-        ),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Item removed'), backgroundColor: Color(0xFF388E3C)),
+        );
+      }
     } catch (e) {
-      print('Error removing item: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to remove item'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      debugPrint('Error removing item: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to remove item'), backgroundColor: Colors.red),
+        );
+      }
     }
   }
 
   Future<Map<String, dynamic>?> _loadUserAddress() async {
     if (currentUser == null) return null;
-
     try {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+      final doc = await FirebaseFirestore.instance
           .collection('user_profile')
           .doc(currentUser!.uid)
           .get();
-
-      if (userDoc.exists) {
-        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-        return userData['address'] as Map<String, dynamic>?;
+      if (doc.exists) {
+        return (doc.data()?['address'] as Map<String, dynamic>?);
       }
     } catch (e) {
-      print('Error loading user address: $e');
+      debugPrint('Error loading address: $e');
     }
     return null;
   }
+
+  // --- Selection Logic ---
 
   void _toggleSelectAll() {
     setState(() {
@@ -152,7 +149,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
         selectAll = false;
       } else {
         selectedItems.add(docId);
-        if (selectedItems.length == cartItems.length) {
+        if (selectedItems.length == cartItems.length && cartItems.isNotEmpty) {
           selectAll = true;
         }
       }
@@ -169,114 +166,319 @@ class _ShoppingCartState extends State<ShoppingCart> {
     return total;
   }
 
+  int _calculateGreenCoins() {
+    int total = 0;
+    for (var item in cartItems) {
+      if (selectedItems.contains(item['docId']) && (item['isPreowned'] ?? false)) {
+        int quantity = item['quantity'] ?? 1;
+        double price = (item['productPrice'] ?? 0).toDouble();
+        total += (price * quantity).floor();
+      }
+    }
+    return total;
+  }
+
   Future<void> _proceedToCheckout() async {
     if (selectedItems.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please select items to checkout'),
-          backgroundColor: Colors.orange,
-        ),
+        const SnackBar(content: Text('Please select items to checkout'), backgroundColor: Colors.orange),
       );
       return;
     }
 
-    // Load user address
-    Map<String, dynamic>? userAddress = await _loadUserAddress();
-
-    // Get selected items data
-    List<Map<String, dynamic>> selectedItemsData = cartItems
+    final userAddress = await _loadUserAddress();
+    final selectedItemsData = cartItems
         .where((item) => selectedItems.contains(item['docId']))
         .toList();
 
-    // Navigate to checkout
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Checkout(
-          selectedItems: selectedItemsData,
-          userAddress: userAddress,
+    if (mounted) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => Checkout(
+            selectedItems: selectedItemsData,
+            userAddress: userAddress,
+          ),
         ),
-      ),
-    ).then((_) {
-      _loadCartItems();
-    });
+      ).then((_) => _loadCartItems());
+    }
   }
 
-  Widget _buildCartItem(Map<String, dynamic> item) {
-    String docId = item['docId'];
-    bool isSelected = selectedItems.contains(docId);
-    int quantity = item['quantity'] ?? 1;
-    double price = (item['productPrice'] ?? 0).toDouble();
-    bool isPreowned = item['isPreowned'] ?? false;
+  // --- Main Build ---
+
+  @override
+  Widget build(BuildContext context) {
+    final int greenCoinsToEarn = _calculateGreenCoins();
+
+    return Scaffold(
+      backgroundColor: Colors.grey[50],
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Shopping Cart',
+          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+        ),
+        centerTitle: true,
+        actions: [
+          if (cartItems.isNotEmpty)
+            TextButton(
+              onPressed: _toggleSelectAll,
+              child: Text(
+                selectAll ? 'Deselect All' : 'Select All',
+                style: const TextStyle(color: Color(0xFF388E3C), fontWeight: FontWeight.w600),
+              ),
+            ),
+        ],
+      ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFF388E3C)))
+          : cartItems.isEmpty
+              ? const _EmptyCartView()
+              : Column(
+                  children: [
+                    // 1. Green Coins Banner
+                    if (greenCoinsToEarn > 0)
+                      _GreenCoinsBanner(coins: greenCoinsToEarn),
+
+                    // 2. Cart List
+                    Expanded(
+                      child: RefreshIndicator(
+                        color: const Color(0xFF388E3C),
+                        onRefresh: _loadCartItems,
+                        child: ListView.builder(
+                          padding: const EdgeInsets.only(bottom: 20),
+                          itemCount: cartItems.length,
+                          itemBuilder: (context, index) {
+                            final item = cartItems[index];
+                            return _CartItemTile(
+                              item: item,
+                              isSelected: selectedItems.contains(item['docId']),
+                              onToggle: () => _toggleItemSelection(item['docId']),
+                              onQuantityChanged: (qty) => _updateQuantity(item['docId'], qty),
+                              onRemove: () => _removeItem(item['docId']),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+
+                    // 3. Bottom Checkout Bar
+                    _CheckoutBottomBar(
+                      itemCount: selectedItems.length,
+                      totalPrice: _calculateSelectedTotal(),
+                      onCheckout: selectedItems.isEmpty ? null : _proceedToCheckout,
+                    ),
+                  ],
+                ),
+    );
+  }
+}
+
+// ==============================================================================
+// SUB-WIDGETS (Extracted for readability)
+// ==============================================================================
+
+class _EmptyCartView extends StatelessWidget {
+  const _EmptyCartView();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.shopping_cart_outlined, size: 100, color: Colors.grey[400]),
+          const SizedBox(height: 16),
+          Text(
+            'Your cart is empty',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Add items to get started',
+            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GreenCoinsBanner extends StatelessWidget {
+  final int coins;
+  const _GreenCoinsBanner({required this.coins});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFF0FDF4), Color(0xFFDCFCE7)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF388E3C).withOpacity(0.3)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+            child: Image.asset(
+              'assets/images/icon/Green Coin.png',
+              width: 24, height: 24,
+              errorBuilder: (_, __, ___) => const Icon(Icons.eco, color: Color(0xFF388E3C), size: 24),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              'You\'ll earn $coins Green Coins with this purchase!',
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF388E3C)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CheckoutBottomBar extends StatelessWidget {
+  final int itemCount;
+  final double totalPrice;
+  final VoidCallback? onCheckout;
+
+  const _CheckoutBottomBar({
+    required this.itemCount,
+    required this.totalPrice,
+    required this.onCheckout,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 8, offset: const Offset(0, -2)),
+        ],
+      ),
+      child: SafeArea(
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Total ($itemCount items)',
+                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'RM ${totalPrice.toStringAsFixed(2)}',
+                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF388E3C)),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 16),
+            CustomButton(
+              text: "Checkout",
+              onPressed: onCheckout ?? () {},
+              // CustomButton doesn't support disabled styling automatically based on null onPressed 
+              // like ElevatedButton, so we handle opacity or logic here if strict visual feedback is needed.
+              // However, since we are just replacing the widget, we'll rely on the logic passed in.
+              // To mimic disabled state visually if onPressed is practically null (handled by parent logic):
+              backgroundColor: onCheckout == null ? Colors.grey : const Color(0xFF388E3C),
+              minimumSize: const Size(140, 50),
+              borderRadius: 12,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _CartItemTile extends StatelessWidget {
+  final Map<String, dynamic> item;
+  final bool isSelected;
+  final VoidCallback onToggle;
+  final Function(int) onQuantityChanged;
+  final VoidCallback onRemove;
+
+  const _CartItemTile({
+    required this.item,
+    required this.isSelected,
+    required this.onToggle,
+    required this.onQuantityChanged,
+    required this.onRemove,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final int quantity = item['quantity'] ?? 1;
+    final double price = (item['productPrice'] ?? 0).toDouble();
+    final bool isPreowned = item['isPreowned'] ?? false;
 
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      elevation: 1,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
-        padding: EdgeInsets.all(12),
+        padding: const EdgeInsets.all(12),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Checkbox
             Checkbox(
               value: isSelected,
-              onChanged: (value) => _toggleItemSelection(docId),
-              activeColor: Color(0xFF388E3C),
+              onChanged: (_) => onToggle(),
+              activeColor: const Color(0xFF388E3C),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
             ),
-
-            // Product Image
+            
+            // Image with Pre-owned Badge
             Stack(
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(8),
-                  child: item['imageUrl'] != null && item['imageUrl'].isNotEmpty
-                      ? Image.asset(
-                          item['imageUrl'],
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Container(
-                              width: 80,
-                              height: 80,
-                              color: Colors.grey[300],
-                              child: Icon(Icons.image, size: 40, color: Colors.grey),
-                            );
-                          },
-                        )
-                      : Container(
-                          width: 80,
-                          height: 80,
-                          color: Colors.grey[300],
-                          child: Icon(Icons.image, size: 40, color: Colors.grey),
-                        ),
+                  child: Container(
+                    width: 80, height: 80,
+                    color: Colors.grey[200],
+                    child: item['imageUrl'] != null && item['imageUrl'].isNotEmpty
+                        ? Image.asset(item['imageUrl'], fit: BoxFit.cover,
+                            errorBuilder: (_,__,___) => const Icon(Icons.image, color: Colors.grey))
+                        : const Icon(Icons.image, color: Colors.grey),
+                  ),
                 ),
-                // Pre-owned badge
                 if (isPreowned)
                   Positioned(
-                    top: 4,
-                    left: 4,
+                    top: 4, left: 4,
                     child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                       decoration: BoxDecoration(
-                        color: Color(0xFF2E5BFF),
+                        color: const Color(0xFF2E5BFF),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.recycling,
-                            size: 10,
-                            color: Colors.white,
-                          ),
+                        children: const [
+                          Icon(Icons.recycling, size: 10, color: Colors.white),
                           SizedBox(width: 2),
                           Text(
                             'Pre-owned',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 9,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
@@ -284,105 +486,85 @@ class _ShoppingCartState extends State<ShoppingCart> {
                   ),
               ],
             ),
-
-            SizedBox(width: 12),
-
-            // Product Details
+            
+            const SizedBox(width: 12),
+            
+            // Details
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     item['productName'] ?? 'Unknown Product',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  SizedBox(height: 4),
-                  if (item['seller'] != null && item['seller'].isNotEmpty)
+                  const SizedBox(height: 4),
+                  if (item['seller'] != null)
                     Text(
                       'By ${item['seller']}',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 13, color: Colors.grey[800]),
                     ),
+                  
                   if (isPreowned) ...[
-                    SizedBox(height: 4),
+                    const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(
-                          Icons.eco,
-                          size: 12,
-                          color: Color(0xFF388E3C),
-                        ),
-                        SizedBox(width: 4),
+                        const Icon(Icons.eco, size: 14, color: Color(0xFF388E3C)),
+                        const SizedBox(width: 4),
                         Text(
                           'Earn ${(price * quantity).floor()} Green Coins',
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: Color(0xFF388E3C),
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style: const TextStyle(fontSize: 12, color: Color(0xFF388E3C), fontWeight: FontWeight.w600),
                         ),
                       ],
                     ),
                   ],
-                  SizedBox(height: 8),
+                  
+                  const SizedBox(height: 8),
                   Text(
                     'RM ${price.toStringAsFixed(2)}',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF388E3C),
-                    ),
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF388E3C)),
                   ),
-                  SizedBox(height: 12),
-
-                  // Quantity controls
+                  
+                  const SizedBox(height: 12),
+                  
+                  // Controls
                   Row(
                     children: [
                       Container(
+                        height: 36,
                         decoration: BoxDecoration(
                           border: Border.all(color: Colors.grey[300]!),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
-                              icon: Icon(Icons.remove, size: 18),
-                              onPressed: quantity > 1
-                                  ? () => _updateQuantity(docId, quantity - 1)
-                                  : null,
-                              padding: EdgeInsets.all(4),
-                              constraints: BoxConstraints(),
+                              icon: const Icon(Icons.remove, size: 16),
+                              onPressed: quantity > 1 ? () => onQuantityChanged(quantity - 1) : null,
+                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              constraints: const BoxConstraints(),
                             ),
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 12),
-                              child: Text(
-                                '$quantity',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
+                              width: 32,
+                              alignment: Alignment.center,
+                              child: Text('$quantity', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
                             ),
                             IconButton(
-                              icon: Icon(Icons.add, size: 18),
-                              onPressed: () => _updateQuantity(docId, quantity + 1),
-                              padding: EdgeInsets.all(4),
-                              constraints: BoxConstraints(),
+                              icon: const Icon(Icons.add, size: 16),
+                              onPressed: () => onQuantityChanged(quantity + 1),
+                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              constraints: const BoxConstraints(),
                             ),
                           ],
                         ),
                       ),
-                      Spacer(),
+                      const Spacer(),
                       IconButton(
-                        icon: Icon(Icons.delete_outline, color: Colors.red),
-                        onPressed: () => _removeItem(docId),
+                        icon: const Icon(Icons.delete_outline, color: Colors.red),
+                        onPressed: onRemove,
                       ),
                     ],
                   ),
@@ -392,224 +574,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
           ],
         ),
       ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // Calculate total green coins to earn
-    int totalGreenCoinsToEarn = 0;
-    for (var item in cartItems) {
-      if (selectedItems.contains(item['docId'])) {
-        bool isPreowned = item['isPreowned'] ?? false;
-        if (isPreowned) {
-          int quantity = item['quantity'] ?? 1;
-          double price = (item['productPrice'] ?? 0).toDouble();
-          totalGreenCoinsToEarn += (price * quantity).floor();
-        }
-      }
-    }
-
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: Text(
-          'Shopping Cart',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          if (cartItems.isNotEmpty)
-            TextButton(
-              onPressed: _toggleSelectAll,
-              child: Text(
-                selectAll ? 'Deselect All' : 'Select All',
-                style: TextStyle(
-                  color: Color(0xFF388E3C),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-        ],
-      ),
-      body: isLoading
-          ? Center(
-              child: CircularProgressIndicator(color: Color(0xFF388E3C)),
-            )
-          : cartItems.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.shopping_cart_outlined,
-                        size: 100,
-                        color: Colors.grey[400],
-                      ),
-                      SizedBox(height: 16),
-                      Text(
-                        'Your cart is empty',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        'Add items to get started',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[500],
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : Column(
-                  children: [
-                    // Green Coins Earning Banner (if any pre-owned items selected)
-                    if (totalGreenCoinsToEarn > 0)
-                      Container(
-                        margin: EdgeInsets.all(16),
-                        padding: EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Color(0xFFF0FDF4), Color(0xFFDCFCE7)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Color(0xFF388E3C).withOpacity(0.3),
-                          ),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Image.asset(
-                                'assets/images/icon/Green Coin.png',
-                                width: 24,
-                                height: 24,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Icon(
-                                    Icons.eco,
-                                    color: Color(0xFF388E3C),
-                                    size: 24,
-                                  );
-                                },
-                              ),
-                            ),
-                            SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                'You\'ll earn $totalGreenCoinsToEarn Green Coins with this purchase!',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF388E3C),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                    Expanded(
-                      child: RefreshIndicator(
-                        color: Color(0xFF388E3C),
-                        onRefresh: _loadCartItems,
-                        child: ListView.builder(
-                          itemCount: cartItems.length,
-                          itemBuilder: (context, index) {
-                            return _buildCartItem(cartItems[index]);
-                          },
-                        ),
-                      ),
-                    ),
-
-                    // Bottom Checkout Bar
-                    Container(
-                      padding: EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 8,
-                            offset: Offset(0, -2),
-                          ),
-                        ],
-                      ),
-                      child: SafeArea(
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    'Total (${selectedItems.length} items)',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey[600],
-                                    ),
-                                  ),
-                                  SizedBox(height: 4),
-                                  Text(
-                                    'RM ${_calculateSelectedTotal().toStringAsFixed(2)}',
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF388E3C),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            SizedBox(width: 16),
-                            ElevatedButton(
-                              onPressed: selectedItems.isEmpty ? null : _proceedToCheckout,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color(0xFF388E3C),
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 32,
-                                  vertical: 16,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                              child: Text(
-                                'Checkout',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
     );
   }
 }

@@ -1,33 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:intl/intl.dart';
 import '../checkout/order_status.dart';
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: PaymentConfirmation(
-        orderData: {},
-        orderId: '',
-        transactionId: '',
-        paymentMethod: '',
-      ),
-    );
-  }
-}
+import '../../widget/custom_button.dart'; // Ensure this import path is correct
 
 class PaymentConfirmation extends StatefulWidget {
   final Map<String, dynamic> orderData;
@@ -48,626 +23,37 @@ class PaymentConfirmation extends StatefulWidget {
 }
 
 class _PaymentConfirmationState extends State<PaymentConfirmation> {
-  Widget labelValueRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label, style: TextStyle(fontSize: 16, color: Colors.grey[600])),
-          Expanded(
-            child: Text(
-              value,
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.black87,
-                fontWeight: FontWeight.w600,
-              ),
-              textAlign: TextAlign.right,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  
+  // --- Data Helpers ---
+  String _getPaymentType() => widget.orderData['type'] ?? 'purchase';
 
-  String _getPaymentType() {
-    if (widget.orderData.containsKey('type')) {
-      return widget.orderData['type'];
-    }
-    return 'purchase';
-  }
-
-  Widget _buildPurchaseConfirmation() {
-    int totalItems = 0;
-    for (var item in widget.orderData['items']) {
-      totalItems += (item['quantity'] as int? ?? 1);
-    }
-
-    String formattedDate = DateFormat('MMM dd, yyyy').format(DateTime.now());
-    String shippingDisplay = widget.orderData['shippingMethod'] == 'Express'
-        ? 'Express (2-3 days)'
-        : 'Standard (5-6 days)';
-
-    int greenCoinsEarned = widget.orderData['greenCoinsToEarn'] ?? 0;
-
-    return Column(
-      children: [
-        // Success Animation
-        Center(
-          child: Lottie.asset(
-            'assets/lottie/Success.json',
-            width: 200,
-            height: 200,
-            fit: BoxFit.fill,
-            repeat: true,
-            animate: true,
-          ),
-        ),
-        const SizedBox(height: 20),
-
-        Text(
-          'Payment Successful!',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF388E3C),
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 10),
-
-        Text(
-          'Your order has been placed successfully.\nThank you for your purchase!',
-          style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 30),
-
-        // Order Summary Card
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.grey[50],
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey[300]!),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Order Summary',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              SizedBox(height: 16),
-              Divider(),
-
-              labelValueRow('Order ID:', widget.orderId),
-              labelValueRow('Date:', formattedDate),
-              labelValueRow('Payment Method:', widget.paymentMethod),
-              labelValueRow('Transaction ID:', widget.transactionId),
-
-              SizedBox(height: 8),
-              Divider(),
-              SizedBox(height: 8),
-
-              labelValueRow(
-                'Items ($totalItems):',
-                'RM ${widget.orderData['itemsTotal'].toStringAsFixed(2)}',
-              ),
-              labelValueRow(
-                'Shipping ($shippingDisplay):',
-                widget.orderData['shippingCost'] == 0
-                    ? 'FREE'
-                    : 'RM ${widget.orderData['shippingCost'].toStringAsFixed(2)}',
-              ),
-              labelValueRow(
-                'Packaging:',
-                'RM ${widget.orderData['packagingCost'].toStringAsFixed(2)}',
-              ),
-
-              if (widget.orderData['discount'] > 0)
-                labelValueRow(
-                  'Discount:',
-                  '-RM ${widget.orderData['discount'].toStringAsFixed(2)}',
-                ),
-
-              if (widget.orderData['greenCoinsUsed'] > 0)
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        children: [
-                          Image.asset(
-                            'assets/images/icon/Green Coin.png',
-                            width: 20,
-                            height: 20,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Icon(
-                                Icons.monetization_on,
-                                color: Color(0xFF388E3C),
-                                size: 20,
-                              );
-                            },
-                          ),
-                          SizedBox(width: 8),
-                          Text(
-                            'Green Coins Used:',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Text(
-                        '${widget.orderData['greenCoinsUsed']} coins',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.black87,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-              SizedBox(height: 8),
-              Divider(thickness: 2),
-              SizedBox(height: 8),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Total Paid:',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  Text(
-                    'RM ${widget.orderData['grandTotal'].toStringAsFixed(2)}',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF388E3C),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        
-        const SizedBox(height: 20),
-
-        // Green Coins Earned (if any pre-owned items)
-        if (greenCoinsEarned > 0)
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFFF0FDF4), Color(0xFFDCFCE7)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: Color(0xFF388E3C).withOpacity(0.3),
-                width: 2,
-              ),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Image.asset(
-                      'assets/images/icon/Green Coin.png',
-                      width: 32,
-                      height: 32,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Icon(
-                          Icons.eco,
-                          color: Color(0xFF388E3C),
-                          size: 32,
-                        );
-                      },
-                    ),
-                  ),
-                ),
-                SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Green Coins Earned',
-                        style: TextStyle(
-                          color: Color(0xFF388E3C),
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 4),
-                      Text(
-                        'From pre-owned purchases',
-                        style: TextStyle(
-                          color: Color(0xFF388E3C).withOpacity(0.8),
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Text(
-                  '+$greenCoinsEarned',
-                  style: TextStyle(
-                    color: Color(0xFF388E3C),
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-        const SizedBox(height: 30),
-
-        // View Order Status Button
-        SizedBox(
-          width: double.infinity,
-          child: ElevatedButton.icon(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => OrderStatus(orderId: widget.orderId),
-                ),
-              );
-            },
-            icon: const Icon(Icons.local_shipping_outlined),
-            label: const Text("View Order Status"),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF388E3C),
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDonationConfirmation() {
-    String formattedDate = DateFormat('MMM dd, yyyy').format(DateTime.now());
-    double amount = widget.orderData['amount'] ?? 0.0;
-    String category = widget.orderData['category'] ?? 'General';
-    int greenCoins = widget.orderData['greenCoinsEarned'] ?? 0;
-
-    return Column(
-      children: [
-        Center(
-          child: Lottie.asset(
-            'assets/lottie/Success.json',
-            width: 200,
-            height: 200,
-            fit: BoxFit.fill,
-            repeat: true,
-            animate: true,
-          ),
-        ),
-        const SizedBox(height: 20),
-
-        Text(
-          'Donation Successful!',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF2E5BFF),
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 10),
-
-        Text(
-          'Thank you for making a difference!\nYour contribution helps save our planet.',
-          style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 30),
-
-        // Donation Summary Card
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.grey[50],
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey[300]!),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Donation Summary',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              SizedBox(height: 16),
-              Divider(),
-
-              labelValueRow('Transaction ID:', widget.transactionId),
-              labelValueRow('Date:', formattedDate),
-              labelValueRow('Payment Method:', widget.paymentMethod),
-              labelValueRow('Category:', category),
-
-              SizedBox(height: 8),
-              Divider(thickness: 2),
-              SizedBox(height: 8),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Donation Amount:',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  Text(
-                    'RM ${amount.toStringAsFixed(2)}',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF2E5BFF),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 20),
-
-        // Green Coins Earned
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Color(0xFFF0FDF4),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Color(0xFF1B6839).withOpacity(0.2)),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                    image: AssetImage('assets/images/icon/Green Coin.png'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Green Coins Earned',
-                      style: TextStyle(
-                        color: Color(0xFF1B6839),
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      'You earned $greenCoins Green Coins!',
-                      style: TextStyle(color: Color(0xFF1B6839), fontSize: 14),
-                    ),
-                  ],
-                ),
-              ),
-              Text(
-                '+$greenCoins',
-                style: TextStyle(
-                  color: Color(0xFF1B6839),
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRepairConfirmation() {
-    String formattedDate = DateFormat('MMM dd, yyyy').format(DateTime.now());
-    double amount = widget.orderData['amount'] ?? 0.0;
-    String repairType = widget.orderData['repairType'] ?? 'Repair Service';
-    int greenCoins = widget.orderData['greenCoinsEarned'] ?? 0;
-
-    return Column(
-      children: [
-        Center(
-          child: Lottie.asset(
-            'assets/lottie/Success.json',
-            width: 200,
-            height: 200,
-            fit: BoxFit.fill,
-            repeat: true,
-            animate: true,
-          ),
-        ),
-        const SizedBox(height: 20),
-
-        Text(
-          'Payment Successful!',
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF2E5BFF),
-          ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 10),
-
-        Text(
-          'Your repair service has been confirmed.\nWe\'ll contact you soon!',
-          style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 30),
-
-        // Repair Summary Card
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.grey[50],
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey[300]!),
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Repair Service Summary',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              SizedBox(height: 16),
-              Divider(),
-
-              labelValueRow('Transaction ID:', widget.transactionId),
-              labelValueRow('Date:', formattedDate),
-              labelValueRow('Payment Method:', widget.paymentMethod),
-              labelValueRow('Service:', repairType),
-
-              SizedBox(height: 8),
-              Divider(thickness: 2),
-              SizedBox(height: 8),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Service Fee:',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  Text(
-                    'RM ${amount.toStringAsFixed(2)}',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF2E5BFF),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 20),
-
-        // Green Coins Earned
-        Container(
-          width: double.infinity,
-          padding: EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Color(0xFFF0FDF4),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Color(0xFF1B6839).withOpacity(0.2)),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                    image: AssetImage('assets/images/icon/Green Coin.png'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Green Coins Earned',
-                      style: TextStyle(
-                        color: Color(0xFF1B6839),
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      'You earned $greenCoins Green Coins!',
-                      style: TextStyle(color: Color(0xFF1B6839), fontSize: 14),
-                    ),
-                  ],
-                ),
-              ),
-              Text(
-                '+$greenCoins',
-                style: TextStyle(
-                  color: Color(0xFF1B6839),
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
+  // --- Main Build ---
   @override
   Widget build(BuildContext context) {
-    String paymentType = _getPaymentType();
+    final type = _getPaymentType();
+    
+    // Determine content based on type
+    String title = 'Payment Successful!';
+    String subtitle = 'Your transaction has been completed.';
+    Color primaryColor = const Color(0xFF388E3C); // Default Green
+    List<Widget> summaryChildren = [];
+    int greenCoinsEarned = widget.orderData['greenCoinsEarned'] ?? widget.orderData['greenCoinsToEarn'] ?? 0;
+
+    // Logic Switch
+    if (type == 'donation') {
+      primaryColor = const Color(0xFF2E5BFF); // Blue
+      title = 'Donation Successful!';
+      subtitle = 'Thank you for making a difference!\nYour contribution helps save our planet.';
+      summaryChildren = _buildDonationSummaryRows();
+    } else if (type == 'repair') {
+      primaryColor = const Color(0xFF2E5BFF); // Blue
+      subtitle = 'Your repair service has been confirmed.\nWe\'ll contact you soon!';
+      summaryChildren = _buildRepairSummaryRows();
+    } else {
+      // Purchase
+      subtitle = 'Your order has been placed successfully.\nThank you for your purchase!';
+      summaryChildren = _buildPurchaseSummaryRows();
+    }
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -676,71 +62,317 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.black),
-          onPressed: () {
-            Navigator.of(context).popUntil((route) => route.isFirst);
-          },
+          onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
         ),
-        title: const Text(
-          'Payment Confirmation',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-        ),
-        centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: 10),
+            // 1. Success Animation & Header
+            _SuccessHeader(
+              title: title,
+              subtitle: subtitle,
+              color: primaryColor,
+            ),
+            
+            const SizedBox(height: 30),
 
-            // Show appropriate confirmation based on type
-            if (paymentType == 'donation')
-              _buildDonationConfirmation()
-            else if (paymentType == 'repair')
-              _buildRepairConfirmation()
-            else
-              _buildPurchaseConfirmation(),
+            // 2. Summary Card
+            _SummaryCard(
+              title: type == 'donation' ? 'Donation Summary' : 
+                     type == 'repair' ? 'Service Summary' : 'Order Summary',
+              children: [
+                _LabelValueRow('Transaction ID:', widget.transactionId),
+                _LabelValueRow('Date:', DateFormat('MMM dd, yyyy').format(DateTime.now())),
+                _LabelValueRow('Payment Method:', widget.paymentMethod),
+                const Divider(height: 24),
+                ...summaryChildren,
+              ],
+            ),
+
+            // 3. Green Coins (Conditional)
+            if (greenCoinsEarned > 0) ...[
+              const SizedBox(height: 20),
+              _GreenCoinsEarnedCard(coins: greenCoinsEarned),
+            ],
+
+            const SizedBox(height: 30),
+
+            // 4. Action Buttons
+            if (type == 'purchase')
+              CustomButton(
+                text: "View Order Status",
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => OrderStatus(orderId: widget.orderId),
+                    ),
+                  );
+                },
+                backgroundColor: primaryColor,
+                minimumSize: const Size(double.infinity, 54),
+              ),
 
             const SizedBox(height: 12),
 
-            // Continue Shopping/Home Button
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
-                onPressed: () {
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                },
-                icon: Icon(
-                  paymentType == 'purchase'
-                      ? Icons.shopping_bag_outlined
-                      : Icons.home_outlined,
-                ),
-                label: Text(
-                  paymentType == 'purchase'
-                      ? "Continue Shopping"
-                      : "Back to Home",
-                ),
+                onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
+                icon: Icon(type == 'purchase' ? Icons.shopping_bag_outlined : Icons.home_outlined),
+                label: Text(type == 'purchase' ? "Continue Shopping" : "Back to Home"),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: paymentType == 'purchase'
-                      ? const Color(0xFF388E3C)
-                      : const Color(0xFF2E5BFF),
+                  foregroundColor: primaryColor,
                   padding: const EdgeInsets.symmetric(vertical: 14),
-                  side: BorderSide(
-                    color: paymentType == 'purchase'
-                        ? Color(0xFF388E3C)
-                        : Color(0xFF2E5BFF),
-                    width: 2,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                  side: BorderSide(color: primaryColor, width: 2),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
-
             const SizedBox(height: 20),
           ],
         ),
+      ),
+    );
+  }
+
+  // --- Specific Logic Builders ---
+
+  List<Widget> _buildPurchaseSummaryRows() {
+    int totalItems = 0;
+    if (widget.orderData['items'] != null) {
+      for (var item in widget.orderData['items']) {
+        totalItems += (item['quantity'] as int? ?? 1);
+      }
+    }
+    
+    final shippingDisplay = widget.orderData['shippingMethod'] == 'Express' ? 'Express (2-3 days)' : 'Standard (5-6 days)';
+    
+    return [
+      _LabelValueRow('Order ID:', widget.orderId),
+      _LabelValueRow('Items ($totalItems):', 'RM ${widget.orderData['itemsTotal'].toStringAsFixed(2)}'),
+      _LabelValueRow(
+        'Shipping ($shippingDisplay):', 
+        widget.orderData['shippingCost'] == 0 ? 'FREE' : 'RM ${widget.orderData['shippingCost'].toStringAsFixed(2)}'
+      ),
+      _LabelValueRow('Packaging:', 'RM ${widget.orderData['packagingCost'].toStringAsFixed(2)}'),
+      if (widget.orderData['discount'] > 0)
+        _LabelValueRow('Discount:', '-RM ${widget.orderData['discount'].toStringAsFixed(2)}', valueColor: Colors.red),
+      
+      const Divider(height: 24, thickness: 1.5),
+      
+      _TotalRow(
+        label: 'Total Paid', 
+        amount: widget.orderData['grandTotal'], 
+        color: const Color(0xFF388E3C),
+      ),
+    ];
+  }
+
+  List<Widget> _buildDonationSummaryRows() {
+    return [
+      _LabelValueRow('Category:', widget.orderData['category'] ?? 'General'),
+      const Divider(height: 24, thickness: 1.5),
+      _TotalRow(
+        label: 'Donation Amount', 
+        amount: widget.orderData['amount'], 
+        color: const Color(0xFF2E5BFF),
+      ),
+    ];
+  }
+
+  List<Widget> _buildRepairSummaryRows() {
+    return [
+      _LabelValueRow('Service Type:', widget.orderData['repairType'] ?? 'General Repair'),
+      const Divider(height: 24, thickness: 1.5),
+      _TotalRow(
+        label: 'Service Fee', 
+        amount: widget.orderData['amount'], 
+        color: const Color(0xFF2E5BFF),
+      ),
+    ];
+  }
+}
+
+// ==============================================================================
+// REUSABLE WIDGETS (Extracted to clean up the main logic)
+// ==============================================================================
+
+class _SuccessHeader extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final Color color;
+
+  const _SuccessHeader({required this.title, required this.subtitle, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Lottie.asset(
+          'assets/lottie/Success.json',
+          width: 180,
+          height: 180,
+          repeat: false,
+        ),
+        const SizedBox(height: 10),
+        Text(
+          title,
+          style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: color),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          subtitle,
+          style: TextStyle(fontSize: 16, color: Colors.grey[800], height: 1.4),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+}
+
+class _SummaryCard extends StatelessWidget {
+  final String title;
+  final List<Widget> children;
+
+  const _SummaryCard({required this.title, required this.children});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.grey[50],
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.grey[300]!),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)),
+          const SizedBox(height: 16),
+          ...children,
+        ],
+      ),
+    );
+  }
+}
+
+class _LabelValueRow extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color? valueColor;
+
+  const _LabelValueRow(this.label, this.value, {this.valueColor});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: TextStyle(fontSize: 15, color: Colors.grey[700], fontWeight: FontWeight.w500)),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: 15, 
+                color: valueColor ?? Colors.black87, 
+                fontWeight: FontWeight.bold
+              ),
+              textAlign: TextAlign.right,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TotalRow extends StatelessWidget {
+  final String label;
+  final dynamic amount; // can be int or double
+  final Color color;
+
+  const _TotalRow({required this.label, required this.amount, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          '$label:',
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+        ),
+        Text(
+          'RM ${(amount is int ? amount.toDouble() : amount).toStringAsFixed(2)}',
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color),
+        ),
+      ],
+    );
+  }
+}
+
+class _GreenCoinsEarnedCard extends StatelessWidget {
+  final int coins;
+
+  const _GreenCoinsEarnedCard({required this.coins});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFF0FDF4), Color(0xFFDCFCE7)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFF388E3C).withOpacity(0.3)),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+            child: Center(
+              child: Image.asset(
+                'assets/images/icon/Green Coin.png',
+                width: 28, height: 28,
+                errorBuilder: (_, __, ___) => const Icon(Icons.eco, color: Color(0xFF388E3C)),
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Green Coins Earned',
+                  style: TextStyle(color: Color(0xFF388E3C), fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                Text(
+                  'You earned $coins coins!',
+                  style: TextStyle(color: const Color(0xFF388E3C).withOpacity(0.9), fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            '+$coins',
+            style: const TextStyle(color: Color(0xFF388E3C), fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+        ],
       ),
     );
   }
