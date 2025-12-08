@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../utils/donation_options.dart';
+import '../../utils/donation_data.dart';
 import '../../utils/router.dart';
 
 void main() async {

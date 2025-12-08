@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import '../../widget/custom_text_field.dart';
 
 class AddressForm extends StatefulWidget {
   final TextEditingController? line1Controller;
@@ -39,7 +40,6 @@ class AddressFormState extends State<AddressForm> {
   void initState() {
     super.initState();
     _isInternalController = widget.line1Controller == null;
-
     line1Controller = widget.line1Controller ?? TextEditingController();
     line2Controller = widget.line2Controller ?? TextEditingController();
     cityController = widget.cityController ?? TextEditingController();
@@ -50,7 +50,6 @@ class AddressFormState extends State<AddressForm> {
 
   @override
   void dispose() {
-    // Only dispose controllers if they were created internally
     if (_isInternalController) {
       line1Controller.dispose();
       line2Controller.dispose();
@@ -61,54 +60,15 @@ class AddressFormState extends State<AddressForm> {
     super.dispose();
   }
 
-  InputDecoration _inputDecoration(String label, {bool isOptional = false}) {
-    return InputDecoration(
-      labelText: label,
-      labelStyle: TextStyle(
-        fontFamily: 'Manrope',
-        color: Colors.grey[600],
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-      ),
-      filled: true,
-      fillColor: Colors.white,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: Colors.grey[300]!, width: 1.5),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: Colors.grey[300]!, width: 1.5),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: Color(0xFF388E3C), width: 2.5),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: Colors.red[400]!, width: 1.5),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: Colors.red[400]!, width: 2.5),
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-    );
-  }
+  // Helper to check if user has started typing in any field
+  bool get _hasAnyData =>
+      line1Controller.text.isNotEmpty ||
+      cityController.text.isNotEmpty ||
+      postalController.text.isNotEmpty ||
+      stateController.text.isNotEmpty;
 
   bool validate() {
-    // Check if at least one field is filled
-    bool hasAnyData =
-        line1Controller.text.isNotEmpty ||
-        cityController.text.isNotEmpty ||
-        postalController.text.isNotEmpty ||
-        stateController.text.isNotEmpty;
-
-    if (!hasAnyData) {
-      return true; // Address is optional, so return true if all fields are empty
-    }
-
-    // If any field is filled, validate the form
+    if (!_hasAnyData) return true; // Optional if all empty
     return _formKey.currentState?.validate() ?? false;
   }
 
@@ -129,118 +89,67 @@ class AddressFormState extends State<AddressForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextFormField(
+          CustomTextField(
             controller: line1Controller,
-            decoration: _inputDecoration('Address Line 1'),
-            style: TextStyle(
-              fontFamily: 'Manrope',
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
+            label: 'Address Line 1',
+            hintText: 'Enter address line 1',
             validator: (value) {
-              // Only validate if any address field has data
-              bool hasAnyData =
-                  line1Controller.text.isNotEmpty ||
-                  cityController.text.isNotEmpty ||
-                  postalController.text.isNotEmpty ||
-                  stateController.text.isNotEmpty;
-
-              if (hasAnyData && (value == null || value.trim().isEmpty)) {
+              if (_hasAnyData && (value == null || value.trim().isEmpty)) {
                 return 'Please enter Address Line 1';
               }
               return null;
             },
           ),
           const SizedBox(height: 18),
-
-          TextFormField(
+          
+          CustomTextField(
             controller: line2Controller,
-            decoration: _inputDecoration(
-              'Address Line 2 (Optional)',
-              isOptional: true,
-            ),
-            style: TextStyle(
-              fontFamily: 'Manrope',
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
+            label: 'Address Line 2 (Optional)',
+            hintText: 'Enter address line 2',
           ),
           const SizedBox(height: 18),
-
-          TextFormField(
+          
+          CustomTextField(
             controller: cityController,
-            decoration: _inputDecoration('City'),
-            style: TextStyle(
-              fontFamily: 'Manrope',
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
+            label: 'City',
+            hintText: 'Enter city',
             validator: (value) {
-              bool hasAnyData =
-                  line1Controller.text.isNotEmpty ||
-                  cityController.text.isNotEmpty ||
-                  postalController.text.isNotEmpty ||
-                  stateController.text.isNotEmpty;
-
-              if (hasAnyData && (value == null || value.trim().isEmpty)) {
+              if (_hasAnyData && (value == null || value.trim().isEmpty)) {
                 return 'Please enter your city';
               }
               return null;
             },
           ),
           const SizedBox(height: 18),
-
-          TextFormField(
+          
+          CustomTextField(
             controller: postalController,
-            decoration: _inputDecoration('Postal Code'),
-            style: TextStyle(
-              fontFamily: 'Manrope',
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
+            label: 'Postal Code',
+            hintText: 'Enter postal code',
             keyboardType: TextInputType.number,
             inputFormatters: [
               FilteringTextInputFormatter.digitsOnly,
               LengthLimitingTextInputFormatter(5),
             ],
             validator: (value) {
-              bool hasAnyData =
-                  line1Controller.text.isNotEmpty ||
-                  cityController.text.isNotEmpty ||
-                  postalController.text.isNotEmpty ||
-                  stateController.text.isNotEmpty;
-
-              if (hasAnyData && (value == null || value.trim().isEmpty)) {
+              if (_hasAnyData && (value == null || value.trim().isEmpty)) {
                 return 'Please enter postal code';
               }
-              if (hasAnyData && value!.trim().length < 5) {
+              if (_hasAnyData && value!.trim().length < 5) {
                 return 'Postal code must be 5 digits';
               }
               return null;
             },
           ),
           const SizedBox(height: 18),
-
-          TextFormField(
+          
+          CustomTextField(
             controller: stateController,
-            decoration: _inputDecoration('State'),
-            style: TextStyle(
-              fontFamily: 'Manrope',
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-            ),
-            onChanged: (value) {
-              // Call the callback when state changes
-              widget.onStateChanged?.call(value);
-            },
+            label: 'State',
+            hintText: 'Enter state',
+            onChanged: widget.onStateChanged,
             validator: (value) {
-              bool hasAnyData =
-                  line1Controller.text.isNotEmpty ||
-                  cityController.text.isNotEmpty ||
-                  postalController.text.isNotEmpty ||
-                  stateController.text.isNotEmpty;
-
-              if (hasAnyData && (value == null || value.trim().isEmpty)) {
+              if (_hasAnyData && (value == null || value.trim().isEmpty)) {
                 return 'Please enter your state';
               }
               return null;
