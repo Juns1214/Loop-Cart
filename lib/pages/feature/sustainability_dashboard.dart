@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../utils/bar_chart.dart';
-import '../../utils/router.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart'; // Make sure to add this to pubspec.yaml
+import '../../utils/bar_chart.dart'; // Import the new chart
+import '../../utils/router.dart';
+import '../../widget/section_header.dart'; // Using your provided widget
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,7 +17,6 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -28,21 +29,23 @@ class MyApp extends StatelessWidget {
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
-
   @override
   State<DashboardPage> createState() => _DashboardPageState();
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  List<double> donationAmount = [0, 0, 0, 0, 0, 0];
+  // Dashboard Data
+  List<ChartData> chartData = [];
   int recycleAmount = 0;
   int repairCount = 0;
   double totalDonation = 0;
   int greenCoin = 0;
   bool isLoading = true;
+
+  // Gamification Data
+  List<Map<String, dynamic>> badges = [];
 
   @override
   void initState() {
@@ -51,140 +54,146 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Future<void> _loadDashboardData() async {
-    setState(() {
-      isLoading = true;
-    });
-
+    setState(() => isLoading = true);
     try {
       final userId = _auth.currentUser?.uid;
-      if (userId == null) {
-        setState(() {
-          isLoading = false;
-        });
-        return;
-      }
+      if (userId == null) return;
 
-      // Fetch user profile for green coins
-      final userDoc = await _firestore
-          .collection('user_profile')
-          .doc(userId)
-          .get();
-      if (userDoc.exists) {
-        setState(() {
-          greenCoin = userDoc.data()?['greenCoins'] ?? 0;
-        });
-      }
+      // 1. Parallel Data Fetching for speed
+      final results = await Future.wait([
+        FirebaseFirestore.instance.collection('user_profile').doc(userId).get(),
+        FirebaseFirestore.instance
+            .collection('donation_record')
+            .where('userId', isEqualTo: userId)
+            .get(),
+        FirebaseFirestore.instance
+            .collection('recycling_record')
+            .where('user_id', isEqualTo: userId)
+            .get(),
+        FirebaseFirestore.instance
+            .collection('repair_record')
+            .where('user_id', isEqualTo: userId)
+            .get(),
+      ]);
 
-      // Fetch donation records
-      final donationsSnapshot = await _firestore
-          .collection('donation_record')
-          .where('userId', isEqualTo: userId)
-          .get();
+      // 2. Process User Profile
+      final userDoc = results[0] as DocumentSnapshot;
+      final coins =
+          (userDoc.data() as Map<String, dynamic>?)?['greenCoins'] ?? 0;
 
-      Map<String, double> categoryTotals = {
+      // 3. Process Donations
+      final donationDocs = (results[1] as QuerySnapshot).docs;
+      Map<String, double> tempTotals = {
         'Low Income': 0,
         'Orphanage': 0,
         'Old Folk': 0,
         'Cancer NGO': 0,
-        'MMF': 0,
-        'CETDEM': 0,
+        'Wildlife': 0,
+        'Environment': 0,
       };
 
-      double total = 0;
-      for (var doc in donationsSnapshot.docs) {
-        final data = doc.data();
+      double totalDonated = 0;
+      for (var doc in donationDocs) {
+        final data = doc.data() as Map<String, dynamic>;
         final amount = (data['amount'] ?? 0).toDouble();
-        final category = data['donationCategory'] ?? '';
+        final cat = (data['donationCategory'] ?? '').toString().toLowerCase();
 
-        total += amount;
+        totalDonated += amount;
 
-        // Map categories to chart labels
-        if (category.toLowerCase().contains('orphanage')) {
-          categoryTotals['Orphanage'] =
-              (categoryTotals['Orphanage'] ?? 0) + amount;
-        } else if (category.toLowerCase().contains('cancer')) {
-          categoryTotals['Cancer NGO'] =
-              (categoryTotals['Cancer NGO'] ?? 0) + amount;
-        } else if (category.toLowerCase().contains('wildlife') ||
-            category.toLowerCase().contains('mmf')) {
-          categoryTotals['MMF'] = (categoryTotals['MMF'] ?? 0) + amount;
-        } else if (category.toLowerCase().contains('environment') ||
-            category.toLowerCase().contains('cetdem')) {
-          categoryTotals['CETDEM'] = (categoryTotals['CETDEM'] ?? 0) + amount;
-        } else if (category.toLowerCase().contains('old') ||
-            category.toLowerCase().contains('elderly') ||
-            category.toLowerCase().contains('folk')) {
-          categoryTotals['Old Folk'] =
-              (categoryTotals['Old Folk'] ?? 0) + amount;
-        } else if (category.toLowerCase().contains('low income') ||
-            category.toLowerCase().contains('poverty')) {
-          categoryTotals['Low Income'] =
-              (categoryTotals['Low Income'] ?? 0) + amount;
+        if (cat.contains('orphanage')) {
+          tempTotals['Orphanage'] = tempTotals['Orphanage']! + amount;
+        } else if (cat.contains('cancer')) {
+          tempTotals['Cancer NGO'] = tempTotals['Cancer NGO']! + amount;
+        } else if (cat.contains('wildlife') || cat.contains('mmf')) {
+          tempTotals['Wildlife'] = tempTotals['Wildlife']! + amount;
+        } else if (cat.contains('environment') || cat.contains('cetdem')) {
+          tempTotals['Environment'] = tempTotals['Environment']! + amount;
+        } else if (cat.contains('old') || cat.contains('folk')) {
+          tempTotals['Old Folk'] = tempTotals['Old Folk']! + amount;
         } else {
-          // Default to Low Income if category doesn't match
-          categoryTotals['Low Income'] =
-              (categoryTotals['Low Income'] ?? 0) + amount;
+          tempTotals['Low Income'] = tempTotals['Low Income']! + amount;
         }
       }
 
-      // Fetch recycling records
-      final recyclingSnapshot = await _firestore
-          .collection('recycling_record')
-          .where('user_id', isEqualTo: userId)
-          .get();
+      // 4. Process Counts
+      final recycled = (results[2] as QuerySnapshot).size;
+      final repaired = (results[3] as QuerySnapshot).size;
 
-      // Fetch repair records
-      final repairSnapshot = await _firestore
-          .collection('repair_record')
-          .where('user_id', isEqualTo: userId)
-          .get();
+      // 5. Calculate Badges
+      _calculateBadges(recycled, repaired, totalDonated);
 
-      setState(() {
-        donationAmount = [
-          categoryTotals['Low Income']!,
-          categoryTotals['Orphanage']!,
-          categoryTotals['Old Folk']!,
-          categoryTotals['Cancer NGO']!,
-          categoryTotals['MMF']!,
-          categoryTotals['CETDEM']!,
-        ];
-        totalDonation = total;
-        recycleAmount = recyclingSnapshot.docs.length;
-        repairCount = repairSnapshot.docs.length;
-        isLoading = false;
-      });
-    } catch (e) {
-      print('Error loading dashboard data: $e');
-      setState(() {
-        isLoading = false;
-      });
-      // Show error snackbar
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error loading data: ${e.toString()}'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        setState(() {
+          greenCoin = coins;
+          recycleAmount = recycled;
+          repairCount = repaired;
+          totalDonation = totalDonated;
+
+          // Convert map to generic ChartData list
+          chartData = tempTotals.entries
+              .map((e) => ChartData(e.key, e.value))
+              .toList();
+
+          isLoading = false;
+        });
       }
+    } catch (e) {
+      debugPrint('Error: $e');
+      if (mounted) setState(() => isLoading = false);
     }
+  }
+
+  void _calculateBadges(int recycled, int repaired, double donated) {
+    badges = [
+      {
+        'name': 'Green Starter',
+        'icon': Icons.eco,
+        'color': Colors.lightGreen,
+        'unlocked': recycled >= 1,
+        'desc': 'Recycle your first item',
+      },
+      {
+        'name': 'Earth Guardian',
+        'icon': Icons.public,
+        'color': Colors.blue,
+        'unlocked': recycled >= 10 && repaired >= 5,
+        'desc': 'Recycle 10 items & Repair 5 items',
+      },
+      {
+        'name': 'Generous Heart',
+        'icon': Icons.favorite,
+        'color': Colors.redAccent,
+        'unlocked': donated >= 100,
+        'desc': 'Donate over RM 100',
+      },
+      {
+        'name': 'Sustainability Hero',
+        'icon': Icons.workspace_premium,
+        'color': Colors.amber,
+        'unlocked': donated >= 500 && recycled >= 50,
+        'desc': 'Donate RM 500 & Recycle 50 items',
+      },
+    ];
+  }
+
+  void _shareBadge(String badgeName) {
+    Share.share(
+      'I just unlocked the "$badgeName" badge on the Sustainability App! 🌍✨ #GoGreen',
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[50], // Slightly off-white background
       appBar: AppBar(
         backgroundColor: const Color(0xFFD6F7C3),
         elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF1B5E20)),
-          onPressed: () => Navigator.pop(context),
-        ),
+        leading: BackButton(color: Color(0xFF1B5E20)),
         title: const Text(
-          'Sustainability Dashboard',
+          'Impact Dashboard',
           style: TextStyle(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w800,
             color: Color(0xFF1B5E20),
           ),
         ),
@@ -192,323 +201,155 @@ class _DashboardPageState extends State<DashboardPage> {
       ),
       body: isLoading
           ? const Center(
-              child: CircularProgressIndicator(color: Color(0xFF22C55E)),
+              child: CircularProgressIndicator(color: Color(0xFF2E7D32)),
             )
           : RefreshIndicator(
               onRefresh: _loadDashboardData,
-              color: const Color(0xFF22C55E),
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
+                padding: const EdgeInsets.only(bottom: 30),
                 child: Column(
                   children: [
-                    // Header Section with gradient
-                    Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFD6F7C3), Color(0xFFBBF7D0)],
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                        ),
-                        borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(30),
-                          bottomRight: Radius.circular(30),
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.green.withOpacity(0.1),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
-                      child: Column(
-                        children: [
-                          const Icon(
-                            Icons.eco,
-                            color: Color(0xFF1B5E20),
-                            size: 40,
-                          ),
-                          const SizedBox(height: 10),
-                          const Text(
-                            "Track your sustainability impact and discover how your choices help create a greener, cleaner world.",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: Color(0xFF1B5E20),
-                              height: 1.4,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                    _buildSummaryHeader(),
 
-                    const SizedBox(height: 20),
-
-                    // Quick Stats Cards
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: _buildStatCard(
-                              icon: Icons.recycling,
-                              title: 'Items Recycled',
-                              value: recycleAmount.toString(),
-                              color: const Color(0xFF10B981),
-                              iconColor: Colors.white,
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _buildStatCard(
-                              icon: Icons.build,
-                              title: 'Items Repaired',
-                              value: repairCount.toString(),
-                              color: const Color(0xFF3B82F6),
-                              iconColor: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Green Coin Balance - Enhanced Design
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFF22C55E), Color(0xFF16A34A)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: const Color(0xFF22C55E).withOpacity(0.4),
-                            blurRadius: 15,
-                            offset: const Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            width: 60,
-                            height: 60,
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              shape: BoxShape.circle,
-                            ),
-                            child: const Icon(
-                              Icons.monetization_on,
-                              color: Colors.white,
-                              size: 35,
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  "Green Coin Balance",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                const SizedBox(height: 5),
-                                Text(
-                                  "$greenCoin Coins",
-                                  style: const TextStyle(
-                                    fontSize: 28,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Icon(
-                            Icons.arrow_forward_ios,
-                            color: Colors.white.withOpacity(0.7),
-                            size: 20,
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 30),
-
-                    // Donation Chart Section - Enhanced
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
                       padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.1),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Donation Breakdown",
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Color(0xFF1B5E20),
-                                    ),
-                                  ),
-                                  SizedBox(height: 4),
-                                  Text(
-                                    "by Category",
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 8,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFF0FDF4),
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(
-                                    color: const Color(0xFFBBF7D0),
-                                  ),
-                                ),
-                                child: Text(
-                                  "RM ${totalDonation.toStringAsFixed(2)}",
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF166534),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 20),
-                          SizedBox(
-                            height: 300,
-                            child: MyBarGraph(donationAmount: donationAmount),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 30),
-
-                    // Sustainability Metrics Section - Enhanced
-                    Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 20),
-                      padding: const EdgeInsets.all(24),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [const Color(0xFFF0FDF4), Colors.white],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: const Color(0xFFBBF7D0),
-                          width: 2,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.green.withOpacity(0.05),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          // 1. Stats Grid
                           Row(
                             children: [
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF22C55E),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: const Icon(
-                                  Icons.trending_up,
-                                  color: Colors.white,
-                                  size: 24,
+                              Expanded(
+                                child: _StatCard(
+                                  icon: Icons.recycling,
+                                  label: "Recycled",
+                                  value: "$recycleAmount",
+                                  color: Colors.green,
                                 ),
                               ),
                               const SizedBox(width: 12),
-                              const Text(
-                                "Sustainability Goals",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF1B5E20),
+                              Expanded(
+                                child: _StatCard(
+                                  icon: Icons.build_circle_outlined,
+                                  label: "Repaired",
+                                  value: "$repairCount",
+                                  color: Colors.blue,
                                 ),
                               ),
                             ],
                           ),
                           const SizedBox(height: 24),
 
-                          _buildGoalProgress(
-                            title: "Recycling Goal",
-                            current: recycleAmount,
-                            target: 50,
-                            unit: "items",
-                            icon: Icons.recycling,
-                            color: const Color(0xFF10B981),
+                          // 2. Donation Chart
+                          const SectionHeader(
+                            title: "Donation Overview",
+                            subtitle: "Where your contributions are going",
                           ),
-
-                          const SizedBox(height: 20),
-
-                          _buildGoalProgress(
-                            title: "Repair Goal",
-                            current: repairCount,
-                            target: 20,
-                            unit: "items",
-                            icon: Icons.build_circle,
-                            color: const Color(0xFF3B82F6),
+                          Container(
+                            height: 320,
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 10,
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      "Total: RM ${totalDonation.toStringAsFixed(0)}",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.grey[800],
+                                      ),
+                                    ),
+                                    const Icon(
+                                      Icons.bar_chart,
+                                      color: Colors.grey,
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 20),
+                                Expanded(
+                                  child: SustainabilityBarChart(
+                                    data: chartData,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
+                          const SizedBox(height: 24),
 
-                          const SizedBox(height: 20),
+                          // 3. Achievements / Badges Section (New)
+                          const SectionHeader(
+                            title: "Achievements",
+                            subtitle: "Unlock badges by reaching milestones",
+                          ),
+                          SizedBox(
+                            height: 110,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: badges.length,
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(width: 12),
+                              itemBuilder: (context, index) {
+                                final badge = badges[index];
+                                return _BadgeCard(
+                                  badge: badge,
+                                  onTap: badge['unlocked']
+                                      ? () => _shareBadge(badge['name'])
+                                      : null,
+                                );
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 24),
 
-                          _buildGoalProgress(
-                            title: "Donation Goal",
-                            current: totalDonation,
-                            target: 2000,
-                            unit: "RM",
-                            icon: Icons.volunteer_activism,
-                            color: const Color(0xFFF59E0B),
+                          // 4. Goals Section
+                          const SectionHeader(
+                            title: "Monthly Goals",
+                            subtitle: "Track your progress targets",
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: Colors.grey.shade200),
+                            ),
+                            child: Column(
+                              children: [
+                                _GoalRow(
+                                  icon: Icons.recycling,
+                                  color: Colors.green,
+                                  title: "Recycle 50 Items",
+                                  current: recycleAmount,
+                                  target: 50,
+                                ),
+                                const Divider(height: 30),
+                                _GoalRow(
+                                  icon: Icons.volunteer_activism,
+                                  color: Colors.orange,
+                                  title: "Donate RM 2,000",
+                                  current: totalDonation.toInt(),
+                                  target: 2000,
+                                  isCurrency: true,
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
                     ),
-
-                    const SizedBox(height: 30),
                   ],
                 ),
               ),
@@ -516,132 +357,272 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  Widget _buildStatCard({
-    required IconData icon,
-    required String title,
-    required String value,
-    required Color color,
-    required Color iconColor,
-  }) {
+  // --- Helper Widgets (Private to this file to keep file count low) ---
+
+  Widget _buildSummaryHeader() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 30),
+      decoration: const BoxDecoration(
+        color: Color(0xFFD6F7C3),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(30),
+          bottomRight: Radius.circular(30),
+        ),
+      ),
+      child: Column(
+        children: [
+          const Text(
+            "Impact Balance",
+            style: TextStyle(
+              color: Color(0xFF1B5E20),
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1B5E20),
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.green.withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.monetization_on,
+                  color: Colors.yellowAccent,
+                  size: 28,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  "$greenCoin GC",
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            "Every action counts towards a greener future.",
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Color(0xFF2E7D32), fontSize: 13),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
+
+  const _StatCard({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: color.withOpacity(0.3),
-            blurRadius: 8,
+            color: color.withOpacity(0.1),
+            blurRadius: 10,
             offset: const Offset(0, 4),
           ),
         ],
+        border: Border.all(color: color.withOpacity(0.1)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: iconColor, size: 32),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color, size: 24),
+          ),
           const SizedBox(height: 12),
           Text(
             value,
             style: const TextStyle(
-              fontSize: 24,
+              fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: Colors.black87,
             ),
           ),
-          const SizedBox(height: 4),
           Text(
-            title,
+            label,
             style: TextStyle(
-              fontSize: 12,
-              color: Colors.white.withOpacity(0.9),
+              fontSize: 13,
+              color: Colors.grey[700],
+              fontWeight: FontWeight.w500,
             ),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildGoalProgress({
-    required String title,
-    required num current,
-    required num target,
-    required String unit,
-    required IconData icon,
-    required Color color,
-  }) {
-    final progress = (current / target).clamp(0.0, 1.0);
-    final isCompleted = current >= target;
+class _BadgeCard extends StatelessWidget {
+  final Map<String, dynamic> badge;
+  final VoidCallback? onTap;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(icon, color: color, size: 20),
-            const SizedBox(width: 8),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: Color(0xFF1B5E20),
-              ),
-            ),
-            const Spacer(),
-            if (isCompleted)
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF10B981),
-                  borderRadius: BorderRadius.circular(12),
+  const _BadgeCard({required this.badge, this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final bool unlocked = badge['unlocked'];
+
+    return GestureDetector(
+      onTap: unlocked
+          ? onTap
+          : () {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Locked: ${badge['desc']}"),
+                  duration: const Duration(seconds: 2),
                 ),
-                child: const Row(
-                  children: [
-                    Icon(Icons.check, color: Colors.white, size: 14),
-                    SizedBox(width: 4),
-                    Text(
-                      'Completed',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-          ],
+              );
+            },
+      child: Container(
+        width: 100,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: unlocked ? Colors.white : Colors.grey[100],
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: unlocked ? badge['color'] : Colors.grey.shade300,
+            width: unlocked ? 2 : 1,
+          ),
         ),
-        const SizedBox(height: 8),
-        Row(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Icon(
+              badge['icon'],
+              color: unlocked ? badge['color'] : Colors.grey,
+              size: 32,
+            ),
+            const SizedBox(height: 8),
             Text(
-              unit == "RM"
-                  ? "$unit ${current is double ? current.toStringAsFixed(2) : current}"
-                  : "$current $unit",
+              badge['name'],
+              textAlign: TextAlign.center,
+              maxLines: 2,
               style: TextStyle(
-                fontSize: 14,
+                fontSize: 11,
                 fontWeight: FontWeight.bold,
-                color: isCompleted ? const Color(0xFF10B981) : color,
+                color: unlocked ? Colors.black87 : Colors.grey,
               ),
             ),
-            Text(
-              " / ${unit == "RM" ? "$unit $target" : "$target $unit"}",
-              style: const TextStyle(fontSize: 14, color: Colors.grey),
-            ),
+            if (unlocked)
+              const Padding(
+                padding: EdgeInsets.only(top: 4),
+                child: Icon(Icons.share, size: 14, color: Colors.black54),
+              ),
           ],
         ),
-        const SizedBox(height: 8),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(10),
-          child: LinearProgressIndicator(
-            value: progress,
-            minHeight: 8,
-            backgroundColor: Colors.grey[200],
-            valueColor: AlwaysStoppedAnimation<Color>(
-              isCompleted ? const Color(0xFF10B981) : color,
-            ),
+      ),
+    );
+  }
+}
+
+class _GoalRow extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String title;
+  final int current;
+  final int target;
+  final bool isCurrency;
+
+  const _GoalRow({
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.current,
+    required this.target,
+    this.isCurrency = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final double progress = (current / target).clamp(0.0, 1.0);
+    final String currentStr = isCurrency ? "RM $current" : "$current";
+    final String targetStr = isCurrency ? "RM $target" : "$target";
+
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, color: color, size: 20),
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  Text(
+                    "$currentStr / $targetStr",
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey[800],
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: progress,
+                  backgroundColor: Colors.grey[200],
+                  valueColor: AlwaysStoppedAnimation(color),
+                  minHeight: 6,
+                ),
+              ),
+            ],
           ),
         ),
       ],

@@ -18,7 +18,6 @@ import '../pages/feature/sell_second_hand_product.dart';
 import '../pages/feature/sustainability_dashboard.dart';
 import '../pages/user_profile/user_profile.dart';
 import '../pages/user_profile/edit_profile.dart';
-import '../pages/e-commerce/category_filter.dart';
 import '../pages/checkout/order_status.dart';
 import '../pages/e-commerce/preowned_main_page.dart';
 
@@ -30,7 +29,6 @@ final Map routes = {
   "/signup": (context) => const SignUpPage(),
   "/mainpage": (context) => const MainPage(),
   "/setup-preference": (context) => const SetupPreferencePage(),
-  "/category-filter": (context) => const CategoryFilterPage(),
   "/shopping-cart": (context) => ShoppingCart(),
   "/checkout": (context, {arguments}) => Checkout(
     selectedItems: arguments['selectedItems'] as List<Map<String, dynamic>>,

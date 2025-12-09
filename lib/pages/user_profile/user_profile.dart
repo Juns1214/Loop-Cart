@@ -6,11 +6,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'dart:convert';
 import '../../utils/router.dart';
 
+// If you want to run this file standalone for testing
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -52,29 +53,56 @@ class _UserProfileState extends State<UserProfile> {
             .doc(user.uid)
             .get();
 
-        setState(() {
-          userData = doc.data();
-          isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            userData = doc.data();
+            isLoading = false;
+          });
+        }
       } catch (e) {
-        setState(() {
-          isLoading = false;
-        });
-        print('Error loading profile: $e');
+        if (mounted) setState(() => isLoading = false);
+        debugPrint('Error loading profile: $e');
       }
     } else {
-      setState(() {
-        isLoading = false;
-      });
+      if (mounted) setState(() => isLoading = false);
     }
   }
 
   Future<void> _navigateToEditProfile() async {
     final result = await Navigator.pushNamed(context, '/edit-profile');
     if (result == true) {
-      // Reload profile data after edit
-      loadUserProfile();
+      loadUserProfile(); // Refresh data if changes were saved
     }
+  }
+
+  Future<void> _handleLogout() async {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Logout', style: TextStyle(fontFamily: 'Manrope')),
+        content: const Text(
+          'Are you sure you want to logout?',
+          style: TextStyle(fontFamily: 'Manrope', fontSize: 16),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Cancel', style: TextStyle(color: Colors.grey[800])),
+          ),
+          TextButton(
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              if (context.mounted) {
+                Navigator.pushNamedAndRemoveUntil(
+                    context, '/login', (route) => false);
+              }
+            },
+            child: const Text('Logout', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -85,645 +113,355 @@ class _UserProfileState extends State<UserProfile> {
         elevation: 0,
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 22),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'User Profile',
+          'Profile',
           style: TextStyle(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w800,
             color: Colors.black87,
             fontFamily: 'Manrope',
             fontSize: 20,
           ),
         ),
         centerTitle: true,
-        systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
       body: isLoading
-          ? Center(
-              child: CircularProgressIndicator(
-                color: Color(0xFF388E3C),
-                strokeWidth: 3,
-              ),
-            )
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFF388E3C)))
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
               child: Column(
                 children: [
-                  // Enhanced Profile Header Section
-                  Container(
-                    padding: EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [Color(0xFF4CAF50), Color(0xFF388E3C)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color(0xFF388E3C).withOpacity(0.3),
-                          blurRadius: 20,
-                          offset: Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      children: [
-                        // Profile Image with Enhanced Shadow
-                        Stack(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 4,
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.2),
-                                    blurRadius: 15,
-                                    offset: Offset(0, 5),
-                                  ),
-                                ],
-                              ),
-                              child: CircleAvatar(
-                                radius: 60,
-                                backgroundColor: Colors.grey[200],
-                                backgroundImage:
-                                    userData?['profileImageURL'] != null &&
-                                        userData!['profileImageURL'].isNotEmpty
-                                    ? MemoryImage(
-                                        base64Decode(
-                                          userData!['profileImageURL'],
-                                        ),
-                                      )
-                                    : AssetImage(
-                                            'assets/images/icon/LogoIcon.png',
-                                          )
-                                          as ImageProvider,
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.2),
-                                      blurRadius: 8,
-                                      offset: Offset(0, 3),
-                                    ),
-                                  ],
-                                ),
-                                child: IconButton(
-                                  icon: Icon(
-                                    Icons.edit_rounded,
-                                    color: Color(0xFF388E3C),
-                                    size: 22,
-                                  ),
-                                  onPressed: _navigateToEditProfile,
-                                  padding: EdgeInsets.all(10),
-                                  constraints: BoxConstraints(),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-
-                        SizedBox(height: 20),
-
-                        // User Name
-                        Text(
-                          userData?['name'] ?? 'No Name',
-                          style: TextStyle(
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Manrope',
-                            color: Colors.white,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-
-                        SizedBox(height: 8),
-
-                        // User Email
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 8,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.email_rounded,
-                                color: Colors.white,
-                                size: 16,
-                              ),
-                              SizedBox(width: 8),
-                              Text(
-                                userData?['email'] ?? 'No Email',
-                                style: TextStyle(
-                                  fontSize: 15,
-                                  color: Colors.white,
-                                  fontFamily: 'Manrope',
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        SizedBox(height: 8),
-
-                        // Phone Number with +60 prefix
-                        if (userData?['phoneNumber'] != null &&
-                            userData!['phoneNumber'].isNotEmpty)
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 8,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.phone_rounded,
-                                  color: Colors.white,
-                                  size: 16,
-                                ),
-                                SizedBox(width: 8),
-                                Text(
-                                  userData!['phoneNumber'],
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    color: Colors.white,
-                                    fontFamily: 'Manrope',
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                        SizedBox(height: 16),
-
-                        // Green Coins Badge
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                blurRadius: 10,
-                                offset: Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.monetization_on,
-                                color: Colors.amber[700],
-                                size: 24,
-                              ),
-                              SizedBox(width: 8),
-                              Text(
-                                '${userData?['greenCoins'] ?? 0} Green Coins',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Manrope',
-                                  color: Colors.amber[700],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  SizedBox(height: 24),
-
+                  _buildProfileHeader(),
+                  const SizedBox(height: 24),
+                  
                   // Profile Details Card
                   if (userData != null) ...[
-                    Container(
-                      padding: EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.08),
-                            blurRadius: 15,
-                            offset: Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(10),
-                                decoration: BoxDecoration(
-                                  color: Colors.blue.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Icon(
-                                  Icons.person_outline,
-                                  color: Colors.blue[700],
-                                  size: 22,
-                                ),
-                              ),
-                              SizedBox(width: 12),
-                              Text(
-                                'Profile Details',
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                  fontFamily: 'Manrope',
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: 20),
-
-                          // Date of Birth
-                          if (userData!['dateOfBirth'] != null &&
-                              userData!['dateOfBirth'].isNotEmpty)
-                            _buildDetailRow(
-                              icon: Icons.cake_rounded,
-                              iconColor: Colors.pink[400]!,
-                              label: 'Date of Birth',
-                              value: userData!['dateOfBirth'],
-                            ),
-
-                          // Address
-                          if (userData!['address'] != null &&
-                              userData!['address'] is Map)
-                            _buildAddressSection(
-                              userData!['address'] as Map<String, dynamic>,
-                            ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 24),
+                     _buildInfoSection(),
+                     const SizedBox(height: 24),
                   ],
 
-                  // History Section
-                  _buildSection(
+                  // Menu Sections
+                  _buildMenuSection(
                     title: 'History',
-                    icon: Icons.history_rounded,
-                    iconColor: Colors.purple,
                     items: [
-                      _buildListItem(
-                        icon: Icons.shopping_bag_rounded,
-                        iconColor: Color(0xFF388E3C),
-                        title: 'My Acitivity',
-                        subtitle: 'View your orders and activities',
-                        onTap: () {
-                          Navigator.pushNamed(context, '/my-activity');
-                        },
+                      _buildMenuItem(
+                        icon: Icons.shopping_bag_outlined,
+                        title: 'My Activity',
+                        onTap: () => Navigator.pushNamed(context, '/my-activity'),
                       ),
-                      Divider(height: 1, thickness: 1),
-                      _buildListItem(
-                        icon: Icons.monetization_on_rounded,
-                        iconColor: Colors.amber[700]!,
+                      _buildMenuItem(
+                        icon: Icons.monetization_on_outlined,
                         title: 'Green Coins History',
-                        subtitle: 'Track your rewards',
-                        onTap: () {},
+                        onTap: () {}, // Add route here
                       ),
                     ],
                   ),
-
-                  SizedBox(height: 20),
-
-                  // Quick Actions Section
-                  _buildSection(
+                  const SizedBox(height: 20),
+                  
+                  _buildMenuSection(
                     title: 'Quick Actions',
-                    icon: Icons.rocket_launch_rounded,
-                    iconColor: Colors.blue,
                     items: [
-                      _buildListItem(
-                        icon: Icons.pie_chart_rounded,
-                        iconColor: Colors.blue[700]!,
+                      _buildMenuItem(
+                        icon: Icons.pie_chart_outline_rounded,
                         title: 'Sustainability Dashboard',
-                        subtitle: 'View your impact',
-                        onTap: () {
-                          Navigator.pushNamed(
-                            context,
-                            '/sustainability-dashboard',
-                          );
-                        },
+                        onTap: () => Navigator.pushNamed(context, '/sustainability-dashboard'),
                       ),
-                      Divider(height: 1, thickness: 1),
-                      _buildListItem(
+                      _buildMenuItem(
                         icon: Icons.support_agent_rounded,
-                        iconColor: Colors.purple[700]!,
                         title: 'Support ChatBot',
-                        subtitle: 'Get instant help',
-                        onTap: () {
-                          Navigator.pushNamed(context, '/chatbot');
-                        },
-                      ),
-                      Divider(height: 1, thickness: 1),
-                      _buildListItem(
-                        icon: Icons.store_rounded,
-                        iconColor: Colors.orange[700]!,
-                        title: 'My Secondary Hand Store',
-                        subtitle: 'Manage your listings',
-                        onTap: () {},
+                        onTap: () => Navigator.pushNamed(context, '/chatbot'),
                       ),
                     ],
                   ),
-
-                  SizedBox(height: 20),
-
-                  // Activity Section
-                  _buildSection(
-                    title: 'Activity',
-                    icon: Icons.settings_rounded,
-                    iconColor: Colors.grey,
-                    items: [
-                      _buildListItem(
-                        icon: Icons.logout_rounded,
-                        iconColor: Colors.red,
-                        title: 'Logout',
-                        subtitle: 'Sign out of your account',
-                        titleColor: Colors.red,
-                        onTap: () async {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              title: Row(
-                                children: [
-                                  Icon(Icons.logout_rounded, color: Colors.red),
-                                  SizedBox(width: 12),
-                                  Text(
-                                    'Logout',
-                                    style: TextStyle(fontFamily: 'Manrope'),
-                                  ),
-                                ],
-                              ),
-                              content: Text(
-                                'Are you sure you want to logout?',
-                                style: TextStyle(fontFamily: 'Manrope'),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: Text(
-                                    'Cancel',
-                                    style: TextStyle(
-                                      fontFamily: 'Manrope',
-                                      color: Colors.grey[600],
-                                    ),
-                                  ),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    await FirebaseAuth.instance.signOut();
-                                    Navigator.pushNamedAndRemoveUntil(
-                                      context,
-                                      '/login',
-                                      (route) => false,
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.red,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'Logout',
-                                    style: TextStyle(
-                                      fontFamily: 'Manrope',
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
+                  const SizedBox(height: 20),
+                  
+                  // Logout Button
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.red.withOpacity(0.1)),
+                      boxShadow: [
+                         BoxShadow(
+                          color: Colors.red.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: ListTile(
+                      onTap: _handleLogout,
+                      leading: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(Icons.logout_rounded, color: Colors.red),
                       ),
-                    ],
+                      title: const Text(
+                        'Logout',
+                        style: TextStyle(
+                          fontFamily: 'Manrope',
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
                   ),
-
-                  SizedBox(height: 24),
+                  const SizedBox(height: 30),
                 ],
               ),
             ),
     );
   }
 
-  // --- NEW METHODS ADDED HERE ---
+  // --- Helper Widgets ---
 
-  Widget _buildDetailRow({
-    required IconData icon,
-    required Color iconColor,
-    required String label,
-    required String value,
-  }) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: iconColor, size: 20),
-          ),
-          SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  label,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                    fontFamily: 'Manrope',
+  Widget _buildProfileHeader() {
+    return Column(
+      children: [
+        Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFF388E3C), width: 3),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
                   ),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  value,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                    fontFamily: 'Manrope',
-                  ),
-                ),
-              ],
+                ],
+              ),
+              child: CircleAvatar(
+                radius: 60,
+                backgroundColor: Colors.grey[200],
+                backgroundImage: userData?['profileImageURL'] != null &&
+                        userData!['profileImageURL'].isNotEmpty
+                    ? MemoryImage(base64Decode(userData!['profileImageURL']))
+                    : const AssetImage('assets/images/icon/LogoIcon.png')
+                        as ImageProvider,
+              ),
             ),
+            Positioned(
+              bottom: 0,
+              right: 0,
+              child: GestureDetector(
+                onTap: _navigateToEditProfile,
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: const BoxDecoration(
+                    color: Color(0xFF388E3C),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.edit, color: Colors.white, size: 20),
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Text(
+          userData?['name'] ?? 'Guest User',
+          style: const TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w800,
+            fontFamily: 'Manrope',
+            color: Color(0xFF1A1A1A), // Darker text
           ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          userData?['email'] ?? '',
+          style: TextStyle(
+            fontSize: 14,
+            fontFamily: 'Manrope',
+            color: Colors.grey[700], // Darker grey
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 16),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: const Color(0xFFFFF8E1), // Light amber bg
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: const Color(0xFFFFD54F)),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.monetization_on, color: Color(0xFFFFA000), size: 20),
+              const SizedBox(width: 8),
+              Text(
+                '${userData?['greenCoins'] ?? 0} Green Coins',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFFFFA000),
+                  fontFamily: 'Manrope',
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildAddressSection(Map<String, dynamic> address) {
-    // Combine address parts safely
-    List<String> addressParts = [];
+  Widget _buildInfoSection() {
+    // Helper to format address
+    String formattedAddress = 'Incomplete Address';
+    if (userData!['address'] != null && userData!['address'] is Map) {
+      final addr = userData!['address'] as Map<String, dynamic>;
+      final parts = [
+        addr['line1'],
+        addr['city'],
+        addr['state']
+      ].where((e) => e != null && e.toString().isNotEmpty).join(', ');
+      if (parts.isNotEmpty) formattedAddress = parts;
+    }
 
-    // Check for common address fields
-    if (address['line1'] != null && address['line1'].toString().isNotEmpty)
-      addressParts.add(address['line1']);
-    if (address['line2'] != null && address['line2'].toString().isNotEmpty)
-      addressParts.add(address['line2']);
-    if (address['city'] != null && address['city'].toString().isNotEmpty)
-      addressParts.add(address['city']);
-    if (address['state'] != null && address['state'].toString().isNotEmpty)
-      addressParts.add(address['state']);
-    if (address['postcode'] != null &&
-        address['postcode'].toString().isNotEmpty)
-      addressParts.add(address['postcode']);
-
-    String formattedAddress = addressParts.join(', ');
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 12.0),
-      child: _buildDetailRow(
-        icon: Icons.location_on_rounded,
-        iconColor: Colors.orange[700]!,
-        label: 'Address',
-        value: formattedAddress.isNotEmpty
-            ? formattedAddress
-            : 'Address incomplete',
-      ),
-    );
-  }
-
-  // --- END NEW METHODS ---
-
-  Widget _buildSection({
-    required String title,
-    required IconData icon,
-    required Color iconColor,
-    required List<Widget> items,
-  }) {
     return Container(
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 15,
-            offset: Offset(0, 4),
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(20),
-            child: Row(
-              children: [
-                Container(
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: iconColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(icon, color: iconColor, size: 22),
-                ),
-                SizedBox(width: 12),
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                    fontFamily: 'Manrope',
-                  ),
-                ),
-              ],
-            ),
+          _buildDetailRow(Icons.phone_outlined, 'Phone', userData?['phoneNumber'] ?? 'Not set'),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 12),
+            child: Divider(height: 1),
           ),
-          ...items,
+          _buildDetailRow(Icons.calendar_today_outlined, 'Date of Birth', userData?['dateOfBirth'] ?? 'Not set'),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 12),
+            child: Divider(height: 1),
+          ),
+          _buildDetailRow(Icons.location_on_outlined, 'Location', formattedAddress),
         ],
       ),
     );
   }
 
-  Widget _buildListItem({
+  Widget _buildDetailRow(IconData icon, String label, String value) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: Colors.grey[600]),
+        const SizedBox(width: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey[600],
+                fontFamily: 'Manrope',
+              ),
+            ),
+            Text(
+              value,
+              style: const TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+                color: Color(0xFF1A1A1A),
+                fontFamily: 'Manrope',
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMenuSection({required String title, required List<Widget> items}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 4, bottom: 12),
+          child: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF1A1A1A),
+              fontFamily: 'Manrope',
+            ),
+          ),
+        ),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Column(
+            children: items.asMap().entries.map((entry) {
+              final index = entry.key;
+              final item = entry.value;
+              return Column(
+                children: [
+                  item,
+                  if (index != items.length - 1)
+                    const Divider(height: 1, indent: 60, endIndent: 20),
+                ],
+              );
+            }).toList(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMenuItem({
     required IconData icon,
-    required Color iconColor,
     required String title,
-    required String subtitle,
-    Color? titleColor,
     required VoidCallback onTap,
   }) {
     return ListTile(
-      contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      onTap: onTap,
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
       leading: Container(
-        padding: EdgeInsets.all(12),
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: iconColor.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(14),
+          color: const Color(0xFF388E3C).withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
         ),
-        child: Icon(icon, color: iconColor, size: 24),
+        child: Icon(icon, color: const Color(0xFF388E3C), size: 22),
       ),
       title: Text(
         title,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.w600,
+          color: Color(0xFF1A1A1A),
           fontFamily: 'Manrope',
-          color: titleColor ?? Colors.black87,
         ),
       ),
-      subtitle: Text(
-        subtitle,
-        style: TextStyle(
-          fontSize: 13,
-          fontFamily: 'Manrope',
-          color: Colors.grey[600],
-        ),
-      ),
-      trailing: Icon(
-        Icons.arrow_forward_ios_rounded,
-        size: 18,
-        color: titleColor ?? Colors.grey[400],
-      ),
-      onTap: onTap,
+      trailing: Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.grey[400]),
     );
   }
 }

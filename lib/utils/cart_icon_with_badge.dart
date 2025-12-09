@@ -9,18 +9,23 @@ class CartIconWithBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final User? currentUser = FirebaseAuth.instance.currentUser;
 
+    // 1. Define the base button to avoid code duplication
+    final Widget cartButton = IconButton(
+      onPressed: () => Navigator.pushNamed(context, '/shopping-cart'),
+      icon: const Icon(
+        Icons.shopping_cart_outlined,
+        size: 28,
+        color: Colors.black87, // Changed from default to darker black for visibility
+      ),
+      tooltip: 'Shopping Cart',
+    );
+
+    // 2. If user is not logged in, just show the button without the stream listener
     if (currentUser == null) {
-      return IconButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/cart-items');
-        },
-        icon: Icon(
-          Icons.shopping_cart_outlined,
-          size: 28,
-        ),
-      );
+      return cartButton;
     }
 
+    // 3. If logged in, listen to the cart count
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection('cart_items')
@@ -28,60 +33,61 @@ class CartIconWithBadge extends StatelessWidget {
           .snapshots(),
       builder: (context, snapshot) {
         int itemCount = 0;
-
         if (snapshot.hasData) {
           itemCount = snapshot.data!.docs.length;
+        }
+
+        // If cart is empty, don't show the badge, just the button
+        if (itemCount == 0) {
+          return cartButton;
         }
 
         return Stack(
           clipBehavior: Clip.none,
           children: [
-            IconButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/shopping-cart');
-              },
-              icon: Icon(
-                Icons.shopping_cart_outlined,
-                size: 28,
-              ),
+            cartButton,
+            Positioned(
+              right: 6,
+              top: 6,
+              child: _buildBadge(itemCount),
             ),
-            if (itemCount > 0)
-              Positioned(
-                right: 6,
-                top: 6,
-                child: Container(
-                  padding: EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
-                        blurRadius: 4,
-                        offset: Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  constraints: BoxConstraints(
-                    minWidth: 18,
-                    minHeight: 18,
-                  ),
-                  child: Center(
-                    child: Text(
-                      itemCount > 99 ? '99+' : '$itemCount',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                ),
-              ),
           ],
         );
       },
+    );
+  }
+
+  // Helper widget to keep the main build method clean
+  Widget _buildBadge(int count) {
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: Colors.red,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+        border: Border.all(color: Colors.white, width: 1.5), // Added white border for better contrast
+      ),
+      constraints: const BoxConstraints(
+        minWidth: 20, // Slightly larger for better visibility
+        minHeight: 20,
+      ),
+      child: Center(
+        child: Text(
+          count > 99 ? '99+' : '$count',
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 11, // Increased size
+            fontWeight: FontWeight.w900, // Extra bold for readability
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ),
     );
   }
 }

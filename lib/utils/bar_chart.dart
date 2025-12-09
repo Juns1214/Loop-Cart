@@ -1,95 +1,95 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'bar_data.dart';
 
-class MyBarGraph extends StatelessWidget {
-  final List<double> donationAmount;
-  const MyBarGraph({super.key, required this.donationAmount});
+class ChartData {
+  final String label;
+  final double value;
+  ChartData(this.label, this.value);
+}
+
+class SustainabilityBarChart extends StatelessWidget {
+  final List<ChartData> data;
+  final double maxY;
+
+  const SustainabilityBarChart({
+    super.key, 
+    required this.data, 
+    this.maxY = 500,
+  });
 
   @override
   Widget build(BuildContext context) {
-    BarData myBarData = BarData(
-      lowIncome: donationAmount[0],
-      orphanage: donationAmount[1],
-      oldFolkHome: donationAmount[2],
-      cancerNGO: donationAmount[3],
-      wildlifeProtection: donationAmount[4],
-      environmentProtection: donationAmount[5],
-    );
-
-    myBarData.initializeBarData();
-
     return BarChart(
       BarChartData(
-        maxY: 450,
+        maxY: maxY,
         minY: 0,
         gridData: FlGridData(
           show: true,
           drawVerticalLine: false,
           horizontalInterval: 100,
-          getDrawingHorizontalLine: (value) {
-            return FlLine(
-              color: Colors.grey[300],
-              strokeWidth: 1,
-            );
-          },
+          getDrawingHorizontalLine: (value) => FlLine(
+            color: Colors.grey.shade300,
+            strokeWidth: 1,
+            dashArray: [5, 5],
+          ),
         ),
         borderData: FlBorderData(show: false),
         titlesData: FlTitlesData(
           show: true,
-          bottomTitles: AxisTitles(
-            sideTitles: SideTitles(
-              showTitles: true,
-              getTitlesWidget: (value, meta) {
-                int index = value.toInt();
-                if (index >= 0 && index < myBarData.barData.length) {
-                  return Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Text(
-                      myBarData.barData[index].x,
-                      style: const TextStyle(
-                        fontSize: 10,
-                        color: Color(0xFF1B5E20),
-                        fontWeight: FontWeight.w500,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  );
-                }
-                return const Text('');
-              },
-              reservedSize: 40,
-            ),
-          ),
+          rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
               reservedSize: 40,
               getTitlesWidget: (value, meta) {
                 return Text(
-                  'RM${value.toInt()}',
+                  'RM ${value.toInt()}',
                   style: TextStyle(
                     fontSize: 10,
-                    color: Colors.grey[600],
+                    color: Colors.grey.shade700, // Darker text
+                    fontWeight: FontWeight.w600,
                   ),
                 );
               },
             ),
           ),
-          topTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
-          ),
-          rightTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: false),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: (value, meta) {
+                int index = value.toInt();
+                if (index >= 0 && index < data.length) {
+                  // Shorten long labels if needed
+                  String label = data[index].label;
+                  if (label.contains(' ')) label = label.split(' ').first;
+                  
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      label,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: Color(0xFF1B5E20),
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  );
+                }
+                return const SizedBox();
+              },
+              reservedSize: 30,
+            ),
           ),
         ),
-        barGroups: myBarData.barData.map((data) {
+        barGroups: data.asMap().entries.map((entry) {
           return BarChartGroupData(
-            x: myBarData.barData.indexOf(data),
+            x: entry.key,
             barRods: [
               BarChartRodData(
-                toY: data.y,
-                width: 24,
+                toY: entry.value.value,
+                width: 20,
                 gradient: const LinearGradient(
                   colors: [Color(0xFF66BB6A), Color(0xFF2E7D32)],
                   begin: Alignment.bottomCenter,
@@ -101,8 +101,8 @@ class MyBarGraph extends StatelessWidget {
                 ),
                 backDrawRodData: BackgroundBarChartRodData(
                   show: true,
-                  toY: 450,
-                  color: Colors.grey[200],
+                  toY: maxY,
+                  color: Colors.grey.shade100,
                 ),
               ),
             ],
@@ -112,14 +112,23 @@ class MyBarGraph extends StatelessWidget {
           enabled: true,
           touchTooltipData: BarTouchTooltipData(
             getTooltipItem: (group, groupIndex, rod, rodIndex) {
-              String category = myBarData.barData[groupIndex].x;
               return BarTooltipItem(
-                '$category\nRM ${rod.toY.toStringAsFixed(0)}',
+                '${data[groupIndex].label}\n',
                 const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
-                  fontSize: 12,
+                  fontSize: 14,
                 ),
+                children: <TextSpan>[
+                  TextSpan(
+                    text: 'RM ${rod.toY.toStringAsFixed(0)}',
+                    style: const TextStyle(
+                      color: Colors.yellowAccent,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
               );
             },
           ),

@@ -1,15 +1,15 @@
-// lib/pages/product_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:intl/intl.dart';
-import '../feature/best_value_comparison.dart';
 import 'package:share_plus/share_plus.dart';
+import '../feature/best_value_comparison.dart';
+import '../../widget/section_container.dart';
+import '../../widget/review_card.dart';
+import '../../widget/seller_info_card.dart';
+import '../../widget/product_image_header.dart';
 
 class ProductPage extends StatefulWidget {
   final Map<String, dynamic> product;
-
   const ProductPage({super.key, required this.product});
 
   @override
@@ -23,11 +23,6 @@ class _ProductPageState extends State<ProductPage> {
   bool isLoading = true;
   bool showAllReviews = false;
   bool isAddingToCart = false;
-
-  // Honest Assessment state
-  Map<String, dynamic>? honestAssessment;
-  bool isLoadingAssessment = true;
-
   final User? currentUser = FirebaseAuth.instance.currentUser;
 
   @override
@@ -36,894 +31,229 @@ class _ProductPageState extends State<ProductPage> {
     _loadProductDetails();
   }
 
-  // UPDATED: Load product details including reviews from 'reviews' collection
-  Future<void> _loadProductDetails() async {
-    setState(() {
-      isLoading = true;
-    });
+  @override
+  Widget build(BuildContext context) {
+    double avgRating = (widget.product['rating'] ?? 0).toDouble();
 
+    return Scaffold(
+      backgroundColor: Colors.grey.shade50,
+      body: isLoading 
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFF388E3C)))
+          : Stack(
+              children: [
+                SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      // 1. Header
+                      ProductImageHeader(
+                        imageUrls: [widget.product['imageUrl'] ?? widget.product['image_url'] ?? ''],
+                        onBack: () => Navigator.pop(context),
+                        onShare: _shareAndEarnCoins,
+                        height: 300,
+                      ),
+
+                      // 2. Product Info
+                      SectionContainer(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (widget.product['category'] != null)
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                decoration: BoxDecoration(color: const Color(0xFF388E3C).withOpacity(0.1), borderRadius: BorderRadius.circular(20)),
+                                child: Text(widget.product['category'], style: const TextStyle(fontSize: 12, color: Color(0xFF388E3C), fontWeight: FontWeight.bold)),
+                              ),
+                            const SizedBox(height: 12),
+                            Text(widget.product['name'] ?? 'Unknown', style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87)),
+                            const SizedBox(height: 8),
+                            Text('RM ${(widget.product['price'] ?? 0).toStringAsFixed(2)}', style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: Color(0xFF388E3C))),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                _buildStarRating(avgRating),
+                                const SizedBox(width: 8),
+                                Text(avgRating.toStringAsFixed(1), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                                Text(' (${reviews.length} reviews)', style: TextStyle(color: Colors.grey.shade600, fontSize: 14)),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            const Text('Description', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 8),
+                            Text(widget.product['description'] ?? 'No description.', style: TextStyle(fontSize: 15, color: Colors.grey.shade800, height: 1.6)),
+                          ],
+                        ),
+                      ),
+
+                      // 3. Seller Info
+                      if (sellerData != null)
+                        SectionContainer(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Seller Information', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 16),
+                              SellerInfoCard(
+                                name: sellerData!['name'] ?? '',
+                                image: sellerData!['profileImage'] ?? '',
+                                subtitle: Row(
+                                  children: [
+                                    const Icon(Icons.star, color: Colors.amber, size: 16),
+                                    const SizedBox(width: 4),
+                                    Text('${(sellerData!['ratings'] ?? 0).toStringAsFixed(1)}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                                    const SizedBox(width: 12),
+                                    Text('Items: $sellerItemCount', style: TextStyle(color: Colors.grey.shade600)),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                      // 4. Reviews
+                      SectionContainer(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Customer Reviews', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 16),
+                            
+                            SmartValueButton(productId: widget.product['id'] ?? '', isPreowned: false),
+                            
+                            if (reviews.isEmpty)
+                               Padding(
+                                 padding: const EdgeInsets.all(24),
+                                 child: Center(child: Text('No reviews yet. Be the first!', style: TextStyle(color: Colors.grey.shade600))),
+                               )
+                            else ...[
+                              if (showAllReviews)
+                                ...reviews.map((r) => ReviewCard(review: r))
+                              else
+                                ReviewCard(review: reviews.first),
+                              
+                              if (reviews.length > 1 && !showAllReviews)
+                                Center(
+                                  child: TextButton(
+                                    onPressed: () => setState(() => showAllReviews = true),
+                                    child: const Text('View All Reviews', style: TextStyle(color: Color(0xFF388E3C), fontWeight: FontWeight.bold)),
+                                  ),
+                                )
+                            ]
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 100),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  bottom: 20, right: 20,
+                  child: FloatingActionButton.extended(
+                    onPressed: isAddingToCart ? null : _addToCart,
+                    backgroundColor: const Color(0xFF388E3C),
+                    icon: isAddingToCart 
+                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                      : const Icon(Icons.shopping_cart),
+                    label: Text(isAddingToCart ? 'Adding...' : 'Add to Cart', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ],
+            ),
+    );
+  }
+
+  // --- Helpers & Logic ---
+
+  Widget _buildStarRating(double rating) {
+    return Row(
+      children: List.generate(5, (i) {
+         if (rating >= i + 1) return const Icon(Icons.star, color: Colors.amber, size: 20);
+         if (rating >= i + 0.5) return const Icon(Icons.star_half, color: Colors.amber, size: 20);
+         return const Icon(Icons.star_border, color: Colors.amber, size: 20);
+      }),
+    );
+  }
+
+  Future<void> _loadProductDetails() async {
+    setState(() => isLoading = true);
     try {
-      // Fetch seller information
       String sellerName = widget.product['seller'] ?? '';
       if (sellerName.isNotEmpty) {
-        QuerySnapshot sellerSnapshot = await FirebaseFirestore.instance
-            .collection('sellers')
-            .where('name', isEqualTo: sellerName)
-            .limit(1)
-            .get();
-
-        if (sellerSnapshot.docs.isNotEmpty) {
-          sellerData = sellerSnapshot.docs.first.data() as Map<String, dynamic>;
-        }
-
-        // Count seller's total items
-        QuerySnapshot productCount = await FirebaseFirestore.instance
-            .collection('products')
-            .where('seller', isEqualTo: sellerName)
-            .get();
-        sellerItemCount = productCount.docs.length;
+        var sellerQ = await FirebaseFirestore.instance.collection('sellers').where('name', isEqualTo: sellerName).limit(1).get();
+        if (sellerQ.docs.isNotEmpty) sellerData = sellerQ.docs.first.data();
+        
+        var countQ = await FirebaseFirestore.instance.collection('products').where('seller', isEqualTo: sellerName).get();
+        sellerItemCount = countQ.docs.length;
       }
 
-      // Fetch reviews from 'reviews' collection with new structure
-      String productId = widget.product['id'] ?? '';
-      if (productId.isNotEmpty) {
-        QuerySnapshot reviewSnapshot = await FirebaseFirestore.instance
-            .collection('reviews')
-            .where('productId', isEqualTo: productId)
-            .get();
-
-        List<Map<String, dynamic>> loadedReviews = reviewSnapshot.docs.map((
-          doc,
-        ) {
-          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-
-          // Ensure all required fields exist with new structure
-          return {
-            'reviewId': data['reviewId'] ?? doc.id,
-            'productId': data['productId'] ?? '',
-            'rating': data['rating'] ?? 0,
-            'reviewTitle': data['reviewTitle'] ?? '',
-            'reviewText': data['reviewText'] ?? '',
-            'userName': data['userName'] ?? 'Anonymous',
-            'userProfileUrl': data['userProfileUrl'] ?? '',
-            'reviewDate': data['reviewDate'] ?? '',
-          };
-        }).toList();
-
-        // Sort by date (newest first)
-        loadedReviews.sort((a, b) {
-          String dateA = a['reviewDate'] ?? '';
-          String dateB = b['reviewDate'] ?? '';
-          return dateB.compareTo(dateA);
-        });
-
-        reviews = loadedReviews;
+      String pid = widget.product['id'] ?? '';
+      if (pid.isNotEmpty) {
+        var reviewQ = await FirebaseFirestore.instance.collection('reviews').where('productId', isEqualTo: pid).get();
+        var list = reviewQ.docs.map((d) => d.data()).toList();
+        list.sort((a, b) => (b['reviewDate'] ?? '').compareTo(a['reviewDate'] ?? ''));
+        reviews = list;
       }
-
-      setState(() {
-        isLoading = false;
-      });
+      
+      setState(() => isLoading = false);
     } catch (e) {
-      print('Error loading product details: $e');
-      setState(() {
-        isLoading = false;
-      });
+      setState(() => isLoading = false);
     }
   }
 
   Future<void> _shareAndEarnCoins() async {
-    if (currentUser == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please login to earn Green Coins for sharing!'),
-          backgroundColor: Colors.red,
-        ),
-      );
+     if (currentUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login to earn coins!'), backgroundColor: Colors.red));
       return;
     }
-
-    try {
-      // 1. Trigger Native Share
-      String productName = widget.product['name'] ?? 'Product';
-      double price = (widget.product['price'] ?? 0).toDouble();
-
-      final shareParams = ShareParams(
-        text:
-            'Check out $productName for RM ${price.toStringAsFixed(2)} on our App!',
-        subject: 'Check out this eco-friendly find!',
-      );
-
-      await SharePlus.instance.share(shareParams);
-      // 2. Update Firestore Green Coins
-      await FirebaseFirestore.instance
-          .collection('user_profile')
-          .doc(currentUser!.uid)
-          .update({'greenCoins': FieldValue.increment(5)});
-
-      // 3. Show Success Message
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                Icon(Icons.monetization_on, color: Colors.white),
-                SizedBox(width: 10),
-                Expanded(child: Text('Shared! You earned 5 Green Coins!')),
-              ],
-            ),
-            backgroundColor: Color(0xFF388E3C),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        );
-      }
-    } catch (e) {
-      print('Error sharing: $e');
-    }
+    await SharePlus.instance.share(ShareParams(
+        text: 'Check out ${widget.product['name']}!',
+        subject: 'Eco-friendly find!',
+    ));
+    await FirebaseFirestore.instance.collection('user_profile').doc(currentUser!.uid).update({'greenCoins': FieldValue.increment(5)});
+    if (mounted) ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Shared! You earned 5 coins!'), backgroundColor: Color(0xFF388E3C)));
   }
 
   Future<void> _addToCart() async {
-    if (currentUser == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please login to add items to cart'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    setState(() {
-      isAddingToCart = true;
-    });
+    // Similar logic to Preowned, but sets isPreowned: false and checks 'products' collection logic
+    if (currentUser == null) return;
+    setState(() => isAddingToCart = true);
 
     try {
-      String productId = widget.product['id'] ?? '';
-      String userId = currentUser!.uid;
-
-      // Check if product already exists in cart
-      QuerySnapshot existingCart = await FirebaseFirestore.instance
-          .collection('cart_items')
-          .where('userId', isEqualTo: userId)
-          .where('productId', isEqualTo: productId)
-          .limit(1)
-          .get();
-
-      Map<String, dynamic> itemToCheckout;
-      String itemDocId;
-
-      if (existingCart.docs.isNotEmpty) {
-        // Product exists, increase quantity
-        DocumentSnapshot cartItem = existingCart.docs.first;
-        int currentQuantity = cartItem['quantity'] ?? 1;
-        int newQuantity = currentQuantity + 1;
-
-        await FirebaseFirestore.instance
-            .collection('cart_items')
-            .doc(cartItem.id)
-            .update({
-              'quantity': newQuantity,
-              'updatedAt': FieldValue.serverTimestamp(),
-            });
-
-        itemDocId = cartItem.id;
-
-        // Get the updated item data
-        Map<String, dynamic> itemData = cartItem.data() as Map<String, dynamic>;
-        itemData['quantity'] = newQuantity;
-        itemData['docId'] = itemDocId;
-        itemToCheckout = itemData;
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Quantity updated in cart!'),
-            backgroundColor: Color(0xFF388E3C),
-            duration: Duration(seconds: 1),
-          ),
-        );
+      String uid = currentUser!.uid;
+      String pid = widget.product['id'] ?? '';
+      var cartQuery = await FirebaseFirestore.instance.collection('cart_items').where('userId', isEqualTo: uid).where('productId', isEqualTo: pid).limit(1).get();
+      
+      Map<String, dynamic> item;
+      
+      if (cartQuery.docs.isNotEmpty) {
+        var doc = cartQuery.docs.first;
+        await doc.reference.update({'quantity': (doc['quantity'] ?? 1) + 1});
+        item = doc.data();
+        item['quantity'] = (doc['quantity'] ?? 1) + 1;
+        item['docId'] = doc.id;
       } else {
-        // Add new item to cart
-        Map<String, dynamic> newItem = {
-          'userId': userId,
-          'productId': productId,
-          'productName': widget.product['name'] ?? 'Unknown',
+        item = {
+          'userId': uid,
+          'productId': pid,
+          'productName': widget.product['name'],
           'productPrice': (widget.product['price'] ?? 0).toDouble(),
           'quantity': 1,
-          'imageUrl':
-              widget.product['imageUrl'] ?? widget.product['image_url'] ?? '',
-          'seller': widget.product['seller'] ?? '',
-          'sellerProfileImage': sellerData?['profileImage'] ?? '',
-          'category': widget.product['category'] ?? '',
-          'isPreowned': false, // Regular products are not pre-owned
+          'imageUrl': widget.product['imageUrl'] ?? '',
+          'seller': widget.product['seller'],
+          'isPreowned': false,
           'dateAdded': FieldValue.serverTimestamp(),
         };
-
-        DocumentReference docRef = await FirebaseFirestore.instance
-            .collection('cart_items')
-            .add(newItem);
-
-        itemDocId = docRef.id;
-        newItem['docId'] = itemDocId;
-        itemToCheckout = newItem;
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Added to cart!'),
-            backgroundColor: Color(0xFF388E3C),
-            duration: Duration(seconds: 1),
-          ),
-        );
+        var ref = await FirebaseFirestore.instance.collection('cart_items').add(item);
+        item['docId'] = ref.id;
       }
 
-      setState(() {
-        isAddingToCart = false;
-      });
-
-      // Wait a moment for the snackbar to show
-      await Future.delayed(Duration(milliseconds: 500));
-
-      // Navigate to checkout with ONLY this item
-      await _navigateToCheckout(itemToCheckout);
+      setState(() => isAddingToCart = false);
+      if (mounted) {
+         // Fetch user address to pass
+         var uDoc = await FirebaseFirestore.instance.collection('user_profile').doc(uid).get();
+         Navigator.pushNamed(context, '/checkout', arguments: {'selectedItems': [item], 'userAddress': uDoc.exists ? uDoc['address'] : null});
+      }
     } catch (e) {
-      print('Error adding to cart: $e');
-      setState(() {
-        isAddingToCart = false;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to add to cart. Please try again.'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      setState(() => isAddingToCart = false);
     }
-  }
-
-  Future<void> _navigateToCheckout(Map<String, dynamic> singleItem) async {
-    if (currentUser == null) return;
-
-    try {
-      // Load user address
-      Map<String, dynamic>? userAddress;
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('user_profile')
-          .doc(currentUser!.uid)
-          .get();
-
-      if (userDoc.exists) {
-        Map<String, dynamic> userData = userDoc.data() as Map<String, dynamic>;
-        userAddress = userData['address'] as Map<String, dynamic>?;
-      }
-
-      // Navigate to checkout with only the single item
-      Navigator.pushNamed(
-        context,
-        '/checkout',
-        arguments: {
-          'selectedItems': [singleItem],
-          'userAddress': userAddress,
-        },
-      );
-    } catch (e) {
-      print('Error navigating to checkout: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to load checkout. Please try again.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-
-  // Build star rating widget
-  Widget _buildStarRating(double rating) {
-    List<Widget> stars = [];
-    for (int i = 1; i <= 5; i++) {
-      if (rating >= i) {
-        stars.add(Icon(Icons.star, color: Colors.amber, size: 18));
-      } else if (rating >= i - 0.5) {
-        stars.add(Icon(Icons.star_half, color: Colors.amber, size: 18));
-      } else {
-        stars.add(Icon(Icons.star_border, color: Colors.amber, size: 18));
-      }
-    }
-    return Row(children: stars);
-  }
-
-  // UPDATED: Build review card with new structure
-  Widget _buildReviewCard(Map<String, dynamic> review) {
-    double rating = (review['rating'] ?? 0).toDouble();
-    String reviewTitle = review['reviewTitle'] ?? '';
-    String reviewText = review['reviewText'] ?? '';
-    String userName = review['userName'] ?? 'Anonymous';
-    String userProfileUrl = review['userProfileUrl'] ?? '';
-    String reviewDate = review['reviewDate'] ?? '';
-
-    // Format date from ISO string
-    String formattedDate = '';
-    if (reviewDate.isNotEmpty) {
-      try {
-        DateTime date = DateTime.parse(reviewDate);
-        formattedDate = DateFormat('MMM dd, yyyy').format(date);
-      } catch (e) {
-        formattedDate = reviewDate;
-      }
-    }
-
-    return Container(
-      margin: EdgeInsets.only(bottom: 16),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 20,
-                backgroundColor: Color(0xFF388E3C).withOpacity(0.1),
-                backgroundImage: userProfileUrl.isNotEmpty
-                    ? AssetImage(userProfileUrl)
-                    : null,
-                child: userProfileUrl.isEmpty
-                    ? Icon(Icons.person, color: Color(0xFF388E3C), size: 20)
-                    : null,
-              ),
-              SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            userName,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        // Verified Buyer Badge
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Color(0xFF388E3C).withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.verified,
-                                size: 10,
-                                color: Color(0xFF388E3C),
-                              ),
-                              SizedBox(width: 2),
-                              Text(
-                                'Verified',
-                                style: TextStyle(
-                                  fontSize: 9,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color(0xFF388E3C),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 2),
-                    Row(
-                      children: [
-                        // Rating stars
-                        Row(
-                          children: List.generate(5, (index) {
-                            return Icon(
-                              index < rating ? Icons.star : Icons.star_border,
-                              color: Colors.amber,
-                              size: 16,
-                            );
-                          }),
-                        ),
-                        if (formattedDate.isNotEmpty) ...[
-                          SizedBox(width: 8),
-                          Text(
-                            '• $formattedDate',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-
-          if (reviewTitle.isNotEmpty) ...[
-            SizedBox(height: 12),
-            Text(
-              reviewTitle,
-              style: TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-            ),
-          ],
-
-          if (reviewText.isNotEmpty) ...[
-            SizedBox(height: 8),
-            Text(
-              reviewText,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey.shade700,
-                height: 1.5,
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    double avgRating = widget.product['rating']?.toDouble() ?? 0.0;
-
-    return Scaffold(
-      backgroundColor: Colors.grey.shade50,
-      body: isLoading
-          ? Center(child: CircularProgressIndicator(color: Color(0xFF388E3C)))
-          : Stack(
-              children: [
-                // Main scrollable content
-                SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Product Image
-                      Stack(
-                        children: [
-                          Container(
-                            width: double.infinity,
-                            height: 300,
-                            color: Colors.white,
-                            child:
-                                widget.product['imageUrl'] != null &&
-                                    widget.product['imageUrl'].isNotEmpty
-                                ? Image.asset(
-                                    widget.product['imageUrl'],
-                                    fit: BoxFit.cover,
-                                    errorBuilder: (context, error, stackTrace) {
-                                      return Center(
-                                        child: Icon(
-                                          Icons.image_not_supported,
-                                          size: 60,
-                                          color: Colors.grey,
-                                        ),
-                                      );
-                                    },
-                                  )
-                                : Center(
-                                    child: Icon(
-                                      Icons.image,
-                                      size: 60,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                          ),
-                          // Back button
-                          SafeArea(
-                            child: Padding(
-                              padding: const EdgeInsets.all(16.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 8,
-                                    ),
-                                  ],
-                                ),
-                                child: IconButton(
-                                  icon: Icon(Icons.arrow_back),
-                                  onPressed: () => Navigator.pop(context),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Positioned(
-                            top: 16,
-                            right: 16,
-                            child: SafeArea(
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 8,
-                                    ),
-                                  ],
-                                ),
-                                child: IconButton(
-                                  icon: Icon(
-                                    Icons.share,
-                                    color: Color(0xFF388E3C),
-                                  ),
-                                  tooltip: 'Share & Earn 5 Coins',
-                                  onPressed: _shareAndEarnCoins,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      // Product Info Section
-                      Container(
-                        color: Colors.white,
-                        padding: EdgeInsets.all(20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Category badge
-                            if (widget.product['category'] != null &&
-                                widget.product['category'].isNotEmpty)
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Color(0xFF388E3C).withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Text(
-                                  widget.product['category'],
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: Color(0xFF388E3C),
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ),
-                            SizedBox(height: 12),
-
-                            // Product Name
-                            Text(
-                              widget.product['name'] ?? 'Unknown Product',
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 12),
-
-                            // Price
-                            Text(
-                              'RM ${(widget.product['price'] ?? 0).toStringAsFixed(2)}',
-                              style: TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF388E3C),
-                              ),
-                            ),
-                            SizedBox(height: 16),
-
-                            // Rating summary
-                            Row(
-                              children: [
-                                _buildStarRating(avgRating),
-                                SizedBox(width: 8),
-                                Text(
-                                  '${avgRating.toStringAsFixed(1)}/5',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                Text(
-                                  ' (${reviews.length} reviews)',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey.shade600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 16),
-
-                            // Description
-                            Text(
-                              'Description',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            Text(
-                              widget.product['description'] ??
-                                  'No description available.',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey.shade700,
-                                height: 1.5,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      SizedBox(height: 8),
-
-                      // Seller Information Section
-                      if (sellerData != null)
-                        Container(
-                          color: Colors.white,
-                          padding: EdgeInsets.all(20),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Seller Information',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 16),
-                              Row(
-                                children: [
-                                  CircleAvatar(
-                                    radius: 30,
-                                    backgroundImage:
-                                        sellerData!['profileImage'] != null &&
-                                            sellerData!['profileImage']
-                                                .isNotEmpty
-                                        ? AssetImage(
-                                            sellerData!['profileImage'],
-                                          )
-                                        : null,
-                                    child:
-                                        sellerData!['profileImage'] == null ||
-                                            sellerData!['profileImage'].isEmpty
-                                        ? Icon(Icons.store, size: 30)
-                                        : null,
-                                  ),
-                                  SizedBox(width: 16),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          sellerData!['name'] ??
-                                              'Unknown Seller',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        SizedBox(height: 4),
-                                        Row(
-                                          children: [
-                                            Icon(
-                                              Icons.star,
-                                              color: Colors.amber,
-                                              size: 16,
-                                            ),
-                                            SizedBox(width: 4),
-                                            Text(
-                                              '${(sellerData!['ratings'] ?? 0).toStringAsFixed(1)}',
-                                              style: TextStyle(
-                                                fontSize: 13,
-                                                fontWeight: FontWeight.w600,
-                                              ),
-                                            ),
-                                            SizedBox(width: 12),
-                                            Text(
-                                              'Items: $sellerItemCount',
-                                              style: TextStyle(
-                                                fontSize: 13,
-                                                color: Colors.grey.shade600,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-
-                      SizedBox(height: 8),
-
-                      // Reviews Section
-                      Container(
-                        color: Colors.white,
-                        padding: EdgeInsets.all(20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  'Customer Reviews',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                if (reviews.isNotEmpty)
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 12,
-                                      vertical: 6,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Color(0xFF388E3C).withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: Text(
-                                      '${reviews.length} reviews',
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Color(0xFF388E3C),
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                            SizedBox(height: 16),
-
-                            // Honest Assessment Widget
-                            SmartValueButton(
-                              productId: widget.product['id'] ?? '',
-                              isPreowned: false,
-                            ),
-
-                            // Reviews List
-                            if (reviews.isEmpty)
-                              Center(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(32.0),
-                                  child: Column(
-                                    children: [
-                                      Icon(
-                                        Icons.rate_review_outlined,
-                                        size: 60,
-                                        color: Colors.grey.shade400,
-                                      ),
-                                      SizedBox(height: 12),
-                                      Text(
-                                        'No reviews yet',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.grey.shade600,
-                                        ),
-                                      ),
-                                      SizedBox(height: 4),
-                                      Text(
-                                        'Be the first to review this product',
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          color: Colors.grey.shade500,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                            else if (showAllReviews)
-                              Column(
-                                children: reviews
-                                    .map((review) => _buildReviewCard(review))
-                                    .toList(),
-                              )
-                            else
-                              _buildReviewCard(reviews[0]),
-
-                            if (reviews.length > 1 && !showAllReviews)
-                              Center(
-                                child: TextButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      showAllReviews = true;
-                                    });
-                                  },
-                                  style: TextButton.styleFrom(
-                                    backgroundColor: Color(
-                                      0xFF388E3C,
-                                    ).withOpacity(0.1),
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 24,
-                                      vertical: 12,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    'View All Reviews (${reviews.length})',
-                                    style: TextStyle(
-                                      color: Color(0xFF388E3C),
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-
-                      SizedBox(height: 100),
-                    ],
-                  ),
-                ),
-
-                // Floating Add to Cart Button
-                Positioned(
-                  bottom: 20,
-                  right: 20,
-                  child: FloatingActionButton.extended(
-                    onPressed: isAddingToCart ? null : _addToCart,
-                    backgroundColor: Color(0xFF388E3C),
-                    icon: isAddingToCart
-                        ? SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : Icon(Icons.shopping_cart),
-                    label: Text(
-                      isAddingToCart ? 'Adding...' : 'Add to Cart',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                      ),
-                    ),
-                    elevation: 4,
-                  ),
-                ),
-              ],
-            ),
-    );
   }
 }

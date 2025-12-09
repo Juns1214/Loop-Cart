@@ -14,53 +14,46 @@ class BottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return BottomAppBar(
       color: Colors.white,
-      shape: CircularNotchedRectangle(),
-      notchMargin: 6,
-      elevation: 8,
-      child: Container(
+      shape: const CircularNotchedRectangle(),
+      notchMargin: 8,
+      elevation: 10,
+      shadowColor: Colors.black26,
+      child: SizedBox(
         height: 60,
-        padding: EdgeInsets.symmetric(horizontal: 4),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Left side - Repair and Recycle
             Expanded(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildNavItem(
-                    icon: Icons.build_outlined,
-                    selectedIcon: Icons.build,
-                    label: 'Repair',
-                    index: 0,
+                  _NavItem(
+                    icon: Icons.build_outlined, activeIcon: Icons.build,
+                    label: 'Repair', index: 0, 
+                    currentIndex: currentIndex, onTap: onTap
                   ),
-                  _buildNavItem(
-                    icon: Icons.recycling_outlined,
-                    selectedIcon: Icons.recycling,
-                    label: 'Recycle',
-                    index: 1,
+                  _NavItem(
+                    icon: Icons.recycling_outlined, activeIcon: Icons.recycling,
+                    label: 'Recycle', index: 1, 
+                    currentIndex: currentIndex, onTap: onTap
                   ),
                 ],
               ),
             ),
-            // Space for floating action button
-            SizedBox(width: 80),
-            // Right side - Analytics and Profile
+            const SizedBox(width: 60), // Space for FAB
             Expanded(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  _buildNavItem(
-                    icon: Icons.analytics_outlined,
-                    selectedIcon: Icons.analytics,
-                    label: 'Analytics',
-                    index: 3,
+                  _NavItem(
+                    icon: Icons.analytics_outlined, activeIcon: Icons.analytics,
+                    label: 'Analytics', index: 3, 
+                    currentIndex: currentIndex, onTap: onTap
                   ),
-                  _buildNavItem(
-                    icon: Icons.support_agent_outlined,
-                    selectedIcon: Icons.support_agent_rounded,
-                    label: 'ChatBot',
-                    index: 4,
+                  _NavItem(
+                    icon: Icons.support_agent_outlined, activeIcon: Icons.support_agent_rounded,
+                    label: 'ChatBot', index: 4, 
+                    currentIndex: currentIndex, onTap: onTap
                   ),
                 ],
               ),
@@ -70,37 +63,47 @@ class BottomNavBar extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildNavItem({
-    required IconData icon,
-    required IconData selectedIcon,
-    required String label,
-    required int index,
-  }) {
-    final isSelected = currentIndex == index;
+class _NavItem extends StatelessWidget {
+  final IconData icon;
+  final IconData activeIcon;
+  final String label;
+  final int index;
+  final int currentIndex;
+  final Function(int) onTap;
+
+  const _NavItem({
+    required this.icon,
+    required this.activeIcon,
+    required this.label,
+    required this.index,
+    required this.currentIndex,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final bool isSelected = currentIndex == index;
+    final Color color = isSelected ? const Color(0xFF2E7D32) : Colors.grey.shade600; // 0xFF2E7D32 is a sharp green
+
     return InkWell(
       onTap: () => onTap(index),
-      splashColor: Colors.green.withOpacity(0.2),
-      highlightColor: Colors.transparent,
       borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: 6, horizontal: 6),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              isSelected ? selectedIcon : icon,
-              color: isSelected ? Color(0xFF388E3C) : Colors.grey.shade600,
-              size: 26,
-            ),
-            SizedBox(height: 2),
+            Icon(isSelected ? activeIcon : icon, color: color, size: 26),
+            const SizedBox(height: 2),
             Text(
               label,
               style: TextStyle(
-                fontSize: 10,
-                color: isSelected ? Color(0xFF388E3C) : Colors.grey.shade600,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                fontSize: 11,
+                color: color,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
               ),
             ),
           ],

@@ -8,14 +8,21 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'dart:io';
+
+// Import your custom widgets
 import '../../utils/address_form.dart';
 import '../../utils/router.dart';
+import '../../widget/custom_text_field.dart';
+import '../../widget/custom_button.dart';
+import '../../widget/section_header.dart';
+import '../../widget/section_container.dart'; // Optional, or just use Container
 
+// If running standalone
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -45,27 +52,21 @@ class _EditProfileState extends State<EditProfile> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _dobController = TextEditingController();
 
-  // Address form controllers
+  // Address Controllers (Using AddressForm widget logic)
   final TextEditingController _line1Controller = TextEditingController();
   final TextEditingController _line2Controller = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _postalController = TextEditingController();
   final TextEditingController _stateController = TextEditingController();
 
-  // Form keys
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final GlobalKey<AddressFormState> _addressFormKey =
-      GlobalKey<AddressFormState>();
+  final GlobalKey<AddressFormState> _addressFormKey = GlobalKey<AddressFormState>();
 
-  // Image
   File? _image;
   String? _existingImageBase64;
-
-  // Loading state
   bool _isLoading = true;
   bool _isSaving = false;
 
-  // User
   final User? user = FirebaseAuth.instance.currentUser;
 
   @override
@@ -90,32 +91,21 @@ class _EditProfileState extends State<EditProfile> {
 
   Future<void> _loadUserProfile() async {
     if (user == null) return;
-
     try {
-      final doc = await FirebaseFirestore.instance
-          .collection('user_profile')
-          .doc(user!.uid)
-          .get();
-
+      final doc = await FirebaseFirestore.instance.collection('user_profile').doc(user!.uid).get();
       if (doc.exists) {
         final data = doc.data()!;
-
         setState(() {
           _nameController.text = data['name'] ?? '';
           _emailController.text = data['email'] ?? user!.email ?? '';
-
-          // Remove +60 prefix if it exists in the database
+          
           String phone = data['phoneNumber'] ?? '';
-          if (phone.startsWith('+60')) {
-            phone = phone.substring(3).trim();
-          } else if (phone.startsWith('60')) {
-            phone = phone.substring(2).trim();
-          }
+          if (phone.startsWith('+60')) phone = phone.substring(3).trim();
+          else if (phone.startsWith('60')) phone = phone.substring(2).trim();
           _phoneController.text = phone;
 
           _dobController.text = data['dateOfBirth'] ?? '';
 
-          // Load address data as map
           if (data['address'] != null && data['address'] is Map) {
             final address = data['address'] as Map<String, dynamic>;
             _line1Controller.text = address['line1'] ?? '';
@@ -124,10 +114,7 @@ class _EditProfileState extends State<EditProfile> {
             _postalController.text = address['postal'] ?? '';
             _stateController.text = address['state'] ?? '';
           }
-
-          // Load existing image
           _existingImageBase64 = data['profileImageURL'];
-
           _isLoading = false;
         });
       } else {
@@ -137,39 +124,25 @@ class _EditProfileState extends State<EditProfile> {
         });
       }
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      Fluttertoast.showToast(
-        msg: "Error loading profile: ${e.toString()}",
-        backgroundColor: Colors.red,
-      );
+      setState(() => _isLoading = false);
+      Fluttertoast.showToast(msg: "Error loading profile: $e", backgroundColor: Colors.red);
     }
   }
 
   Future<void> _pickImageFromGallery() async {
     try {
-      final ImagePicker picker = ImagePicker();
-      final XFile? pickedFile = await picker.pickImage(
+      final XFile? pickedFile = await ImagePicker().pickImage(
         source: ImageSource.gallery,
         maxWidth: 1024,
         maxHeight: 1024,
         imageQuality: 85,
       );
-
       if (pickedFile != null) {
-        setState(() {
-          _image = File(pickedFile.path);
-        });
+        setState(() => _image = File(pickedFile.path));
       }
     } catch (e) {
-      Fluttertoast.showToast(msg: "Error picking image: ${e.toString()}");
+      Fluttertoast.showToast(msg: "Error picking image: $e");
     }
-  }
-
-  Future<String> _convertImageToBase64(File imageFile) async {
-    List<int> imageBytes = await imageFile.readAsBytes();
-    return base64Encode(imageBytes);
   }
 
   Future<void> _selectDateOfBirth() async {
@@ -180,21 +153,13 @@ class _EditProfileState extends State<EditProfile> {
           : DateTime(2000),
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: ColorScheme.light(
-              primary: Color(0xFF388E3C),
-              onPrimary: Colors.white,
-              surface: Colors.white,
-              onSurface: Colors.black,
-            ),
-          ),
-          child: child!,
-        );
-      },
+      builder: (context, child) => Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: const ColorScheme.light(primary: Color(0xFF388E3C)),
+        ),
+        child: child!,
+      ),
     );
-
     if (picked != null) {
       setState(() {
         _dobController.text = DateFormat('dd/MM/yyyy').format(picked);
@@ -208,382 +173,142 @@ class _EditProfileState extends State<EditProfile> {
       return;
     }
 
-    // Validate address form only if user has filled any address field
-    bool hasAddressData =
-        _line1Controller.text.isNotEmpty ||
-        _cityController.text.isNotEmpty ||
-        _postalController.text.isNotEmpty ||
-        _stateController.text.isNotEmpty;
-
-    if (hasAddressData && !_addressFormKey.currentState!.validate()) {
+    // Check if address form has data and validate it
+    bool hasAddressData = _line1Controller.text.isNotEmpty || _cityController.text.isNotEmpty;
+    if (hasAddressData && _addressFormKey.currentState?.validate() == false) {
       Fluttertoast.showToast(msg: "Please complete the address information");
       return;
     }
 
-    setState(() {
-      _isSaving = true;
-    });
+    setState(() => _isSaving = true);
 
     try {
-      String? imageBase64;
-
-      // Convert new image to base64 if selected
+      String? imageBase64 = _existingImageBase64 ?? '';
       if (_image != null) {
-        imageBase64 = await _convertImageToBase64(_image!);
-      } else {
-        imageBase64 = _existingImageBase64 ?? '';
+        List<int> imageBytes = await _image!.readAsBytes();
+        imageBase64 = base64Encode(imageBytes);
       }
 
-      // Prepare phone number with +60 prefix
       String phoneWithPrefix = _phoneController.text.trim().isNotEmpty
           ? '+60${_phoneController.text.trim()}'
           : '';
 
-      // Get address data
       Map<String, dynamic>? addressData;
       if (hasAddressData) {
         addressData = _addressFormKey.currentState!.getAddressData();
       }
 
-      // Build update data - only include fields that are not empty
+      // Only adding non-empty fields
       Map<String, dynamic> updateData = {
         'updatedAt': FieldValue.serverTimestamp(),
+        if (_nameController.text.isNotEmpty) 'name': _nameController.text.trim(),
+        if (_emailController.text.isNotEmpty) 'email': _emailController.text.trim(),
+        if (phoneWithPrefix.isNotEmpty) 'phoneNumber': phoneWithPrefix,
+        if (_dobController.text.isNotEmpty) 'dateOfBirth': _dobController.text.trim(),
+        if (addressData != null) 'address': addressData,
+        if (imageBase64.isNotEmpty) 'profileImageURL': imageBase64,
       };
 
-      if (_nameController.text.trim().isNotEmpty) {
-        updateData['name'] = _nameController.text.trim();
-      }
-      if (_emailController.text.trim().isNotEmpty) {
-        updateData['email'] = _emailController.text.trim();
-      }
-      if (phoneWithPrefix.isNotEmpty) {
-        updateData['phoneNumber'] = phoneWithPrefix;
-      }
-      if (_dobController.text.trim().isNotEmpty) {
-        updateData['dateOfBirth'] = _dobController.text.trim();
-      }
-      if (addressData != null) {
-        updateData['address'] = addressData;
-      }
-      if (imageBase64 != null && imageBase64.isNotEmpty) {
-        updateData['profileImageURL'] = imageBase64;
-      }
-
-      await FirebaseFirestore.instance
-          .collection('user_profile')
-          .doc(user!.uid)
-          .set(updateData, SetOptions(merge: true));
+      await FirebaseFirestore.instance.collection('user_profile').doc(user!.uid).set(updateData, SetOptions(merge: true));
 
       Fluttertoast.showToast(
         msg: "✓ Profile updated successfully!",
-        backgroundColor: Color(0xFF388E3C),
+        backgroundColor: const Color(0xFF388E3C),
         textColor: Colors.white,
-        fontSize: 16,
       );
-      Navigator.pop(context, true);
-    } catch (e) {
-      Fluttertoast.showToast(
-        msg: "Error updating profile: ${e.toString()}",
-        backgroundColor: Colors.red,
-      );
-    } finally {
-      setState(() {
-        _isSaving = false;
-      });
-    }
-  }
+      if (mounted) Navigator.pop(context, true);
 
-  InputDecoration _inputDecoration(
-    String label, {
-    bool readOnly = false,
-    Widget? suffixIcon,
-    String? prefixText,
-  }) {
-    return InputDecoration(
-      labelText: label,
-      labelStyle: TextStyle(
-        fontFamily: 'Manrope',
-        color: Colors.grey[600],
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-      ),
-      filled: true,
-      fillColor: readOnly ? Colors.grey[100] : Colors.white,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: Colors.grey[300]!, width: 1.5),
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: Colors.grey[300]!, width: 1.5),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: Color(0xFF388E3C), width: 2.5),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: Colors.red[400]!, width: 1.5),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(16),
-        borderSide: BorderSide(color: Colors.red[400]!, width: 2.5),
-      ),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-      suffixIcon: suffixIcon,
-      prefixText: prefixText,
-      prefixStyle: TextStyle(
-        fontFamily: 'Manrope',
-        color: Colors.black87,
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-      ),
-    );
+    } catch (e) {
+      Fluttertoast.showToast(msg: "Error updating: $e", backgroundColor: Colors.red);
+    } finally {
+      if (mounted) setState(() => _isSaving = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: Colors.grey[50], // Light grey bg
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 22),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Edit Profile',
           style: TextStyle(
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w800,
             color: Colors.black87,
             fontFamily: 'Manrope',
             fontSize: 20,
           ),
         ),
         centerTitle: true,
-        systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
       body: _isLoading
-          ? Center(
-              child: CircularProgressIndicator(
-                color: Color(0xFF388E3C),
-                strokeWidth: 3,
-              ),
-            )
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFF388E3C)))
           : SingleChildScrollView(
               padding: const EdgeInsets.all(20.0),
               child: Form(
                 key: _formKey,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // Profile Image Section with Enhanced Design
+                    _buildAvatarSection(),
+                    const SizedBox(height: 32),
+                    
+                    // Personal Info Section
                     Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Color(0xFF388E3C).withOpacity(0.3),
-                            blurRadius: 20,
-                            offset: Offset(0, 8),
-                          ),
-                        ],
-                      ),
-                      child: Stack(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Color(0xFF388E3C).withOpacity(0.3),
-                                width: 4,
-                              ),
-                            ),
-                            child: CircleAvatar(
-                              radius: 70,
-                              backgroundColor: Colors.grey[200],
-                              backgroundImage: _image != null
-                                  ? FileImage(_image!)
-                                  : (_existingImageBase64 != null &&
-                                                _existingImageBase64!.isNotEmpty
-                                            ? MemoryImage(
-                                                base64Decode(
-                                                  _existingImageBase64!,
-                                                ),
-                                              )
-                                            : AssetImage(
-                                                'assets/images/icon/LogoIcon.png',
-                                              ))
-                                        as ImageProvider,
-                            ),
-                          ),
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: InkWell(
-                              onTap: _pickImageFromGallery,
-                              child: Container(
-                                padding: EdgeInsets.all(12),
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(
-                                    colors: [
-                                      Color(0xFF4CAF50),
-                                      Color(0xFF388E3C),
-                                    ],
-                                    begin: Alignment.topLeft,
-                                    end: Alignment.bottomRight,
-                                  ),
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.white,
-                                    width: 4,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Color(0xFF388E3C).withOpacity(0.4),
-                                      blurRadius: 8,
-                                      offset: Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                child: Icon(
-                                  Icons.camera_alt_rounded,
-                                  color: Colors.white,
-                                  size: 22,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    SizedBox(height: 12),
-
-                    Text(
-                      'Tap to change profile picture',
-                      style: TextStyle(
-                        fontFamily: 'Manrope',
-                        fontSize: 13,
-                        color: Colors.grey[600],
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-
-                    SizedBox(height: 32),
-
-                    // Form Fields with Enhanced Container
-                    Container(
-                      padding: EdgeInsets.all(24),
+                      padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.08),
-                            blurRadius: 20,
-                            offset: Offset(0, 4),
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
                           ),
                         ],
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: Color(0xFF388E3C).withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Icon(
-                                  Icons.person_rounded,
-                                  color: Color(0xFF388E3C),
-                                  size: 20,
-                                ),
-                              ),
-                              SizedBox(width: 12),
-                              Text(
-                                'Personal Information',
-                                style: TextStyle(
-                                  fontFamily: 'Manrope',
-                                  fontSize: 19,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ],
+                          const SectionHeader(
+                            title: 'Personal Information',
+                            subtitle: 'Update your personal details',
                           ),
-                          SizedBox(height: 24),
-
-                          // Name Field
-                          TextFormField(
+                          CustomTextField(
                             controller: _nameController,
-                            decoration: _inputDecoration('Full Name'),
-                            style: TextStyle(
-                              fontFamily: 'Manrope',
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            label: 'Full Name',
+                            hintText: 'Enter your name',
+                            validator: (val) => val!.isEmpty ? 'Name required' : null,
                           ),
-                          SizedBox(height: 18),
-
-                          // Email Field (Read-only)
-                          TextFormField(
+                          const SizedBox(height: 20),
+                          CustomTextField(
                             controller: _emailController,
-                            decoration: _inputDecoration(
-                              'Email',
-                              readOnly: true,
-                            ),
-                            style: TextStyle(
-                              fontFamily: 'Manrope',
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey[600],
-                            ),
-                            readOnly: true,
-                            enabled: false,
+                            label: 'Email',
+                            hintText: 'Email address',
+                            readOnly: true, // Uses your custom widget property
                           ),
-                          SizedBox(height: 18),
-
-                          // Phone Field with +60 prefix
-                          TextFormField(
+                          const SizedBox(height: 20),
+                          CustomTextField(
                             controller: _phoneController,
-                            decoration: _inputDecoration(
-                              'Phone Number',
-                              prefixText: '+60 ',
-                            ),
-                            style: TextStyle(
-                              fontFamily: 'Manrope',
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            label: 'Phone Number',
+                            hintText: '123456789',
+                            prefixText: '+60 ',
                             keyboardType: TextInputType.phone,
                             inputFormatters: [
                               FilteringTextInputFormatter.digitsOnly,
                               LengthLimitingTextInputFormatter(11),
                             ],
                           ),
-                          SizedBox(height: 18),
-
-                          // Date of Birth Field
-                          TextFormField(
+                          const SizedBox(height: 20),
+                          CustomTextField(
                             controller: _dobController,
-                            decoration: _inputDecoration(
-                              'Date of Birth',
-                              suffixIcon: Icon(
-                                Icons.calendar_today_rounded,
-                                color: Color(0xFF388E3C),
-                                size: 22,
-                              ),
-                            ),
-                            style: TextStyle(
-                              fontFamily: 'Manrope',
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            label: 'Date of Birth',
+                            hintText: 'DD/MM/YYYY',
                             readOnly: true,
                             onTap: _selectDateOfBirth,
                           ),
@@ -591,52 +316,29 @@ class _EditProfileState extends State<EditProfile> {
                       ),
                     ),
 
-                    SizedBox(height: 20),
+                    const SizedBox(height: 24),
 
                     // Address Section
                     Container(
-                      padding: EdgeInsets.all(24),
+                      padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(24),
+                        borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.08),
-                            blurRadius: 20,
-                            offset: Offset(0, 4),
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                            offset: const Offset(0, 4),
                           ),
                         ],
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: Colors.blue.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Icon(
-                                  Icons.location_on_rounded,
-                                  color: Colors.blue[700],
-                                  size: 20,
-                                ),
-                              ),
-                              SizedBox(width: 12),
-                              Text(
-                                'Address Information',
-                                style: TextStyle(
-                                  fontFamily: 'Manrope',
-                                  fontSize: 19,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
-                              ),
-                            ],
+                          const SectionHeader(
+                            title: 'Address',
+                            subtitle: 'Where should we deliver your orders?',
                           ),
-                          SizedBox(height: 24),
                           AddressForm(
                             key: _addressFormKey,
                             line1Controller: _line1Controller,
@@ -649,66 +351,68 @@ class _EditProfileState extends State<EditProfile> {
                       ),
                     ),
 
-                    SizedBox(height: 32),
+                    const SizedBox(height: 32),
 
-                    // Save Button with Gradient
-                    SizedBox(
-                      width: double.infinity,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          gradient: LinearGradient(
-                            colors: [Color(0xFF4CAF50), Color(0xFF388E3C)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(0xFF388E3C).withOpacity(0.4),
-                              blurRadius: 12,
-                              offset: Offset(0, 6),
-                            ),
-                          ],
-                        ),
-                        child: ElevatedButton.icon(
-                          onPressed: _isSaving ? null : _uploadProfileChanges,
-                          icon: _isSaving
-                              ? SizedBox(
-                                  width: 22,
-                                  height: 22,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2.5,
-                                  ),
-                                )
-                              : Icon(Icons.check_circle_rounded, size: 24),
-                          label: Text(
-                            _isSaving ? 'Saving Changes...' : 'Save Changes',
-                            style: TextStyle(
-                              fontFamily: 'Manrope',
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.transparent,
-                            foregroundColor: Colors.white,
-                            shadowColor: Colors.transparent,
-                            padding: const EdgeInsets.symmetric(vertical: 18),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                          ),
-                        ),
-                      ),
+                    // Save Button
+                    CustomButton(
+                      text: "Save Changes",
+                      onPressed: _uploadProfileChanges,
+                      isLoading: _isSaving,
+                      minimumSize: const Size(double.infinity, 56), // Full width
                     ),
-
-                    SizedBox(height: 24),
+                    const SizedBox(height: 24),
                   ],
                 ),
               ),
             ),
+    );
+  }
+
+  Widget _buildAvatarSection() {
+    return Center(
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: const Color(0xFF388E3C).withOpacity(0.2), width: 4),
+            ),
+            child: CircleAvatar(
+              radius: 65,
+              backgroundColor: Colors.grey[200],
+              backgroundImage: _image != null
+                  ? FileImage(_image!)
+                  : (_existingImageBase64 != null && _existingImageBase64!.isNotEmpty
+                          ? MemoryImage(base64Decode(_existingImageBase64!))
+                          : const AssetImage('assets/images/icon/LogoIcon.png'))
+                      as ImageProvider,
+            ),
+          ),
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: GestureDetector(
+              onTap: _pickImageFromGallery,
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF388E3C),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 3),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF388E3C).withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 20),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

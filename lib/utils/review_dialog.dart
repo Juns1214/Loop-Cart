@@ -38,235 +38,109 @@ class _ReviewDialogState extends State<ReviewDialog> {
   Future<void> _pickImages() async {
     try {
       final List<XFile> images = await _picker.pickMultiImage();
-      
       if (images.isNotEmpty) {
         setState(() {
-          // Limit to 3 images
-          _selectedImages = images
-              .take(3)
-              .map((xFile) => File(xFile.path))
-              .toList();
+          _selectedImages = images.take(3).map((x) => File(x.path)).toList();
         });
       }
     } catch (e) {
-      print('Error picking images: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to pick images'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    }
-  }
-
-  void _removeImage(int index) {
-    setState(() {
-      _selectedImages.removeAt(index);
-    });
-  }
-
-  String _generateReviewId() {
-    final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final random = (timestamp % 10000).toString().padLeft(4, '0');
-    return 'REV$timestamp$random';
-  }
-
-  Future<Map<String, dynamic>?> _getUserProfile() async {
-    if (currentUser == null) return null;
-
-    try {
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('user_profile')
-          .doc(currentUser!.uid)
-          .get();
-
-      if (userDoc.exists) {
-        return userDoc.data() as Map<String, dynamic>;
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to pick images'), backgroundColor: Colors.red),
+        );
       }
-    } catch (e) {
-      print('Error loading user profile: $e');
     }
-    return null;
   }
 
   Future<void> _submitReview() async {
-    // Validation
-    if (_rating == 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please select a rating'),
-          backgroundColor: Colors.orange,
-        ),
-      );
-      return;
-    }
+    if (_rating == 0) return _showSnack('Please select a rating', Colors.orange);
+    if (_reviewController.text.trim().isEmpty) return _showSnack('Please write a review', Colors.orange);
+    if (currentUser == null) return _showSnack('Please login first', Colors.red);
 
-    if (_reviewController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please write a review'),
-          backgroundColor: Colors.orange,
-        ),
-      );
-      return;
-    }
-
-    if (currentUser == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please login to submit review'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
-    setState(() {
-      _isSubmitting = true;
-    });
+    setState(() => _isSubmitting = true);
 
     try {
-      // Get user profile
-      Map<String, dynamic>? userProfile = await _getUserProfile();
-      String userName = userProfile?['name'] ?? 'Anonymous';
-      String userProfileUrl = userProfile?['profileImage'] ?? '';
+      // 1. Get User Info
+      final userDoc = await FirebaseFirestore.instance.collection('user_profile').doc(currentUser!.uid).get();
+      final userData = userDoc.data() ?? {};
+      
+      String reviewId = 'REV${DateTime.now().millisecondsSinceEpoch}';
 
-      String reviewId = _generateReviewId();
-      String productId = widget.product['productId'] ?? '';
-
-      // Create review document
-      Map<String, dynamic> reviewData = {
+      // 2. Prepare Data
+      final reviewData = {
         'reviewId': reviewId,
-        'productId': productId,
+        'productId': widget.product['productId'] ?? '',
         'orderId': widget.orderId,
         'userId': currentUser!.uid,
-        'userName': userName,
-        'userProfileUrl': userProfileUrl,
+        'userName': userData['name'] ?? 'Anonymous',
+        'userProfileUrl': userData['profileImage'] ?? '',
         'rating': _rating,
         'reviewTitle': _titleController.text.trim(),
         'reviewText': _reviewController.text.trim(),
         'reviewDate': DateTime.now().toIso8601String(),
         'createdAt': FieldValue.serverTimestamp(),
+        if (_selectedImages.isNotEmpty) ...{
+          'hasImages': true,
+          'imageCount': _selectedImages.length,
+          // 'imageUrls': [] // TODO: Upload images to Storage and add URLs here
+        }
       };
 
-      // Note: Image upload would require Firebase Storage setup
-      // For now, we'll store image paths if selected
-      if (_selectedImages.isNotEmpty) {
-        reviewData['hasImages'] = true;
-        reviewData['imageCount'] = _selectedImages.length;
-        // In production, upload to Firebase Storage and store URLs
-        // reviewData['imageUrls'] = uploadedUrls;
-      }
+      // 3. Batch Writes for Atomicity
+      final batch = FirebaseFirestore.instance.batch();
+      
+      // Save Review
+      final reviewRef = FirebaseFirestore.instance.collection('reviews').doc(reviewId);
+      batch.set(reviewRef, reviewData);
 
-      // Save review to Firestore
-      await FirebaseFirestore.instance
-          .collection('reviews')
-          .doc(reviewId)
-          .set(reviewData);
-
-      // Mark product as reviewed in order
-      await FirebaseFirestore.instance
-          .collection('orders')
-          .doc(widget.orderId)
-          .update({
-        'items': FieldValue.arrayRemove([widget.product]),
+      // Update Order Items
+      final orderRef = FirebaseFirestore.instance.collection('orders').doc(widget.orderId);
+      
+      // We manually update the array to avoid race conditions with complex objects
+      // Ideally, just mark the order as "reviewed" or specific item ID as reviewed
+      batch.update(orderRef, {
+         'items': FieldValue.arrayRemove([widget.product])
       });
-
-      // Update product with reviewed flag
-      Map<String, dynamic> updatedProduct = Map.from(widget.product);
+      
+      final updatedProduct = Map<String, dynamic>.from(widget.product);
       updatedProduct['isReviewed'] = true;
-
-      await FirebaseFirestore.instance
-          .collection('orders')
-          .doc(widget.orderId)
-          .update({
-        'items': FieldValue.arrayUnion([updatedProduct]),
+      
+      batch.update(orderRef, {
+        'items': FieldValue.arrayUnion([updatedProduct])
       });
 
-      if (!mounted) return;
+      await batch.commit();
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Review submitted successfully!'),
-          backgroundColor: Color(0xFF388E3C),
-        ),
-      );
-
-      Navigator.pop(context, true); // Return true to indicate review submitted
-
-    } catch (e) {
-      print('Error submitting review: $e');
-      
-      if (!mounted) return;
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to submit review. Please try again.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-    } finally {
       if (mounted) {
-        setState(() {
-          _isSubmitting = false;
-        });
+        _showSnack('Review submitted successfully!', const Color(0xFF388E3C));
+        Navigator.pop(context, true);
       }
+    } catch (e) {
+      if (mounted) _showSnack('Failed to submit review: $e', Colors.red);
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
     }
   }
 
-  Widget _buildStarRating() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(5, (index) {
-        return GestureDetector(
-          onTap: () {
-            setState(() {
-              _rating = index + 1;
-            });
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: Icon(
-              index < _rating ? Icons.star : Icons.star_border,
-              color: Colors.amber,
-              size: 40,
-            ),
-          ),
-        );
-      }),
-    );
+  void _showSnack(String msg, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg), backgroundColor: color));
   }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Blurred background
         GestureDetector(
           onTap: () => Navigator.pop(context),
-          child: Container(
-            color: Colors.black.withOpacity(0.5),
-          ),
+          child: Container(color: Colors.black54),
         ),
-
-        // Dialog content (2/3 of screen)
-        Align(
-          alignment: Alignment.center,
+        Center(
           child: Container(
-            margin: EdgeInsets.symmetric(
-              horizontal: MediaQuery.of(context).size.width * 0.1,
-              vertical: MediaQuery.of(context).size.height * 0.15,
-            ),
+            margin: const EdgeInsets.all(24),
+            constraints: const BoxConstraints(maxWidth: 400),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
-                  blurRadius: 20,
-                  offset: Offset(0, 10),
-                ),
-              ],
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
@@ -275,277 +149,30 @@ class _ReviewDialogState extends State<ReviewDialog> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Header
-                      Container(
-                        width: double.infinity,
-                        padding: EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Color(0xFF66BB6A), Color(0xFF388E3C)],
-                          ),
-                        ),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    'Write a Review',
-                                    style: TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.close, color: Colors.white),
-                                  onPressed: () => Navigator.pop(context),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 12),
-                            // Product info
-                            Row(
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(8),
-                                  child: widget.product['imageUrl'] != null &&
-                                          widget.product['imageUrl'].isNotEmpty
-                                      ? Image.asset(
-                                          widget.product['imageUrl'],
-                                          width: 60,
-                                          height: 60,
-                                          fit: BoxFit.cover,
-                                          errorBuilder: (context, error, stackTrace) {
-                                            return Container(
-                                              width: 60,
-                                              height: 60,
-                                              color: Colors.white,
-                                              child: Icon(Icons.image),
-                                            );
-                                          },
-                                        )
-                                      : Container(
-                                          width: 60,
-                                          height: 60,
-                                          color: Colors.white,
-                                          child: Icon(Icons.image),
-                                        ),
-                                ),
-                                SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    widget.product['productName'] ?? 'Product',
-                                    style: TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.w600,
-                                      color: Colors.white,
-                                    ),
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      // Content
+                      _buildHeader(),
                       Padding(
                         padding: const EdgeInsets.all(20),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Rating
-                            Text(
-                              'Rate this product',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 12),
-                            _buildStarRating(),
-                            if (_rating > 0)
-                              Center(
-                                child: Text(
-                                  '$_rating out of 5',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.grey[600],
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-
-                            SizedBox(height: 24),
-
-                            // Review Title
-                            Text(
-                              'Review Title (Optional)',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            TextField(
+                            _buildRatingSection(),
+                            const SizedBox(height: 24),
+                            _buildTextField(
+                              label: 'Review Title (Optional)',
                               controller: _titleController,
-                              decoration: InputDecoration(
-                                hintText: 'Summarize your review',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    color: Color(0xFF388E3C),
-                                    width: 2,
-                                  ),
-                                ),
-                              ),
+                              hint: 'Summarize your review',
                             ),
-
-                            SizedBox(height: 20),
-
-                            // Review Text
-                            Text(
-                              'Your Review *',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            TextField(
+                            const SizedBox(height: 16),
+                            _buildTextField(
+                              label: 'Your Review *',
                               controller: _reviewController,
-                              maxLines: 5,
-                              decoration: InputDecoration(
-                                hintText: 'Share your experience with this product...',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    color: Color(0xFF388E3C),
-                                    width: 2,
-                                  ),
-                                ),
-                              ),
+                              hint: 'Share your experience...',
+                              maxLines: 4,
                             ),
-
-                            SizedBox(height: 20),
-
-                            // Image Upload Section
-                            Text(
-                              'Add Photos (Optional)',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            
-                            // Selected images preview
-                            if (_selectedImages.isNotEmpty)
-                              Container(
-                                height: 100,
-                                margin: EdgeInsets.only(bottom: 12),
-                                child: ListView.builder(
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: _selectedImages.length,
-                                  itemBuilder: (context, index) {
-                                    return Stack(
-                                      children: [
-                                        Container(
-                                          margin: EdgeInsets.only(right: 8),
-                                          child: ClipRRect(
-                                            borderRadius: BorderRadius.circular(8),
-                                            child: Image.file(
-                                              _selectedImages[index],
-                                              width: 100,
-                                              height: 100,
-                                              fit: BoxFit.cover,
-                                            ),
-                                          ),
-                                        ),
-                                        Positioned(
-                                          top: 4,
-                                          right: 12,
-                                          child: GestureDetector(
-                                            onTap: () => _removeImage(index),
-                                            child: Container(
-                                              padding: EdgeInsets.all(4),
-                                              decoration: BoxDecoration(
-                                                color: Colors.red,
-                                                shape: BoxShape.circle,
-                                              ),
-                                              child: Icon(
-                                                Icons.close,
-                                                color: Colors.white,
-                                                size: 16,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                ),
-                              ),
-
-                            // Upload button
-                            if (_selectedImages.length < 3)
-                              OutlinedButton.icon(
-                                onPressed: _pickImages,
-                                icon: Icon(Icons.add_photo_alternate),
-                                label: Text('Add Photos (Max 3)'),
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: Color(0xFF388E3C),
-                                  side: BorderSide(color: Color(0xFF388E3C)),
-                                  padding: EdgeInsets.symmetric(vertical: 12),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                              ),
-
-                            SizedBox(height: 24),
-
-                            // Submit Button
-                            SizedBox(
-                              width: double.infinity,
-                              child: ElevatedButton(
-                                onPressed: _isSubmitting ? null : _submitReview,
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Color(0xFF388E3C),
-                                  padding: EdgeInsets.symmetric(vertical: 16),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                ),
-                                child: _isSubmitting
-                                    ? SizedBox(
-                                        height: 20,
-                                        width: 20,
-                                        child: CircularProgressIndicator(
-                                          color: Colors.white,
-                                          strokeWidth: 2,
-                                        ),
-                                      )
-                                    : Text(
-                                        'Submit Review',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                              ),
-                            ),
+                            const SizedBox(height: 20),
+                            _buildImageUploadSection(),
+                            const SizedBox(height: 24),
+                            _buildSubmitButton(),
                           ],
                         ),
                       ),
@@ -557,6 +184,149 @@ class _ReviewDialogState extends State<ReviewDialog> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(colors: [Color(0xFF66BB6A), Color(0xFF388E3C)]),
+      ),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text('Write a Review', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+              InkWell(onTap: () => Navigator.pop(context), child: const Icon(Icons.close, color: Colors.white)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Container(
+                  width: 50, height: 50, color: Colors.white,
+                  child: widget.product['imageUrl'] != null 
+                    ? Image.asset(widget.product['imageUrl'], fit: BoxFit.cover, errorBuilder: (_,__,___) => const Icon(Icons.image)) 
+                    : const Icon(Icons.image),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  widget.product['productName'] ?? 'Product',
+                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.white),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRatingSection() {
+    return Column(
+      children: [
+        const Text('Rate this product', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87)),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(5, (index) => GestureDetector(
+            onTap: () => setState(() => _rating = index + 1),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: Icon(index < _rating ? Icons.star : Icons.star_border, color: Colors.amber, size: 36),
+            ),
+          )),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTextField({required String label, required TextEditingController controller, required String hint, int maxLines = 1}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.black87)),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          maxLines: maxLines,
+          style: const TextStyle(color: Colors.black87),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: TextStyle(color: Colors.grey[500]),
+            contentPadding: const EdgeInsets.all(16),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: Colors.grey.shade300)),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF388E3C), width: 2)),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildImageUploadSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Add Photos', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.black87)),
+        const SizedBox(height: 10),
+        if (_selectedImages.isNotEmpty)
+          SizedBox(
+            height: 80,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: _selectedImages.length,
+              separatorBuilder: (_,__) => const SizedBox(width: 8),
+              itemBuilder: (context, index) => Stack(
+                children: [
+                  ClipRRect(borderRadius: BorderRadius.circular(8), child: Image.file(_selectedImages[index], width: 80, height: 80, fit: BoxFit.cover)),
+                  Positioned(
+                    top: 0, right: 0,
+                    child: GestureDetector(
+                      onTap: () => setState(() => _selectedImages.removeAt(index)),
+                      child: Container(padding: const EdgeInsets.all(2), color: Colors.red, child: const Icon(Icons.close, color: Colors.white, size: 14)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        if (_selectedImages.length < 3)
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: OutlinedButton.icon(
+              onPressed: _pickImages,
+              icon: const Icon(Icons.camera_alt, size: 18),
+              label: const Text('Upload Image'),
+              style: OutlinedButton.styleFrom(foregroundColor: const Color(0xFF388E3C), side: const BorderSide(color: Color(0xFF388E3C))),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildSubmitButton() {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: _isSubmitting ? null : _submitReview,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF388E3C),
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          elevation: 2,
+        ),
+        child: _isSubmitting 
+          ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+          : const Text('Submit Review', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+      ),
     );
   }
 }

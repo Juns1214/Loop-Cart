@@ -191,9 +191,7 @@ Be direct and specific. No fluff.
                   'maxOutputTokens': 120,
                 },
               }),
-            )
-            .timeout(const Duration(seconds: 15));
-
+            );
         if (response.statusCode == 200) {
           var result = json.decode(response.body);
           String aiResponse =
