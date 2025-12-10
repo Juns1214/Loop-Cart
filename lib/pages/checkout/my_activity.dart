@@ -42,7 +42,7 @@ class _MyActivityPageState extends State<MyActivityPage>
   }
 
   // ============= DATA LOADING =============
-  
+
   Future<void> _loadAllData() async {
     if (currentUser == null) {
       if (mounted) setState(() => isLoading = false);
@@ -51,18 +51,42 @@ class _MyActivityPageState extends State<MyActivityPage>
 
     setState(() => isLoading = true);
     await Future.wait([
-      _loadCollection('orders', (data) => purchaseHistory = data, 
-          orderBy: 'orderDate', userField: 'userId'),
-      _loadCollection('repair_record', (data) => repairRecords = data,
-          orderBy: 'created_at', userField: 'user_id'),
-      _loadCollection('recycling_record', (data) => recyclingRecords = data,
-          orderBy: 'created_at', userField: 'user_id'),
-      _loadCollection('donation_record', (data) => donationRecords = data,
-          orderBy: 'createdAt', userField: 'userId'),
-      _loadCollection('sell_items', (data) => sellItems = data,
-          orderBy: 'posted_at', userField: 'user_id'),
-      _loadCollection('green_coin_transactions', (data) => greenCoinRecords = data,
-          orderBy: 'createdAt', userField: 'userId'),
+      _loadCollection(
+        'orders',
+        (data) => purchaseHistory = data,
+        orderBy: 'orderDate',
+        userField: 'userId',
+      ),
+      _loadCollection(
+        'repair_record',
+        (data) => repairRecords = data,
+        orderBy: 'created_at',
+        userField: 'user_id',
+      ),
+      _loadCollection(
+        'recycling_record',
+        (data) => recyclingRecords = data,
+        orderBy: 'created_at',
+        userField: 'user_id',
+      ),
+      _loadCollection(
+        'donation_record',
+        (data) => donationRecords = data,
+        orderBy: 'createdAt',
+        userField: 'userId',
+      ),
+      _loadCollection(
+        'sell_items',
+        (data) => sellItems = data,
+        orderBy: 'posted_at',
+        userField: 'user_id',
+      ),
+      _loadCollection(
+        'green_coin_transactions',
+        (data) => greenCoinRecords = data,
+        orderBy: 'createdAt',
+        userField: 'userId',
+      ),
     ]);
     if (mounted) setState(() => isLoading = false);
   }
@@ -80,11 +104,13 @@ class _MyActivityPageState extends State<MyActivityPage>
           .orderBy(orderBy, descending: true)
           .get();
 
-      onSuccess(snapshot.docs.map((doc) {
-        var data = doc.data();
-        data['docId'] = doc.id;
-        return data;
-      }).toList());
+      onSuccess(
+        snapshot.docs.map((doc) {
+          var data = doc.data();
+          data['docId'] = doc.id;
+          return data;
+        }).toList(),
+      );
     } catch (e) {
       debugPrint('Error loading $collection: $e');
     }
@@ -101,16 +127,46 @@ class _MyActivityPageState extends State<MyActivityPage>
         controller: _tabController,
         children: [
           _buildPurchaseTab(),
-          _buildGenericTab(repairRecords, _buildRepairCard, Icons.build_outlined,
-              'No Repair Records', 'Your bookings will appear here', 'Repair'),
-          _buildGenericTab(recyclingRecords, _buildRecyclingCard, Icons.recycling_outlined,
-              'No Recycling Records', 'Your requests will appear here', 'Request'),
-          _buildGenericTab(donationRecords, _buildDonationCard, Icons.volunteer_activism_outlined,
-              'No Donations', 'Your history will appear here', 'Donation'),
-          _buildGenericTab(sellItems, _buildSellItemCard, Icons.sell_outlined,
-              'No Listed Items', 'Your posted items will appear here', 'Item'),
-          _buildGenericTab(greenCoinRecords, _buildGreenCoinCard, Icons.monetization_on_outlined,
-              'No Coin History', 'Transactions appear here', 'Transaction'),
+          _buildGenericTab(
+            repairRecords,
+            _buildRepairCard,
+            Icons.build_outlined,
+            'No Repair Records',
+            'Your bookings will appear here',
+            'Repair',
+          ),
+          _buildGenericTab(
+            recyclingRecords,
+            _buildRecyclingCard,
+            Icons.recycling_outlined,
+            'No Recycling Records',
+            'Your requests will appear here',
+            'Request',
+          ),
+          _buildGenericTab(
+            donationRecords,
+            _buildDonationCard,
+            Icons.volunteer_activism_outlined,
+            'No Donations',
+            'Your history will appear here',
+            'Donation',
+          ),
+          _buildGenericTab(
+            sellItems,
+            _buildSellItemCard,
+            Icons.sell_outlined,
+            'No Listed Items',
+            'Your posted items will appear here',
+            'Item',
+          ),
+          _buildGenericTab(
+            greenCoinRecords,
+            _buildGreenCoinCard,
+            Icons.monetization_on_outlined,
+            'No Coin History',
+            'Transactions appear here',
+            'Transaction',
+          ),
         ],
       ),
     );
@@ -121,8 +177,10 @@ class _MyActivityPageState extends State<MyActivityPage>
       backgroundColor: Colors.white,
       elevation: 0,
       leading: const BackButton(color: Colors.black87),
-      title: const Text('My Activity',
-          style: TextStyle(fontWeight: FontWeight.w800, color: Colors.black87)),
+      title: const Text(
+        'My Activity',
+        style: TextStyle(fontWeight: FontWeight.w800, color: Colors.black87),
+      ),
       centerTitle: true,
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(50),
@@ -135,7 +193,10 @@ class _MyActivityPageState extends State<MyActivityPage>
             unselectedLabelColor: Colors.grey[600],
             indicatorColor: _primaryColor,
             indicatorWeight: 3,
-            labelStyle: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14),
+            labelStyle: const TextStyle(
+              fontWeight: FontWeight.w800,
+              fontSize: 14,
+            ),
             tabs: const [
               Tab(text: 'Purchases'),
               Tab(text: 'Repairs'),
@@ -154,9 +215,12 @@ class _MyActivityPageState extends State<MyActivityPage>
     return ActivityTabBody(
       isLoading: isLoading,
       data: purchaseHistory,
-      onRefresh: () => _loadCollection('orders',
-          (data) => setState(() => purchaseHistory = data),
-          orderBy: 'orderDate', userField: 'userId'),
+      onRefresh: () => _loadCollection(
+        'orders',
+        (data) => setState(() => purchaseHistory = data),
+        orderBy: 'orderDate',
+        userField: 'userId',
+      ),
       emptyIcon: Icons.shopping_bag_outlined,
       emptyTitle: 'No Purchase History',
       emptySubtitle: 'Your purchase history will appear here',
@@ -191,13 +255,27 @@ class _MyActivityPageState extends State<MyActivityPage>
     final orderId = order['orderId'] ?? '';
     final status = order['status'] ?? 'Unknown';
     final grandTotal = (order['grandTotal'] ?? 0).toDouble();
-    final items = order['items'] ?? [];
+
+    // --- FIX START: Explicitly cast these lists to avoid the TypeError ---
+    // We use List.from(...) to safely convert the dynamic Firestore data
+    final items = List<Map<String, dynamic>>.from(
+      order['items']?.map((x) => Map<String, dynamic>.from(x)) ?? [],
+    );
+    final reviewedIds = List<String>.from(order['reviewedProductIds'] ?? []);
+    // --- FIX END ---
+
     final isReceived = order['isReceived'] ?? false;
     final isDelivered = status == 'Delivered';
-    final reviewedIds = order['reviewedProductIds'] ?? [];
-    final allReviewed = items.isNotEmpty &&
+
+    // Now this line works safely because 'items' is known to be a List
+    final allReviewed =
+        items.isNotEmpty &&
         items.every((item) => reviewedIds.contains(item['productId']));
-    final totalQty = items.fold<int>(0, (sum, item) => sum + (item['quantity'] as int? ?? 1));
+
+    final totalQty = items.fold<int>(
+      0,
+      (sum, item) => sum + (item['quantity'] as int? ?? 1),
+    );
 
     return ActivityCardWrapper(
       child: Column(
@@ -205,7 +283,13 @@ class _MyActivityPageState extends State<MyActivityPage>
         children: [
           _buildOrderHeader(orderId, order['orderDate'], grandTotal, totalQty),
           const SizedBox(height: 12),
-          _buildOrderStatusBadges(status, isReceived, allReviewed, reviewedIds.length, items.length),
+          _buildOrderStatusBadges(
+            status,
+            isReceived,
+            allReviewed,
+            reviewedIds.length,
+            items.length,
+          ),
           const Divider(height: 24),
           ...items.take(2).map((item) => _buildOrderItem(item, reviewedIds)),
           if (items.length > 2) _buildMoreItemsText(items.length - 2),
@@ -216,7 +300,12 @@ class _MyActivityPageState extends State<MyActivityPage>
     );
   }
 
-  Widget _buildOrderHeader(String orderId, dynamic orderDate, double total, int qty) {
+  Widget _buildOrderHeader(
+    String orderId,
+    dynamic orderDate,
+    double total,
+    int qty,
+  ) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -225,26 +314,54 @@ class _MyActivityPageState extends State<MyActivityPage>
           children: [
             Text(
               'Order #${orderId.length > 8 ? orderId.substring(orderId.length - 8) : orderId}',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: Colors.black87),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w800,
+                color: Colors.black87,
+              ),
             ),
-            Text(_formatDate(orderDate),
-                style: TextStyle(fontSize: 13, color: Colors.grey[800], fontWeight: FontWeight.w600)),
+            Text(
+              _formatDate(orderDate),
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.grey[800],
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ],
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text('RM ${total.toStringAsFixed(2)}',
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: _primaryColor)),
-            Text('$qty items',
-                style: TextStyle(fontSize: 13, color: Colors.grey[800], fontWeight: FontWeight.w600)),
+            Text(
+              'RM ${total.toStringAsFixed(2)}',
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w800,
+                color: _primaryColor,
+              ),
+            ),
+            Text(
+              '$qty items',
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.grey[800],
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildOrderStatusBadges(String status, bool isReceived, bool allReviewed, int reviewedCount, int totalItems) {
+  Widget _buildOrderStatusBadges(
+    String status,
+    bool isReceived,
+    bool allReviewed,
+    int reviewedCount,
+    int totalItems,
+  ) {
     return Wrap(
       spacing: 8,
       children: [
@@ -252,7 +369,9 @@ class _MyActivityPageState extends State<MyActivityPage>
         if (isReceived) const StatusBadge(status: 'Received'),
         if (isReceived)
           StatusBadge(
-            status: allReviewed ? 'All Reviewed' : 'Reviewed $reviewedCount/$totalItems',
+            status: allReviewed
+                ? 'All Reviewed'
+                : 'Reviewed $reviewedCount/$totalItems',
             colorOverride: allReviewed ? Colors.amber[800] : Colors.grey[800],
           ),
       ],
@@ -271,27 +390,49 @@ class _MyActivityPageState extends State<MyActivityPage>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(item['productName'] ?? 'Unknown',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Colors.black87)),
+                Text(
+                  item['productName'] ?? 'Unknown',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                    color: Colors.black87,
+                  ),
+                ),
                 const SizedBox(height: 4),
                 Row(
                   children: [
                     ProductTypeBadge(isPreowned: item['isPreowned'] ?? false),
                     if (isReviewed) ...[
                       const SizedBox(width: 8),
-                      const Icon(Icons.check_circle, size: 14, color: Colors.amber),
-                      Text(' Reviewed',
-                          style: TextStyle(fontSize: 11, color: Colors.amber[800], fontWeight: FontWeight.w800)),
+                      const Icon(
+                        Icons.check_circle,
+                        size: 14,
+                        color: Colors.amber,
+                      ),
+                      Text(
+                        ' Reviewed',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.amber[800],
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
                     ],
                   ],
                 ),
               ],
             ),
           ),
-          Text('x${item['quantity'] ?? 1}',
-              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Colors.black87)),
+          Text(
+            'x${item['quantity'] ?? 1}',
+            style: const TextStyle(
+              fontWeight: FontWeight.w700,
+              fontSize: 15,
+              color: Colors.black87,
+            ),
+          ),
         ],
       ),
     );
@@ -305,8 +446,11 @@ class _MyActivityPageState extends State<MyActivityPage>
         height: 50,
         color: Colors.grey[200],
         child: imageUrl != null
-            ? Image.asset(imageUrl, fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const Icon(Icons.image))
+            ? Image.asset(
+                imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => const Icon(Icons.image),
+              )
             : const Icon(Icons.image),
       ),
     );
@@ -315,12 +459,24 @@ class _MyActivityPageState extends State<MyActivityPage>
   Widget _buildMoreItemsText(int count) {
     return Padding(
       padding: const EdgeInsets.only(top: 4),
-      child: Text('+ $count more items',
-          style: const TextStyle(fontSize: 13, color: _primaryColor, fontWeight: FontWeight.w700, fontStyle: FontStyle.italic)),
+      child: Text(
+        '+ $count more items',
+        style: const TextStyle(
+          fontSize: 13,
+          color: _primaryColor,
+          fontWeight: FontWeight.w700,
+          fontStyle: FontStyle.italic,
+        ),
+      ),
     );
   }
 
-  Widget _buildOrderActions(String orderId, bool isReceived, bool allReviewed, Map<String, dynamic> order) {
+  Widget _buildOrderActions(
+    String orderId,
+    bool isReceived,
+    bool allReviewed,
+    Map<String, dynamic> order,
+  ) {
     return Padding(
       padding: const EdgeInsets.only(top: 16),
       child: Row(
@@ -340,7 +496,9 @@ class _MyActivityPageState extends State<MyActivityPage>
             if (!isReceived) const SizedBox(width: 12),
             Expanded(
               child: CustomButton(
-                text: (order['reviewedProductIds'] ?? []).isEmpty ? 'Review Items' : 'Review More',
+                text: (order['reviewedProductIds'] ?? []).isEmpty
+                    ? 'Review Items'
+                    : 'Review More',
                 onPressed: () => _showFeedbackDialog(order),
                 backgroundColor: const Color(0xFF2E5BFF),
                 fontSize: 14,
@@ -369,19 +527,34 @@ class _MyActivityPageState extends State<MyActivityPage>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                      child: Text(record['name'] ?? 'Unknown',
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.black87)),
+                      child: Text(
+                        record['name'] ?? 'Unknown',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black87,
+                        ),
+                      ),
                     ),
                     StatusBadge(status: record['status'] ?? 'Pending'),
                   ],
                 ),
                 if (record['repair_option'] != null) ...[
                   const SizedBox(height: 4),
-                  Text('${record['repair_option']['Repair']} - ${record['repair_option']['Price']}',
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.grey[850])),
+                  Text(
+                    '${record['repair_option']['Repair']} - ${record['repair_option']['Price']}',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey[850],
+                    ),
+                  ),
                 ],
                 const SizedBox(height: 8),
-                _buildDateTimeRow(record['scheduled_date'], record['scheduled_time']),
+                _buildDateTimeRow(
+                  record['scheduled_date'],
+                  record['scheduled_time'],
+                ),
               ],
             ),
           ),
@@ -401,17 +574,38 @@ class _MyActivityPageState extends State<MyActivityPage>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(record['name'] ?? 'Unknown',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.black87)),
+                Text(
+                  record['name'] ?? 'Unknown',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black87,
+                  ),
+                ),
                 const SizedBox(height: 6),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(color: Colors.green[50], borderRadius: BorderRadius.circular(6)),
-                  child: Text(record['category'] ?? '',
-                      style: const TextStyle(color: _primaryColor, fontSize: 12, fontWeight: FontWeight.w700)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.green[50],
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(
+                    record['category'] ?? '',
+                    style: const TextStyle(
+                      color: _primaryColor,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 8),
-                _buildDateTimeRow(record['scheduled_date'], record['scheduled_time']),
+                _buildDateTimeRow(
+                  record['scheduled_date'],
+                  record['scheduled_time'],
+                ),
               ],
             ),
           ),
@@ -431,14 +625,32 @@ class _MyActivityPageState extends State<MyActivityPage>
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(record['donationCategory'] ?? 'Donation',
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Colors.black87)),
-                  Text(_formatDate(record['createdAt']),
-                      style: TextStyle(fontSize: 13, color: Colors.grey[800], fontWeight: FontWeight.w600)),
+                  Text(
+                    record['donationCategory'] ?? 'Donation',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  Text(
+                    _formatDate(record['createdAt']),
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: Colors.grey[800],
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
                 ],
               ),
-              Text('RM ${amount.toStringAsFixed(2)}',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: _primaryColor)),
+              Text(
+                'RM ${amount.toStringAsFixed(2)}',
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: _primaryColor,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -450,8 +662,14 @@ class _MyActivityPageState extends State<MyActivityPage>
                 Row(
                   children: [
                     const Icon(Icons.eco, size: 14, color: Colors.amber),
-                    Text(' +${record['greenCoinsEarned']} coins',
-                        style: const TextStyle(color: Colors.amber, fontWeight: FontWeight.w800, fontSize: 13)),
+                    Text(
+                      ' +${record['greenCoinsEarned']} coins',
+                      style: const TextStyle(
+                        color: Colors.amber,
+                        fontWeight: FontWeight.w800,
+                        fontSize: 13,
+                      ),
+                    ),
                   ],
                 ),
             ],
@@ -462,7 +680,8 @@ class _MyActivityPageState extends State<MyActivityPage>
   }
 
   Widget _buildSellItemCard(Map<String, dynamic> item) {
-    final price = (double.tryParse(item['price']?.toString() ?? '0') ?? 0).toStringAsFixed(2);
+    final price = (double.tryParse(item['price']?.toString() ?? '0') ?? 0)
+        .toStringAsFixed(2);
     return ActivityCardWrapper(
       child: Row(
         children: [
@@ -476,17 +695,37 @@ class _MyActivityPageState extends State<MyActivityPage>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Expanded(
-                      child: Text(item['name'] ?? 'Item',
-                          style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 16, color: Colors.black87)),
+                      child: Text(
+                        item['name'] ?? 'Item',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          fontSize: 16,
+                          color: Colors.black87,
+                        ),
+                      ),
                     ),
-                    StatusBadge(status: (item['isDraft'] ?? false) ? 'Draft' : 'Active'),
+                    StatusBadge(
+                      status: (item['isDraft'] ?? false) ? 'Draft' : 'Active',
+                    ),
                   ],
                 ),
                 const SizedBox(height: 4),
-                Text('RM $price',
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: _primaryColor)),
-                Text('Posted: ${_formatDate(item['posted_at'])}',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[700], fontWeight: FontWeight.w600)),
+                Text(
+                  'RM $price',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    color: _primaryColor,
+                  ),
+                ),
+                Text(
+                  'Posted: ${_formatDate(item['posted_at'])}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[700],
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ),
           ),
@@ -506,26 +745,44 @@ class _MyActivityPageState extends State<MyActivityPage>
               color: isCredit ? Colors.green[50] : Colors.red[50],
               shape: BoxShape.circle,
             ),
-            child: Icon(isCredit ? Icons.add : Icons.remove,
-                color: isCredit ? Colors.green[700] : Colors.red[700], size: 20),
+            child: Icon(
+              isCredit ? Icons.add : Icons.remove,
+              color: isCredit ? Colors.green[700] : Colors.red[700],
+              size: 20,
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(record['description'] ?? 'Transaction',
-                    style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: Colors.black87)),
-                Text('${record['activity']?.toUpperCase() ?? ''} • ${_formatDate(record['createdAt'])}',
-                    style: TextStyle(fontSize: 12, color: Colors.grey[700], fontWeight: FontWeight.w600)),
+                Text(
+                  record['description'] ?? 'Transaction',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w700,
+                    fontSize: 15,
+                    color: Colors.black87,
+                  ),
+                ),
+                Text(
+                  '${record['activity']?.toUpperCase() ?? ''} • ${_formatDate(record['createdAt'])}',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[700],
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ],
             ),
           ),
-          Text('${isCredit ? '+' : ''}${record['amount']}',
-              style: TextStyle(
-                  color: isCredit ? _primaryColor : Colors.red[700],
-                  fontWeight: FontWeight.w800,
-                  fontSize: 16)),
+          Text(
+            '${isCredit ? '+' : ''}${record['amount']}',
+            style: TextStyle(
+              color: isCredit ? _primaryColor : Colors.red[700],
+              fontWeight: FontWeight.w800,
+              fontSize: 16,
+            ),
+          ),
         ],
       ),
     );
@@ -541,8 +798,12 @@ class _MyActivityPageState extends State<MyActivityPage>
         height: 80,
         color: Colors.grey[100],
         child: base64String != null
-            ? Image.memory(base64Decode(base64String), fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Icon(fallbackIcon, color: Colors.grey[400]))
+            ? Image.memory(
+                base64Decode(base64String),
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) =>
+                    Icon(fallbackIcon, color: Colors.grey[400]),
+              )
             : Icon(fallbackIcon, color: Colors.grey[400]),
       ),
     );
@@ -554,13 +815,27 @@ class _MyActivityPageState extends State<MyActivityPage>
         if (date != null) ...[
           Icon(Icons.calendar_today, size: 13, color: Colors.grey[700]),
           const SizedBox(width: 4),
-          Text(date, style: TextStyle(fontSize: 13, color: Colors.grey[850], fontWeight: FontWeight.w600)),
+          Text(
+            date,
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.grey[850],
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
         if (time != null) ...[
           const SizedBox(width: 12),
           Icon(Icons.access_time, size: 13, color: Colors.grey[700]),
           const SizedBox(width: 4),
-          Text(time, style: TextStyle(fontSize: 13, color: Colors.grey[850], fontWeight: FontWeight.w600)),
+          Text(
+            time,
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.grey[850],
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ],
     );
@@ -570,15 +845,17 @@ class _MyActivityPageState extends State<MyActivityPage>
 
   Future<void> _confirmReceiveParcel(String orderId) async {
     try {
-      await FirebaseFirestore.instance.collection('orders').doc(orderId).update({
-        'isReceived': true,
-        'receivedAt': FieldValue.serverTimestamp(),
-      });
+      await FirebaseFirestore.instance.collection('orders').doc(orderId).update(
+        {'isReceived': true, 'receivedAt': FieldValue.serverTimestamp()},
+      );
       _loadAllData();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Package received!', style: TextStyle(fontWeight: FontWeight.bold)),
+            content: Text(
+              'Package received!',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             backgroundColor: _primaryColor,
           ),
         );
@@ -586,7 +863,10 @@ class _MyActivityPageState extends State<MyActivityPage>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error updating status'), backgroundColor: Colors.red),
+          const SnackBar(
+            content: Text('Error updating status'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -600,7 +880,10 @@ class _MyActivityPageState extends State<MyActivityPage>
       context: context,
       builder: (context) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Select Item to Review', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        title: const Text(
+          'Select Item to Review',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
         content: SizedBox(
           width: double.maxFinite,
           child: ListView.builder(
@@ -613,19 +896,39 @@ class _MyActivityPageState extends State<MyActivityPage>
                 leading: ClipRRect(
                   borderRadius: BorderRadius.circular(6),
                   child: item['imageUrl'] != null
-                      ? Image.asset(item['imageUrl'], width: 44, height: 44, fit: BoxFit.cover,
-                          errorBuilder: (_, __, ___) => const Icon(Icons.image))
+                      ? Image.asset(
+                          item['imageUrl'],
+                          width: 44,
+                          height: 44,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => const Icon(Icons.image),
+                        )
                       : const Icon(Icons.image),
                 ),
-                title: Text(item['productName'] ?? 'Product',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                title: Text(
+                  item['productName'] ?? 'Product',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
                 subtitle: Row(
                   children: [
                     ProductTypeBadge(isPreowned: item['isPreowned'] ?? false),
                     if (isReviewed) ...[
                       const SizedBox(width: 8),
-                      const Icon(Icons.check_circle, size: 12, color: Colors.amber),
-                      Text(' Reviewed', style: TextStyle(fontSize: 11, color: Colors.amber[800])),
+                      const Icon(
+                        Icons.check_circle,
+                        size: 12,
+                        color: Colors.amber,
+                      ),
+                      Text(
+                        ' Reviewed',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.amber[800],
+                        ),
+                      ),
                     ],
                   ],
                 ),
@@ -646,7 +949,10 @@ class _MyActivityPageState extends State<MyActivityPage>
   }
 
   Future<void> _showItemReviewDialog(
-      Map<String, dynamic> item, String orderId, List<dynamic> allOrderItems) async {
+    Map<String, dynamic> item,
+    String orderId,
+    List<dynamic> allOrderItems,
+  ) async {
     double rating = 5.0;
     final titleCtrl = TextEditingController();
     final textCtrl = TextEditingController();
@@ -655,9 +961,13 @@ class _MyActivityPageState extends State<MyActivityPage>
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: Text('Review ${item['productName']}',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Text(
+            'Review ${item['productName']}',
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -667,9 +977,13 @@ class _MyActivityPageState extends State<MyActivityPage>
                   children: List.generate(
                     5,
                     (index) => IconButton(
-                      icon: Icon(index < rating ? Icons.star : Icons.star_border,
-                          color: Colors.amber, size: 36),
-                      onPressed: () => setDialogState(() => rating = index + 1.0),
+                      icon: Icon(
+                        index < rating ? Icons.star : Icons.star_border,
+                        color: Colors.amber,
+                        size: 36,
+                      ),
+                      onPressed: () =>
+                          setDialogState(() => rating = index + 1.0),
                     ),
                   ),
                 ),
@@ -698,14 +1012,24 @@ class _MyActivityPageState extends State<MyActivityPage>
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel', style: TextStyle(color: Colors.grey, fontSize: 15)),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Colors.grey, fontSize: 15),
+              ),
             ),
             CustomButton(
               text: 'Submit',
               onPressed: () async {
                 if (titleCtrl.text.isEmpty) return;
                 Navigator.pop(context);
-                await _submitReview(item, orderId, rating, titleCtrl.text, textCtrl.text, allOrderItems);
+                await _submitReview(
+                  item,
+                  orderId,
+                  rating,
+                  titleCtrl.text,
+                  textCtrl.text,
+                  allOrderItems,
+                );
               },
               backgroundColor: _primaryColor,
               fontSize: 15,
@@ -718,8 +1042,14 @@ class _MyActivityPageState extends State<MyActivityPage>
     );
   }
 
-  Future<void> _submitReview(Map<String, dynamic> item, String orderId, double rating,
-      String title, String text, List<dynamic> allOrderItems) async {
+  Future<void> _submitReview(
+    Map<String, dynamic> item,
+    String orderId,
+    double rating,
+    String title,
+    String text,
+    List<dynamic> allOrderItems,
+  ) async {
     try {
       await ReviewService.submitReview(
         userId: currentUser!.uid,
@@ -733,14 +1063,20 @@ class _MyActivityPageState extends State<MyActivityPage>
       _loadAllData();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Review Submitted!'), backgroundColor: _primaryColor),
+          const SnackBar(
+            content: Text('Review Submitted!'),
+            backgroundColor: _primaryColor,
+          ),
         );
       }
     } catch (e) {
       debugPrint('Review Error: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Error submitting review'), backgroundColor: Colors.red),
+          const SnackBar(
+            content: Text('Error submitting review'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }

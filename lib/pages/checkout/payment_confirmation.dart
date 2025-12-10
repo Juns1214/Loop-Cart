@@ -23,7 +23,6 @@ class PaymentConfirmation extends StatefulWidget {
 }
 
 class _PaymentConfirmationState extends State<PaymentConfirmation> {
-  
   // --- Data Helpers ---
   String _getPaymentType() => widget.orderData['type'] ?? 'purchase';
 
@@ -31,27 +30,33 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
   @override
   Widget build(BuildContext context) {
     final type = _getPaymentType();
-    
+
     // Determine content based on type
     String title = 'Payment Successful!';
     String subtitle = 'Your transaction has been completed.';
     Color primaryColor = const Color(0xFF388E3C); // Default Green
     List<Widget> summaryChildren = [];
-    int greenCoinsEarned = widget.orderData['greenCoinsEarned'] ?? widget.orderData['greenCoinsToEarn'] ?? 0;
+    int greenCoinsEarned =
+        widget.orderData['greenCoinsEarned'] ??
+        widget.orderData['greenCoinsToEarn'] ??
+        0;
 
     // Logic Switch
     if (type == 'donation') {
       primaryColor = const Color(0xFF2E5BFF); // Blue
       title = 'Donation Successful!';
-      subtitle = 'Thank you for making a difference!\nYour contribution helps save our planet.';
+      subtitle =
+          'Thank you for making a difference!\nYour contribution helps save our planet.';
       summaryChildren = _buildDonationSummaryRows();
     } else if (type == 'repair') {
       primaryColor = const Color(0xFF2E5BFF); // Blue
-      subtitle = 'Your repair service has been confirmed.\nWe\'ll contact you soon!';
+      subtitle =
+          'Your repair service has been confirmed.\nWe\'ll contact you soon!';
       summaryChildren = _buildRepairSummaryRows();
     } else {
       // Purchase
-      subtitle = 'Your order has been placed successfully.\nThank you for your purchase!';
+      subtitle =
+          'Your order has been placed successfully.\nThank you for your purchase!';
       summaryChildren = _buildPurchaseSummaryRows();
     }
 
@@ -62,7 +67,8 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.black),
-          onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
+          onPressed: () =>
+              Navigator.of(context).popUntil((route) => route.isFirst),
         ),
       ),
       body: SingleChildScrollView(
@@ -75,16 +81,22 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
               subtitle: subtitle,
               color: primaryColor,
             ),
-            
+
             const SizedBox(height: 30),
 
             // 2. Summary Card
             _SummaryCard(
-              title: type == 'donation' ? 'Donation Summary' : 
-                     type == 'repair' ? 'Service Summary' : 'Order Summary',
+              title: type == 'donation'
+                  ? 'Donation Summary'
+                  : type == 'repair'
+                  ? 'Service Summary'
+                  : 'Order Summary',
               children: [
                 _LabelValueRow('Transaction ID:', widget.transactionId),
-                _LabelValueRow('Date:', DateFormat('MMM dd, yyyy').format(DateTime.now())),
+                _LabelValueRow(
+                  'Date:',
+                  DateFormat('MMM dd, yyyy').format(DateTime.now()),
+                ),
                 _LabelValueRow('Payment Method:', widget.paymentMethod),
                 const Divider(height: 24),
                 ...summaryChildren,
@@ -107,7 +119,8 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => OrderStatus(orderId: widget.orderId),
+                      builder: (context) =>
+                          OrderStatus(orderId: widget.orderId),
                     ),
                   );
                 },
@@ -120,15 +133,27 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
-                onPressed: () => Navigator.of(context).popUntil((route) => route.isFirst),
-                icon: Icon(type == 'purchase' ? Icons.shopping_bag_outlined : Icons.home_outlined),
-                label: Text(type == 'purchase' ? "Continue Shopping" : "Back to Home"),
+                onPressed: () =>
+                    Navigator.of(context).popUntil((route) => route.isFirst),
+                icon: Icon(
+                  type == 'purchase'
+                      ? Icons.shopping_bag_outlined
+                      : Icons.home_outlined,
+                ),
+                label: Text(
+                  type == 'purchase' ? "Continue Shopping" : "Back to Home",
+                ),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: primaryColor,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   side: BorderSide(color: primaryColor, width: 2),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
@@ -143,30 +168,62 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
 
   List<Widget> _buildPurchaseSummaryRows() {
     int totalItems = 0;
+    double calculatedItemsTotal = 0.0;
+
+    // Safely calculate totals even if 'itemsTotal' is missing
     if (widget.orderData['items'] != null) {
       for (var item in widget.orderData['items']) {
-        totalItems += (item['quantity'] as int? ?? 1);
+        int qty = (item['quantity'] as int? ?? 1);
+        double price = (item['productPrice'] ?? item['price'] ?? 0).toDouble();
+
+        totalItems += qty;
+        calculatedItemsTotal += (price * qty);
       }
     }
-    
-    final shippingDisplay = widget.orderData['shippingMethod'] == 'Express' ? 'Express (2-3 days)' : 'Standard (5-6 days)';
-    
+
+    // Use passed value if available, otherwise use our calculation
+    double finalItemsTotal = widget.orderData['itemsTotal'] != null
+        ? (widget.orderData['itemsTotal'] as num).toDouble()
+        : calculatedItemsTotal;
+
+    final shippingDisplay = widget.orderData['shippingMethod'] == 'Express'
+        ? 'Express (2-3 days)'
+        : 'Standard (5-6 days)';
+
+    // Safely handle other potentially null numbers
+    double shippingCost = (widget.orderData['shippingCost'] as num? ?? 0)
+        .toDouble();
+    double packagingCost = (widget.orderData['packagingCost'] as num? ?? 0)
+        .toDouble();
+    double discount = (widget.orderData['discount'] as num? ?? 0).toDouble();
+    double grandTotal =
+        (widget.orderData['grandTotal'] as num? ??
+                (finalItemsTotal + shippingCost + packagingCost - discount))
+            .toDouble();
+
     return [
       _LabelValueRow('Order ID:', widget.orderId),
-      _LabelValueRow('Items ($totalItems):', 'RM ${widget.orderData['itemsTotal'].toStringAsFixed(2)}'),
       _LabelValueRow(
-        'Shipping ($shippingDisplay):', 
-        widget.orderData['shippingCost'] == 0 ? 'FREE' : 'RM ${widget.orderData['shippingCost'].toStringAsFixed(2)}'
+        'Items ($totalItems):',
+        'RM ${finalItemsTotal.toStringAsFixed(2)}',
       ),
-      _LabelValueRow('Packaging:', 'RM ${widget.orderData['packagingCost'].toStringAsFixed(2)}'),
-      if (widget.orderData['discount'] > 0)
-        _LabelValueRow('Discount:', '-RM ${widget.orderData['discount'].toStringAsFixed(2)}', valueColor: Colors.red),
-      
+      _LabelValueRow(
+        'Shipping ($shippingDisplay):',
+        shippingCost == 0 ? 'FREE' : 'RM ${shippingCost.toStringAsFixed(2)}',
+      ),
+      _LabelValueRow('Packaging:', 'RM ${packagingCost.toStringAsFixed(2)}'),
+      if (discount > 0)
+        _LabelValueRow(
+          'Discount:',
+          '-RM ${discount.toStringAsFixed(2)}',
+          valueColor: Colors.red,
+        ),
+
       const Divider(height: 24, thickness: 1.5),
-      
+
       _TotalRow(
-        label: 'Total Paid', 
-        amount: widget.orderData['grandTotal'], 
+        label: 'Total Paid',
+        amount: grandTotal,
         color: const Color(0xFF388E3C),
       ),
     ];
@@ -177,8 +234,8 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
       _LabelValueRow('Category:', widget.orderData['category'] ?? 'General'),
       const Divider(height: 24, thickness: 1.5),
       _TotalRow(
-        label: 'Donation Amount', 
-        amount: widget.orderData['amount'], 
+        label: 'Donation Amount',
+        amount: widget.orderData['amount'],
         color: const Color(0xFF2E5BFF),
       ),
     ];
@@ -186,11 +243,14 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
 
   List<Widget> _buildRepairSummaryRows() {
     return [
-      _LabelValueRow('Service Type:', widget.orderData['repairType'] ?? 'General Repair'),
+      _LabelValueRow(
+        'Service Type:',
+        widget.orderData['repairType'] ?? 'General Repair',
+      ),
       const Divider(height: 24, thickness: 1.5),
       _TotalRow(
-        label: 'Service Fee', 
-        amount: widget.orderData['amount'], 
+        label: 'Service Fee',
+        amount: widget.orderData['amount'],
         color: const Color(0xFF2E5BFF),
       ),
     ];
@@ -206,7 +266,11 @@ class _SuccessHeader extends StatelessWidget {
   final String subtitle;
   final Color color;
 
-  const _SuccessHeader({required this.title, required this.subtitle, required this.color});
+  const _SuccessHeader({
+    required this.title,
+    required this.subtitle,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -221,7 +285,11 @@ class _SuccessHeader extends StatelessWidget {
         const SizedBox(height: 10),
         Text(
           title,
-          style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: color),
+          style: TextStyle(
+            fontSize: 26,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 8),
@@ -254,7 +322,14 @@ class _SummaryCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black)),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
           const SizedBox(height: 16),
           ...children,
         ],
@@ -277,14 +352,21 @@ class _LabelValueRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontSize: 15, color: Colors.grey[700], fontWeight: FontWeight.w500)),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 15,
+              color: Colors.grey[700],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
           Expanded(
             child: Text(
               value,
               style: TextStyle(
-                fontSize: 15, 
-                color: valueColor ?? Colors.black87, 
-                fontWeight: FontWeight.bold
+                fontSize: 15,
+                color: valueColor ?? Colors.black87,
+                fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.right,
             ),
@@ -300,7 +382,11 @@ class _TotalRow extends StatelessWidget {
   final dynamic amount; // can be int or double
   final Color color;
 
-  const _TotalRow({required this.label, required this.amount, required this.color});
+  const _TotalRow({
+    required this.label,
+    required this.amount,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -309,11 +395,19 @@ class _TotalRow extends StatelessWidget {
       children: [
         Text(
           '$label:',
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
         ),
         Text(
           'RM ${(amount is int ? amount.toDouble() : amount).toStringAsFixed(2)}',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: color),
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: color,
+          ),
         ),
       ],
     );
@@ -343,12 +437,17 @@ class _GreenCoinsEarnedCard extends StatelessWidget {
           Container(
             width: 48,
             height: 48,
-            decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+            ),
             child: Center(
               child: Image.asset(
                 'assets/images/icon/Green Coin.png',
-                width: 28, height: 28,
-                errorBuilder: (_, __, ___) => const Icon(Icons.eco, color: Color(0xFF388E3C)),
+                width: 28,
+                height: 28,
+                errorBuilder: (_, __, ___) =>
+                    const Icon(Icons.eco, color: Color(0xFF388E3C)),
               ),
             ),
           ),
@@ -359,18 +458,29 @@ class _GreenCoinsEarnedCard extends StatelessWidget {
               children: [
                 const Text(
                   'Green Coins Earned',
-                  style: TextStyle(color: Color(0xFF388E3C), fontSize: 16, fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    color: Color(0xFF388E3C),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 Text(
                   'You earned $coins coins!',
-                  style: TextStyle(color: const Color(0xFF388E3C).withOpacity(0.9), fontSize: 14),
+                  style: TextStyle(
+                    color: const Color(0xFF388E3C).withOpacity(0.9),
+                    fontSize: 14,
+                  ),
                 ),
               ],
             ),
           ),
           Text(
             '+$coins',
-            style: const TextStyle(color: Color(0xFF388E3C), fontSize: 24, fontWeight: FontWeight.bold),
+            style: const TextStyle(
+              color: Color(0xFF388E3C),
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ],
       ),
