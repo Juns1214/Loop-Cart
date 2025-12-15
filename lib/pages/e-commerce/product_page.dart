@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../feature/best_value_comparison.dart';
+import '../../utils/share_product.dart';
 import '../../widget/section_container.dart';
 import '../../widget/review_card.dart';
 import '../../widget/seller_info_card.dart';
@@ -9,7 +10,7 @@ import '../../widget/product_image_header.dart';
 
 class ProductPage extends StatefulWidget {
   final Map<String, dynamic> product;
-  final bool isPreowned; // Flag to toggle modes
+  final bool isPreowned;
 
   const ProductPage({
     super.key, 
@@ -39,15 +40,12 @@ class _ProductPageState extends State<ProductPage> {
     // 1. Determine Images
     List<String> images = [];
     if (widget.isPreowned) {
-      // Collect all available images for pre-owned
       if (widget.product['imageUrl1'] != null) images.add(widget.product['imageUrl1']);
       if (widget.product['imageUrl2'] != null) images.add(widget.product['imageUrl2']);
       if (widget.product['imageUrl3'] != null) images.add(widget.product['imageUrl3']);
     } else {
-      // Standard product image
       images.add(widget.product['imageUrl'] ?? widget.product['image_url'] ?? '');
     }
-    // Fallback if empty
     if (images.isEmpty) images.add('');
 
     // 2. Rating & Coins logic
@@ -68,7 +66,7 @@ class _ProductPageState extends State<ProductPage> {
                       ProductImageHeader(
                         imageUrls: images,
                         onBack: () => Navigator.pop(context),
-                        onShare: _shareAndEarnCoins,
+                        onShare: _handleShare,
                         height: 300,
                       ),
 
@@ -121,7 +119,6 @@ class _ProductPageState extends State<ProductPage> {
                                 ],
                               )
                             else 
-                              // Pre-owned specific badge
                               Row(
                                 children: [
                                   const Icon(Icons.recycling, size: 16, color: Colors.blue),
@@ -142,7 +139,6 @@ class _ProductPageState extends State<ProductPage> {
                       ),
 
                       // --- SELLER INFO ---
-                      // We show this for both, but data source might differ
                       if (sellerData != null || widget.isPreowned)
                         SectionContainer(
                           child: Column(
@@ -152,7 +148,7 @@ class _ProductPageState extends State<ProductPage> {
                               const SizedBox(height: 16),
                               SellerInfoCard(
                                 name: widget.isPreowned ? (widget.product['seller'] ?? 'Private Seller') : (sellerData?['name'] ?? ''),
-                                image: widget.isPreowned ? '' : (sellerData?['profileImage'] ?? ''), // No image for preowned sellers usually
+                                image: widget.isPreowned ? '' : (sellerData?['profileImage'] ?? ''),
                                 subtitle: widget.isPreowned 
                                   ? const Text('Verified Seller', style: TextStyle(color: Colors.green))
                                   : Row(
@@ -174,7 +170,6 @@ class _ProductPageState extends State<ProductPage> {
                             const Text('Customer Reviews', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                             const SizedBox(height: 16),
                             
-                            // Smart Value Button works for both if configured correctly
                             SmartValueButton(
                               productId: widget.product['id'] ?? '', 
                               isPreowned: widget.isPreowned
@@ -217,7 +212,6 @@ class _ProductPageState extends State<ProductPage> {
   Future<void> _loadData() async {
     setState(() => isLoading = true);
     try {
-      // 1. Load Seller Data (Only strictly needed for Standard items for profile image etc)
       if (!widget.isPreowned) {
         String sellerName = widget.product['seller'] ?? '';
         if (sellerName.isNotEmpty) {
@@ -226,23 +220,28 @@ class _ProductPageState extends State<ProductPage> {
         }
       }
 
-      // 2. Load Reviews (Switch collection based on type)
       String pid = widget.product['id'] ?? '';
       String collection = widget.isPreowned ? 'preowned_reviews' : 'reviews';
       
       if (pid.isNotEmpty) {
         var reviewQ = await FirebaseFirestore.instance.collection(collection).where('productId', isEqualTo: pid).get();
         var list = reviewQ.docs.map((d) => d.data()).toList();
-        // Simple sort by date string, adapt if using Timestamp
         list.sort((a, b) => (b['reviewDate'] ?? '').compareTo(a['reviewDate'] ?? ''));
         reviews = list;
       }
       
       setState(() => isLoading = false);
     } catch (e) {
-      print("Error loading data: $e");
       setState(() => isLoading = false);
     }
+  }
+
+  Future<void> _handleShare() async {
+    await ProductShareHandler.shareProduct(
+      context: context,
+      product: widget.product,
+      isPreowned: widget.isPreowned,
+    );
   }
 
   Future<void> _addToCart() async {
@@ -256,7 +255,6 @@ class _ProductPageState extends State<ProductPage> {
       String uid = currentUser!.uid;
       String pid = widget.product['id'] ?? '';
       
-      // Check existing cart
       var cartQuery = await FirebaseFirestore.instance.collection('cart_items')
           .where('userId', isEqualTo: uid)
           .where('productId', isEqualTo: pid)
@@ -266,14 +264,12 @@ class _ProductPageState extends State<ProductPage> {
       Map<String, dynamic> item;
       
       if (cartQuery.docs.isNotEmpty) {
-        // Update Quantity
         var doc = cartQuery.docs.first;
         await doc.reference.update({'quantity': (doc['quantity'] ?? 1) + 1});
         item = doc.data();
         item['quantity'] = (doc['quantity'] ?? 1) + 1;
         item['docId'] = doc.id;
       } else {
-        // Add New
         item = {
           'userId': uid,
           'productId': pid,
@@ -284,7 +280,7 @@ class _ProductPageState extends State<ProductPage> {
               ? (widget.product['imageUrl1'] ?? '') 
               : (widget.product['imageUrl'] ?? ''),
           'seller': widget.product['seller'],
-          'isPreowned': widget.isPreowned, // IMPORTANT: Saves the type to cart
+          'isPreowned': widget.isPreowned,
           'dateAdded': FieldValue.serverTimestamp(),
         };
         var ref = await FirebaseFirestore.instance.collection('cart_items').add(item);
@@ -332,11 +328,5 @@ class _ProductPageState extends State<ProductPage> {
         ],
       ),
     );
-  }
-
-  Future<void> _shareAndEarnCoins() async {
-     // ... (Keep your existing share logic here) ...
-     // For brevity, using basic placeholder, copy your original logic if needed
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Shared!')));
   }
 }

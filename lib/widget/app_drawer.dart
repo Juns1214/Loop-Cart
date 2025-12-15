@@ -39,7 +39,6 @@ class AppDrawer extends StatelessWidget {
             children: [
               _buildDrawerItem(context, 'Explore', () {
                 Navigator.pop(context);
-                // Navigate to Explore logic if needed, or just pop
               }),
               _buildDrawerItem(context, 'Second Hand Items', () {
                 Navigator.pop(context);
@@ -71,7 +70,8 @@ class AppDrawer extends StatelessWidget {
             title: 'Sustainability & Impact',
             iconPath: 'assets/images/icon/SustainabilityIcon.png',
             children: [
-              _buildDrawerItem(context, 'Green Coin', () => Navigator.pop(context)),
+              _buildDrawerItem(context, 'Green Coin', () {Navigator.pop(context);
+                Navigator.pushNamed(context, '/green-coin');}),
               _buildDrawerItem(context, 'Analytics Dashboard', () {
                 Navigator.pop(context);
                 onNavigate(3);

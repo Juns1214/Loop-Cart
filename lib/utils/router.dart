@@ -22,6 +22,7 @@ import '../pages/checkout/order_status.dart';
 import '../pages/e-commerce/preowned_main_page.dart';
 import '../pages/e-commerce/category_filter.dart';
 import '../pages/quiz/quiz_start_page.dart';
+import './../pages/feature/green_coin.dart';
 
 //1. Set up routes
 final Map routes = {
@@ -58,6 +59,7 @@ final Map routes = {
   "/preowned-main-page": (context) => const PreownedMainPage(),
   "/category-filter": (context) => const CategoryFilterPage(),
   "/quiz-start-page": (context) => const QuizStartPage(),
+  "/green-coin": (context) => const GreenCoinPage(),
 };
 
 //2. Set up Route Generator (FIXED)
