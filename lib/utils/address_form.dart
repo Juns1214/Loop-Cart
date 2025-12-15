@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../widget/custom_text_field.dart';
+import '../../utils/malaysia_state_selection.dart';
 
 class AddressForm extends StatefulWidget {
   final TextEditingController? line1Controller;
   final TextEditingController? line2Controller;
   final TextEditingController? cityController;
   final TextEditingController? postalController;
-  final TextEditingController? stateController;
+  final String? selectedState; // Changed from TextEditingController
   final GlobalKey<FormState>? formKey;
-  final ValueChanged<String>? onStateChanged;
+  final ValueChanged<String?>? onStateChanged;
 
   const AddressForm({
     super.key,
@@ -17,7 +18,7 @@ class AddressForm extends StatefulWidget {
     this.line2Controller,
     this.cityController,
     this.postalController,
-    this.stateController,
+    this.selectedState, // Changed parameter
     this.formKey,
     this.onStateChanged,
   });
@@ -31,7 +32,7 @@ class AddressFormState extends State<AddressForm> {
   late final TextEditingController line2Controller;
   late final TextEditingController cityController;
   late final TextEditingController postalController;
-  late final TextEditingController stateController;
+  String? selectedState; // Changed to String?
   late final GlobalKey<FormState> _formKey;
 
   bool _isInternalController = false;
@@ -44,7 +45,7 @@ class AddressFormState extends State<AddressForm> {
     line2Controller = widget.line2Controller ?? TextEditingController();
     cityController = widget.cityController ?? TextEditingController();
     postalController = widget.postalController ?? TextEditingController();
-    stateController = widget.stateController ?? TextEditingController();
+    selectedState = widget.selectedState; // Initialize from widget
     _formKey = widget.formKey ?? GlobalKey<FormState>();
   }
 
@@ -55,7 +56,6 @@ class AddressFormState extends State<AddressForm> {
       line2Controller.dispose();
       cityController.dispose();
       postalController.dispose();
-      stateController.dispose();
     }
     super.dispose();
   }
@@ -65,7 +65,7 @@ class AddressFormState extends State<AddressForm> {
       line1Controller.text.isNotEmpty ||
       cityController.text.isNotEmpty ||
       postalController.text.isNotEmpty ||
-      stateController.text.isNotEmpty;
+      selectedState != null;
 
   bool validate() {
     if (!_hasAnyData) return true; // Optional if all empty
@@ -78,7 +78,7 @@ class AddressFormState extends State<AddressForm> {
       'line2': line2Controller.text.trim(),
       'city': cityController.text.trim(),
       'postal': postalController.text.trim(),
-      'state': stateController.text.trim(),
+      'state': selectedState ?? '',
     };
   }
 
@@ -143,14 +143,16 @@ class AddressFormState extends State<AddressForm> {
           ),
           const SizedBox(height: 18),
           
-          CustomTextField(
-            controller: stateController,
-            label: 'State',
-            hintText: 'Enter state',
-            onChanged: widget.onStateChanged,
+          // Use MalaysiaStateDropdown instead of CustomTextField
+          MalaysiaStateDropdown(
+            value: selectedState,
+            onChanged: (value) {
+              setState(() => selectedState = value);
+              widget.onStateChanged?.call(value ?? '');
+            },
             validator: (value) {
-              if (_hasAnyData && (value == null || value.trim().isEmpty)) {
-                return 'Please enter your state';
+              if (_hasAnyData && value == null) {
+                return 'Please select your state';
               }
               return null;
             },

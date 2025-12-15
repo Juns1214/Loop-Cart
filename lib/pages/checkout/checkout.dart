@@ -356,7 +356,7 @@ class _CheckoutState extends State<Checkout> {
             child: Switch(
               value: useGreenCoinDiscount,
               onChanged: availableGreenCoins > 0 ? _toggleGreenCoinDiscount : null,
-              activeColor: _primaryColor,
+              activeThumbColor: _primaryColor,
             ),
           ),
         ],

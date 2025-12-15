@@ -161,7 +161,9 @@ class _PaymentState extends State<Payment> {
             .where('userId', isEqualTo: currentUser!.uid)
             .where('productId', isEqualTo: item['productId'])
             .get();
-        for (var doc in cartQuery.docs) await doc.reference.delete();
+        for (var doc in cartQuery.docs) {
+          await doc.reference.delete();
+        }
       }
 
       if (!mounted) return;

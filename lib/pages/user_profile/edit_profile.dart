@@ -15,7 +15,6 @@ import '../../utils/router.dart';
 import '../../widget/custom_text_field.dart';
 import '../../widget/custom_button.dart';
 import '../../widget/section_header.dart';
-import '../../widget/section_container.dart'; // Optional, or just use Container
 
 // If running standalone
 void main() async {
@@ -57,10 +56,11 @@ class _EditProfileState extends State<EditProfile> {
   final TextEditingController _line2Controller = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _postalController = TextEditingController();
-  final TextEditingController _stateController = TextEditingController();
+  String? selectedState;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final GlobalKey<AddressFormState> _addressFormKey = GlobalKey<AddressFormState>();
+  final GlobalKey<AddressFormState> _addressFormKey =
+      GlobalKey<AddressFormState>();
 
   File? _image;
   String? _existingImageBase64;
@@ -85,23 +85,27 @@ class _EditProfileState extends State<EditProfile> {
     _line2Controller.dispose();
     _cityController.dispose();
     _postalController.dispose();
-    _stateController.dispose();
     super.dispose();
   }
 
   Future<void> _loadUserProfile() async {
     if (user == null) return;
     try {
-      final doc = await FirebaseFirestore.instance.collection('user_profile').doc(user!.uid).get();
+      final doc = await FirebaseFirestore.instance
+          .collection('user_profile')
+          .doc(user!.uid)
+          .get();
       if (doc.exists) {
         final data = doc.data()!;
         setState(() {
           _nameController.text = data['name'] ?? '';
           _emailController.text = data['email'] ?? user!.email ?? '';
-          
+
           String phone = data['phoneNumber'] ?? '';
-          if (phone.startsWith('+60')) phone = phone.substring(3).trim();
-          else if (phone.startsWith('60')) phone = phone.substring(2).trim();
+          if (phone.startsWith('+60')) {
+            phone = phone.substring(3).trim();
+          } else if (phone.startsWith('60'))
+            phone = phone.substring(2).trim();
           _phoneController.text = phone;
 
           _dobController.text = data['dateOfBirth'] ?? '';
@@ -112,7 +116,7 @@ class _EditProfileState extends State<EditProfile> {
             _line2Controller.text = address['line2'] ?? '';
             _cityController.text = address['city'] ?? '';
             _postalController.text = address['postal'] ?? '';
-            _stateController.text = address['state'] ?? '';
+            selectedState = address['state'] ?? '';
           }
           _existingImageBase64 = data['profileImageURL'];
           _isLoading = false;
@@ -125,7 +129,10 @@ class _EditProfileState extends State<EditProfile> {
       }
     } catch (e) {
       setState(() => _isLoading = false);
-      Fluttertoast.showToast(msg: "Error loading profile: $e", backgroundColor: Colors.red);
+      Fluttertoast.showToast(
+        msg: "Error loading profile: $e",
+        backgroundColor: Colors.red,
+      );
     }
   }
 
@@ -174,7 +181,8 @@ class _EditProfileState extends State<EditProfile> {
     }
 
     // Check if address form has data and validate it
-    bool hasAddressData = _line1Controller.text.isNotEmpty || _cityController.text.isNotEmpty;
+    bool hasAddressData =
+        _line1Controller.text.isNotEmpty || _cityController.text.isNotEmpty;
     if (hasAddressData && _addressFormKey.currentState?.validate() == false) {
       Fluttertoast.showToast(msg: "Please complete the address information");
       return;
@@ -201,15 +209,21 @@ class _EditProfileState extends State<EditProfile> {
       // Only adding non-empty fields
       Map<String, dynamic> updateData = {
         'updatedAt': FieldValue.serverTimestamp(),
-        if (_nameController.text.isNotEmpty) 'name': _nameController.text.trim(),
-        if (_emailController.text.isNotEmpty) 'email': _emailController.text.trim(),
+        if (_nameController.text.isNotEmpty)
+          'name': _nameController.text.trim(),
+        if (_emailController.text.isNotEmpty)
+          'email': _emailController.text.trim(),
         if (phoneWithPrefix.isNotEmpty) 'phoneNumber': phoneWithPrefix,
-        if (_dobController.text.isNotEmpty) 'dateOfBirth': _dobController.text.trim(),
+        if (_dobController.text.isNotEmpty)
+          'dateOfBirth': _dobController.text.trim(),
         if (addressData != null) 'address': addressData,
         if (imageBase64.isNotEmpty) 'profileImageURL': imageBase64,
       };
 
-      await FirebaseFirestore.instance.collection('user_profile').doc(user!.uid).set(updateData, SetOptions(merge: true));
+      await FirebaseFirestore.instance
+          .collection('user_profile')
+          .doc(user!.uid)
+          .set(updateData, SetOptions(merge: true));
 
       Fluttertoast.showToast(
         msg: "✓ Profile updated successfully!",
@@ -217,9 +231,11 @@ class _EditProfileState extends State<EditProfile> {
         textColor: Colors.white,
       );
       if (mounted) Navigator.pop(context, true);
-
     } catch (e) {
-      Fluttertoast.showToast(msg: "Error updating: $e", backgroundColor: Colors.red);
+      Fluttertoast.showToast(
+        msg: "Error updating: $e",
+        backgroundColor: Colors.red,
+      );
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
@@ -233,7 +249,11 @@ class _EditProfileState extends State<EditProfile> {
         elevation: 0,
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: Colors.black87,
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
@@ -248,7 +268,9 @@ class _EditProfileState extends State<EditProfile> {
         centerTitle: true,
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF388E3C)))
+          ? const Center(
+              child: CircularProgressIndicator(color: Color(0xFF388E3C)),
+            )
           : SingleChildScrollView(
               padding: const EdgeInsets.all(20.0),
               child: Form(
@@ -257,7 +279,7 @@ class _EditProfileState extends State<EditProfile> {
                   children: [
                     _buildAvatarSection(),
                     const SizedBox(height: 32),
-                    
+
                     // Personal Info Section
                     Container(
                       padding: const EdgeInsets.all(24),
@@ -283,7 +305,8 @@ class _EditProfileState extends State<EditProfile> {
                             controller: _nameController,
                             label: 'Full Name',
                             hintText: 'Enter your name',
-                            validator: (val) => val!.isEmpty ? 'Name required' : null,
+                            validator: (val) =>
+                                val!.isEmpty ? 'Name required' : null,
                           ),
                           const SizedBox(height: 20),
                           CustomTextField(
@@ -345,7 +368,11 @@ class _EditProfileState extends State<EditProfile> {
                             line2Controller: _line2Controller,
                             cityController: _cityController,
                             postalController: _postalController,
-                            stateController: _stateController,
+                            selectedState:
+                                selectedState, // Updated parameter name
+                            onStateChanged: (value) {
+                              setState(() => selectedState = value);
+                            },
                           ),
                         ],
                       ),
@@ -358,7 +385,10 @@ class _EditProfileState extends State<EditProfile> {
                       text: "Save Changes",
                       onPressed: _uploadProfileChanges,
                       isLoading: _isSaving,
-                      minimumSize: const Size(double.infinity, 56), // Full width
+                      minimumSize: const Size(
+                        double.infinity,
+                        56,
+                      ), // Full width
                     ),
                     const SizedBox(height: 24),
                   ],
@@ -375,17 +405,23 @@ class _EditProfileState extends State<EditProfile> {
           Container(
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFF388E3C).withOpacity(0.2), width: 4),
+              border: Border.all(
+                color: const Color(0xFF388E3C).withOpacity(0.2),
+                width: 4,
+              ),
             ),
             child: CircleAvatar(
               radius: 65,
               backgroundColor: Colors.grey[200],
               backgroundImage: _image != null
                   ? FileImage(_image!)
-                  : (_existingImageBase64 != null && _existingImageBase64!.isNotEmpty
-                          ? MemoryImage(base64Decode(_existingImageBase64!))
-                          : const AssetImage('assets/images/icon/LogoIcon.png'))
-                      as ImageProvider,
+                  : (_existingImageBase64 != null &&
+                                _existingImageBase64!.isNotEmpty
+                            ? MemoryImage(base64Decode(_existingImageBase64!))
+                            : const AssetImage(
+                                'assets/images/icon/LogoIcon.png',
+                              ))
+                        as ImageProvider,
             ),
           ),
           Positioned(
@@ -407,7 +443,11 @@ class _EditProfileState extends State<EditProfile> {
                     ),
                   ],
                 ),
-                child: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 20),
+                child: const Icon(
+                  Icons.camera_alt_rounded,
+                  color: Colors.white,
+                  size: 20,
+                ),
               ),
             ),
           ),

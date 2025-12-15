@@ -21,6 +21,7 @@ import '../pages/user_profile/edit_profile.dart';
 import '../pages/checkout/order_status.dart';
 import '../pages/e-commerce/preowned_main_page.dart';
 import '../pages/e-commerce/category_filter.dart';
+import '../pages/quiz/quiz_start_page.dart';
 
 //1. Set up routes
 final Map routes = {
@@ -56,6 +57,7 @@ final Map routes = {
       OrderStatus(orderId: arguments['orderId'] as String),
   "/preowned-main-page": (context) => const PreownedMainPage(),
   "/category-filter": (context) => const CategoryFilterPage(),
+  "/quiz-start-page": (context) => const QuizStartPage(),
 };
 
 //2. Set up Route Generator (FIXED)

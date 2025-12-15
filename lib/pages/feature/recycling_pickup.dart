@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -23,7 +22,10 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   @override
-  Widget build(BuildContext context) => const MaterialApp(debugShowCheckedModeBanner: false, home: RecyclingPickUpPage());
+  Widget build(BuildContext context) => const MaterialApp(
+    debugShowCheckedModeBanner: false,
+    home: RecyclingPickUpPage(),
+  );
 }
 
 class RecyclingCategory {
@@ -31,7 +33,12 @@ class RecyclingCategory {
   final IconData icon;
   final Color color;
   final int greenCoins;
-  const RecyclingCategory({required this.name, required this.icon, required this.color, required this.greenCoins});
+  const RecyclingCategory({
+    required this.name,
+    required this.icon,
+    required this.color,
+    required this.greenCoins,
+  });
 }
 
 class RecyclingPickUpPage extends StatefulWidget {
@@ -44,15 +51,15 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
   final _formKey = GlobalKey<FormState>();
   final _addressFormKey = GlobalKey<AddressFormState>();
   final _descController = TextEditingController();
-  
+
   final User? user = FirebaseAuth.instance.currentUser;
-  
+
   // Address
   final _line1 = TextEditingController();
   final _line2 = TextEditingController();
   final _city = TextEditingController();
   final _postal = TextEditingController();
-  final _state = TextEditingController();
+  String? selectedState; // Changed to String?
 
   File? _image;
   DateTime selectedDate = DateTime.now();
@@ -61,12 +68,42 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
   bool _isLoading = false;
 
   static const List<RecyclingCategory> categories = [
-    RecyclingCategory(name: 'Plastic', icon: Icons.water_drop_outlined, color: Color(0xFF4CAF50), greenCoins: 15),
-    RecyclingCategory(name: 'Paper', icon: Icons.description_outlined, color: Color(0xFF8D6E63), greenCoins: 10),
-    RecyclingCategory(name: 'Glass', icon: Icons.wine_bar_outlined, color: Color(0xFF00BCD4), greenCoins: 20),
-    RecyclingCategory(name: 'Metal', icon: Icons.recycling, color: Color(0xFF9E9E9E), greenCoins: 25),
-    RecyclingCategory(name: 'Electronics', icon: Icons.devices_outlined, color: Color(0xFFFF9800), greenCoins: 30),
-    RecyclingCategory(name: 'Cardboard', icon: Icons.inventory_2_outlined, color: Color(0xFF795548), greenCoins: 10),
+    RecyclingCategory(
+      name: 'Plastic',
+      icon: Icons.water_drop_outlined,
+      color: Color(0xFF4CAF50),
+      greenCoins: 15,
+    ),
+    RecyclingCategory(
+      name: 'Paper',
+      icon: Icons.description_outlined,
+      color: Color(0xFF8D6E63),
+      greenCoins: 10,
+    ),
+    RecyclingCategory(
+      name: 'Glass',
+      icon: Icons.wine_bar_outlined,
+      color: Color(0xFF00BCD4),
+      greenCoins: 20,
+    ),
+    RecyclingCategory(
+      name: 'Metal',
+      icon: Icons.recycling,
+      color: Color(0xFF9E9E9E),
+      greenCoins: 25,
+    ),
+    RecyclingCategory(
+      name: 'Electronics',
+      icon: Icons.devices_outlined,
+      color: Color(0xFFFF9800),
+      greenCoins: 30,
+    ),
+    RecyclingCategory(
+      name: 'Cardboard',
+      icon: Icons.inventory_2_outlined,
+      color: Color(0xFF795548),
+      greenCoins: 10,
+    ),
   ];
 
   @override
@@ -78,7 +115,10 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
   Future<void> _loadUserAddress() async {
     if (user == null) return;
     try {
-      final doc = await FirebaseFirestore.instance.collection('user_profile').doc(user!.uid).get();
+      final doc = await FirebaseFirestore.instance
+          .collection('user_profile')
+          .doc(user!.uid)
+          .get();
       if (doc.exists) {
         final data = doc.data() as Map<String, dynamic>;
         final addr = data['address'] as Map<String, dynamic>?;
@@ -88,7 +128,7 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
             _line2.text = addr['line2'] ?? '';
             _city.text = addr['city'] ?? '';
             _postal.text = addr['postal'] ?? '';
-            _state.text = addr['state'] ?? '';
+            selectedState = addr['state']; // Changed
           });
         }
       }
@@ -96,13 +136,19 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate() || !_addressFormKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate() ||
+        !_addressFormKey.currentState!.validate())
+      return;
     if (_image == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please upload an image')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please upload an image')));
       return;
     }
     if (_selectedCategory == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please select a category')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please select a category')));
       return;
     }
 
@@ -110,7 +156,9 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
     try {
       final bytes = await _image!.readAsBytes();
       final base64Img = base64Encode(bytes);
-      final coins = categories.firstWhere((c) => c.name == _selectedCategory).greenCoins;
+      final coins = categories
+          .firstWhere((c) => c.name == _selectedCategory)
+          .greenCoins;
       final txnId = 'TXN${DateTime.now().millisecondsSinceEpoch}';
 
       // Record Pickup
@@ -128,25 +176,37 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
       });
 
       // Update User Coins
-      await FirebaseFirestore.instance.collection('user_profile').doc(user!.uid)
+      await FirebaseFirestore.instance
+          .collection('user_profile')
+          .doc(user!.uid)
           .update({'greenCoins': FieldValue.increment(coins)});
 
       // Record Transaction
-      await FirebaseFirestore.instance.collection('green_coin_transactions').doc(txnId).set({
-        'transactionId': txnId,
-        'userId': user!.uid,
-        'amount': coins,
-        'activity': 'recycling_pickup',
-        'description': 'Recycling Pickup: $_selectedCategory',
-        'createdAt': FieldValue.serverTimestamp(),
-      });
+      await FirebaseFirestore.instance
+          .collection('green_coin_transactions')
+          .doc(txnId)
+          .set({
+            'transactionId': txnId,
+            'userId': user!.uid,
+            'amount': coins,
+            'activity': 'recycling_pickup',
+            'description': 'Recycling Pickup: $_selectedCategory',
+            'createdAt': FieldValue.serverTimestamp(),
+          });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Pickup Scheduled! +$coins Coins'), backgroundColor: Colors.green));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Pickup Scheduled! +$coins Coins'),
+            backgroundColor: Colors.green,
+          ),
+        );
         Navigator.pop(context);
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -160,7 +220,10 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: BackButton(color: Colors.black),
-        title: const Text('Recycling Pickup', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Recycling Pickup',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
       body: Form(
@@ -170,21 +233,42 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SectionHeader(title: "Pickup Details", subtitle: "Recycle items to earn Green Coins."),
-              
-              const Text("Photo Evidence", style: TextStyle(fontFamily: 'Manrope', fontSize: 15, color: Color(0xFF1B5E20), fontWeight: FontWeight.bold)),
+              const SectionHeader(
+                title: "Pickup Details",
+                subtitle: "Recycle items to earn Green Coins.",
+              ),
+
+              const Text(
+                "Photo Evidence",
+                style: TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize: 15,
+                  color: Color(0xFF1B5E20),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 8),
               ImagePickerWidget(
                 imageFile: _image,
                 onTap: () async {
-                  final f = await ImagePicker().pickImage(source: ImageSource.gallery);
+                  final f = await ImagePicker().pickImage(
+                    source: ImageSource.gallery,
+                  );
                   if (f != null) setState(() => _image = File(f.path));
                 },
                 label: "Upload Item Photo",
               ),
               const SizedBox(height: 24),
 
-              const Text("Category", style: TextStyle(fontFamily: 'Manrope', fontSize: 15, color: Color(0xFF1B5E20), fontWeight: FontWeight.bold)),
+              const Text(
+                "Category",
+                style: TextStyle(
+                  fontFamily: 'Manrope',
+                  fontSize: 15,
+                  color: Color(0xFF1B5E20),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 12),
               Wrap(
                 spacing: 10,
@@ -193,11 +277,19 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
                   final isSelected = _selectedCategory == c.name;
                   return ChoiceChip(
                     label: Text(c.name),
-                    avatar: Icon(c.icon, size: 18, color: isSelected ? Colors.white : c.color),
+                    avatar: Icon(
+                      c.icon,
+                      size: 18,
+                      color: isSelected ? Colors.white : c.color,
+                    ),
                     selected: isSelected,
-                    onSelected: (s) => setState(() => _selectedCategory = s ? c.name : null),
+                    onSelected: (s) =>
+                        setState(() => _selectedCategory = s ? c.name : null),
                     selectedColor: c.color,
-                    labelStyle: TextStyle(color: isSelected ? Colors.white : Colors.black87, fontWeight: FontWeight.w600),
+                    labelStyle: TextStyle(
+                      color: isSelected ? Colors.white : Colors.black87,
+                      fontWeight: FontWeight.w600,
+                    ),
                     backgroundColor: Colors.grey[100],
                   );
                 }).toList(),
@@ -207,7 +299,11 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
               if (_selectedCategory != null)
                 Container(
                   padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(color: const Color(0xFFF0FDF4), borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.green.shade200)),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF0FDF4),
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.green.shade200),
+                  ),
                   child: Row(
                     children: [
                       const Icon(Icons.eco, color: Colors.green),
@@ -215,7 +311,10 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
                       Expanded(
                         child: Text(
                           "Earn ${categories.firstWhere((c) => c.name == _selectedCategory).greenCoins} Green Coins for this item!",
-                          style: const TextStyle(color: Color(0xFF1B5E20), fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            color: Color(0xFF1B5E20),
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
@@ -233,17 +332,22 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
 
               const SectionHeader(title: "Schedule & Location"),
               SyncfusionDateTimePicker(
-                onDateTimeSelected: (d, t) => setState(() { selectedDate = d; selectedTime = t; }),
+                onDateTimeSelected: (d, t) => setState(() {
+                  selectedDate = d;
+                  selectedTime = t;
+                }),
               ),
               const SizedBox(height: 24),
-              
+
               AddressForm(
                 key: _addressFormKey,
                 line1Controller: _line1,
                 line2Controller: _line2,
                 cityController: _city,
                 postalController: _postal,
-                stateController: _state,
+                selectedState: selectedState, // Changed parameter
+                onStateChanged: (value) =>
+                    setState(() => selectedState = value), // Added callback
               ),
               const SizedBox(height: 32),
 

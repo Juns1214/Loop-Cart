@@ -134,8 +134,9 @@ class _MainPageState extends State<MainPage> {
     if (selectedFilter != 'All') {
        results.sort((a, b) {
         int compare = 0;
-        if (selectedFilter == 'Price') compare = (a['price'] ?? 0).compareTo(b['price'] ?? 0);
-        else if (selectedFilter == 'Rating') compare = (a['rating'] ?? 0).compareTo(b['rating'] ?? 0);
+        if (selectedFilter == 'Price') {
+          compare = (a['price'] ?? 0).compareTo(b['price'] ?? 0);
+        } else if (selectedFilter == 'Rating') compare = (a['rating'] ?? 0).compareTo(b['rating'] ?? 0);
         return isAscending ? compare : -compare;
       });
     }
@@ -185,7 +186,8 @@ class _MainPageState extends State<MainPage> {
                             Builder(builder: (c) => IconButton(icon: const Icon(Icons.menu, size: 28), onPressed: () => Scaffold.of(c).openDrawer())),
                             Row(
                               children: [
-                                IconButton(onPressed: () {}, icon: const Icon(Icons.notifications_outlined, size: 28)),
+                                IconButton(onPressed: () {
+                                }, icon: const Icon(Icons.notifications_outlined, size: 28)),
                                 const CartIconWithBadge(),
                               ],
                             ),

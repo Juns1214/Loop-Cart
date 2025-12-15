@@ -53,9 +53,9 @@ class _PreownedMainPageState extends State<PreownedMainPage> {
         // Parsing helper
         double price = 0.0;
         var p = data['price'];
-        if (p is int)
+        if (p is int) {
           price = p.toDouble();
-        else if (p is double)
+        } else if (p is double)
           price = p;
         else if (p is String)
           price = double.tryParse(p) ?? 0.0;

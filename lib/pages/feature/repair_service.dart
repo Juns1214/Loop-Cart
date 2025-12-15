@@ -59,7 +59,7 @@ class _RepairServicePageState extends State<RepairServicePage> {
   final _line2Controller = TextEditingController();
   final _cityController = TextEditingController();
   final _postalController = TextEditingController();
-  final _stateController = TextEditingController();
+  String? selectedState; // Changed to String?
 
   final User? user = FirebaseAuth.instance.currentUser;
   
@@ -70,13 +70,24 @@ class _RepairServicePageState extends State<RepairServicePage> {
   double? calculatedDeliveryFee;
   bool _isLoadingAddress = true;
 
-  // Data
+  // Data - Simplified fee structure
   static const Map<String, double> STATE_FEES = {
-    'Kuala Lumpur': 10.0, 'Selangor': 15.0, 'Putrajaya': 12.0,
-    'Negeri Sembilan': 25.0, 'Melaka': 30.0, 'Johor': 35.0,
-    'Pahang': 40.0, 'Terengganu': 45.0, 'Kelantan': 50.0,
-    'Perak': 35.0, 'Penang': 40.0, 'Kedah': 45.0,
-    'Perlis': 50.0, 'Sabah': 60.0, 'Sarawak': 60.0,
+    'Kuala Lumpur': 10.0,
+    'Selangor': 15.0,
+    'Putrajaya': 12.0,
+    'Negeri Sembilan': 25.0,
+    'Melaka': 30.0,
+    'Johor': 35.0,
+    'Pahang': 40.0,
+    'Terengganu': 45.0,
+    'Kelantan': 50.0,
+    'Perak': 35.0,
+    'Penang': 40.0,
+    'Kedah': 45.0,
+    'Perlis': 50.0,
+    'Sabah': 60.0,
+    'Sarawak': 60.0,
+    'Labuan': 60.0,
   };
 
   @override
@@ -101,7 +112,7 @@ class _RepairServicePageState extends State<RepairServicePage> {
             _line2Controller.text = addr['line2'] ?? '';
             _cityController.text = addr['city'] ?? '';
             _postalController.text = addr['postal'] ?? '';
-            _stateController.text = addr['state'] ?? '';
+            selectedState = addr['state']; // Changed
             _calculateDeliveryFee();
           });
         }
@@ -118,7 +129,6 @@ class _RepairServicePageState extends State<RepairServicePage> {
     _line2Controller.dispose();
     _cityController.dispose();
     _postalController.dispose();
-    _stateController.dispose();
     super.dispose();
   }
 
@@ -131,23 +141,15 @@ class _RepairServicePageState extends State<RepairServicePage> {
   }
 
   void _calculateDeliveryFee() {
-    String state = _stateController.text.trim();
-    if (state.isEmpty) return;
-
-    final entry = STATE_FEES.entries.firstWhere(
-      (e) => e.key.toLowerCase() == state.toLowerCase(),
-      orElse: () => const MapEntry('', -1),
-    );
-
-    setState(() {
-      calculatedDeliveryFee = (entry.value != -1) ? entry.value : null;
-    });
-
-    if (calculatedDeliveryFee == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Invalid state: "$state". Check spelling.'), backgroundColor: Colors.orange),
-      );
+    if (selectedState == null || selectedState!.isEmpty) {
+      setState(() => calculatedDeliveryFee = null);
+      return;
     }
+
+    // Direct lookup from STATE_FEES map
+    setState(() {
+      calculatedDeliveryFee = STATE_FEES[selectedState] ?? 15.0; // Default to 15.0 if not found
+    });
   }
 
   Future<void> _handleSubmit() async {
@@ -259,8 +261,11 @@ class _RepairServicePageState extends State<RepairServicePage> {
                       line2Controller: _line2Controller,
                       cityController: _cityController,
                       postalController: _postalController,
-                      stateController: _stateController,
-                      onStateChanged: (_) => _calculateDeliveryFee(),
+                      selectedState: selectedState, // Changed parameter
+                      onStateChanged: (value) {
+                        setState(() => selectedState = value);
+                        _calculateDeliveryFee(); // Recalculate when state changes
+                      },
                     ),
 
                     if (calculatedDeliveryFee != null)

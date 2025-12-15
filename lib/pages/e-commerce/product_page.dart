@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:share_plus/share_plus.dart';
 import '../feature/best_value_comparison.dart';
 import '../../widget/section_container.dart';
 import '../../widget/review_card.dart';

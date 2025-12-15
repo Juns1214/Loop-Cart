@@ -1,0 +1,746 @@
+[
+  {
+    "questionId": "SUS-001",
+    "question": "What is the basic definition of sustainability?",
+    "options": ["Using resources without running out", "Making as much money as possible", "Using plastic instead of glass", "Stopping all manufacturing"],
+    "correctAnswer": "Using resources without running out",
+    "explanation": "Sustainability means meeting our own needs without compromising the ability of future generations to meet their own needs.",
+    "category": "Sustainability Basics"
+  },
+  {
+    "questionId": "SUS-002",
+    "question": "Which of the following is considered a sustainable daily habit?",
+    "options": ["Leaving lights on all day", "Using a reusable water bottle", "Buying new clothes every week", "Driving short distances"],
+    "correctAnswer": "Using a reusable water bottle",
+    "explanation": "Using reusable items reduces waste and the demand for single-use plastics.",
+    "category": "Sustainability Basics"
+  },
+  {
+    "questionId": "SUS-003",
+    "question": "What are the 'Three Rs' of waste management?",
+    "options": ["Read, Run, Rest", "Reduce, Reuse, Recycle", "Refuse, Remove, Replace", "Repair, Reset, Refund"],
+    "correctAnswer": "Reduce, Reuse, Recycle",
+    "explanation": "The hierarchy of waste management starts with reducing consumption, reusing items, and finally recycling materials.",
+    "category": "Sustainability Basics"
+  },
+  {
+    "questionId": "SUS-004",
+    "question": "Why is it important to save water?",
+    "options": ["Water is expensive", "Clean fresh water is a limited resource", "It makes pipes last longer", "Ocean water needs to be kept full"],
+    "correctAnswer": "Clean fresh water is a limited resource",
+    "explanation": "While the earth has a lot of water, only a tiny percentage is drinkable fresh water.",
+    "category": "Sustainability Basics"
+  },
+  {
+    "questionId": "SUS-005",
+    "question": "What is a 'Carbon Footprint'?",
+    "options": ["A shoe made of carbon", "The amount of carbon dioxide released by your activities", "The mark left by a car tire", "A type of fossil fuel"],
+    "correctAnswer": "The amount of carbon dioxide released by your activities",
+    "explanation": "Your carbon footprint measures the impact of your lifestyle on the climate in terms of greenhouse gases produced.",
+    "category": "Sustainability Basics"
+  },
+  {
+    "questionId": "SUS-006",
+    "question": "Which source of energy is considered renewable?",
+    "options": ["Coal", "Natural Gas", "Solar Power", "Oil"],
+    "correctAnswer": "Solar Power",
+    "explanation": "Solar power comes from the sun, which is a resource that naturally replenishes and won't run out.",
+    "category": "Sustainability Basics"
+  },
+  {
+    "questionId": "SUS-007",
+    "question": "What is the main problem with single-use plastics?",
+    "options": ["They are too heavy", "They take hundreds of years to decompose", "They are too expensive to make", "They change the taste of food"],
+    "correctAnswer": "They take hundreds of years to decompose",
+    "explanation": "Items like straws and bags are used for minutes but pollute the environment for centuries.",
+    "category": "Sustainability Basics"
+  },
+  {
+    "questionId": "SUS-008",
+    "question": "What does 'buying local' help achieve?",
+    "options": ["It increases shipping costs", "It reduces emissions from long-distance transport", "It makes food spoil faster", "It reduces the quality of goods"],
+    "correctAnswer": "It reduces emissions from long-distance transport",
+    "explanation": "Buying products made nearby means less fuel was burned to transport them to you.",
+    "category": "Sustainability Basics"
+  },
+  {
+    "questionId": "SUS-009",
+    "question": "Which light bulb type is the most energy-efficient?",
+    "options": ["Incandescent bulbs", "LED bulbs", "Halogen bulbs", "Neon lights"],
+    "correctAnswer": "LED bulbs",
+    "explanation": "LED bulbs use significantly less electricity and last longer than traditional bulbs.",
+    "category": "Sustainability Basics"
+  },
+  {
+    "questionId": "SUS-010",
+    "question": "What is 'Fast Fashion'?",
+    "options": ["Clothing made for running", "Cheap, trendy clothing produced rapidly and discarded quickly", "Clothes that dry fast", "Fashion shows that are short"],
+    "correctAnswer": "Cheap, trendy clothing produced rapidly and discarded quickly",
+    "explanation": "Fast fashion contributes heavily to textile waste and water pollution.",
+    "category": "Sustainability Basics"
+  },
+  {
+    "questionId": "SUS-011",
+    "question": "Using public transportation instead of a personal car helps to:",
+    "options": ["Increase traffic jams", "Reduce air pollution per person", "Make the trip slower", "Use more gasoline overall"],
+    "correctAnswer": "Reduce air pollution per person",
+    "explanation": "Buses and trains carry many people at once, reducing the carbon emissions per passenger.",
+    "category": "Sustainability Basics"
+  },
+  {
+    "questionId": "SUS-012",
+    "question": "What does the term 'Biodegradable' mean?",
+    "options": ["Cannot be destroyed", "Can be broken down naturally by bacteria or organisms", "Made of plastic", "Safe to eat"],
+    "correctAnswer": "Can be broken down naturally by bacteria or organisms",
+    "explanation": "Biodegradable materials return to nature without leaving permanent trash behind.",
+    "category": "Sustainability Basics"
+  },
+  {
+    "questionId": "SUS-013",
+    "question": "Which of these is a benefit of planting trees?",
+    "options": ["They absorb carbon dioxide", "They make the ground harder", "They block all sunlight", "They increase noise pollution"],
+    "correctAnswer": "They absorb carbon dioxide",
+    "explanation": "Trees act as 'carbon sinks,' absorbing CO2 from the air and releasing oxygen.",
+    "category": "Sustainability Basics"
+  },
+  {
+    "questionId": "SUS-014",
+    "question": "What is 'Greenwashing'?",
+    "options": ["Washing clothes with eco-soap", "Painting a building green", "Companies pretending to be eco-friendly when they are not", "Cleaning up a park"],
+    "correctAnswer": "Companies pretending to be eco-friendly when they are not",
+    "explanation": "Greenwashing is a marketing tactic to mislead consumers about the environmental benefits of a product.",
+    "category": "Sustainability Basics"
+  },
+  {
+    "questionId": "SUS-015",
+    "question": "True or False: Small individual actions do not matter for the environment.",
+    "options": ["True", "False", "Only for rich people", "It depends on the country"],
+    "correctAnswer": "False",
+    "explanation": "Collective small actions by millions of people create massive global change.",
+    "category": "Sustainability Basics"
+  },
+  {
+    "questionId": "REC-001",
+    "question": "Which of these items is generally accepted in paper recycling?",
+    "options": ["Used paper napkins", "Cardboard boxes", "Greasy pizza boxes", "Plastic-coated coffee cups"],
+    "correctAnswer": "Cardboard boxes",
+    "explanation": "Clean cardboard is recyclable. Grease and food residue often ruin paper recycling.",
+    "category": "Recycling & Waste Sorting"
+  },
+  {
+    "questionId": "REC-002",
+    "question": "Before recycling a plastic container, what should you do?",
+    "options": ["Crush it immediately", "Rinse it out to remove food residue", "Fill it with water", "Paint it"],
+    "correctAnswer": "Rinse it out to remove food residue",
+    "explanation": "Food residue can contaminate an entire batch of recycling, making it unusable.",
+    "category": "Recycling & Waste Sorting"
+  },
+  {
+    "questionId": "REC-003",
+    "question": "What is 'E-Waste'?",
+    "options": ["Electronic waste like old phones and laptops", "Empty waste bins", "Energy waste", "Email trash folder"],
+    "correctAnswer": "Electronic waste like old phones and laptops",
+    "explanation": "E-waste requires special recycling because it contains toxic materials like lead and mercury.",
+    "category": "Recycling & Waste Sorting"
+  },
+  {
+    "questionId": "REC-004",
+    "question": "Can a greasy pizza box be recycled with normal paper?",
+    "options": ["Yes, always", "No, grease contaminates the paper fibers", "Only if folded", "Yes, if the box is white"],
+    "correctAnswer": "No, grease contaminates the paper fibers",
+    "explanation": "Oil and grease prevent paper fibers from binding together during the recycling process.",
+    "category": "Recycling & Waste Sorting"
+  },
+  {
+    "questionId": "REC-005",
+    "question": "Which material can be recycled indefinitely without losing quality?",
+    "options": ["Plastic", "Paper", "Aluminum", "Clothing"],
+    "correctAnswer": "Aluminum",
+    "explanation": "Metals like aluminum and glass can be melted and reformed forever. Plastic and paper degrade over time.",
+    "category": "Recycling & Waste Sorting"
+  },
+  {
+    "questionId": "REC-006",
+    "question": "Where should used batteries go?",
+    "options": ["Regular trash bin", "Recycling bin", "Compost bin", "Special hazardous waste collection"],
+    "correctAnswer": "Special hazardous waste collection",
+    "explanation": "Batteries contain chemicals that can leak and pollute soil and water if thrown in regular trash.",
+    "category": "Recycling & Waste Sorting"
+  },
+  {
+    "questionId": "REC-007",
+    "question": "What is 'Composting'?",
+    "options": ["Burning trash", "Breaking down organic waste into soil nutrient", "Burying plastic", "Washing trash"],
+    "correctAnswer": "Breaking down organic waste into soil nutrient",
+    "explanation": "Composting turns food scraps and yard waste into rich soil for plants.",
+    "category": "Recycling & Waste Sorting"
+  },
+  {
+    "questionId": "REC-008",
+    "question": "Why shouldn't you bag your recyclables in a plastic trash bag?",
+    "options": ["It looks ugly", "Machines can't open bags efficiently and may jam", "The bag is too heavy", "It smells bad"],
+    "correctAnswer": "Machines can't open bags efficiently and may jam",
+    "explanation": "Recyclables should usually be loose in the bin. Plastic bags often get tangled in sorting machinery.",
+    "category": "Recycling & Waste Sorting"
+  },
+  {
+    "questionId": "REC-009",
+    "question": "Which of these is NOT typically recyclable in curbside bins?",
+    "options": ["Soda cans", "Plastic water bottles", "Styrofoam (Polystyrene)", "Newspapers"],
+    "correctAnswer": "Styrofoam (Polystyrene)",
+    "explanation": "Styrofoam is very difficult and expensive to recycle, so most local programs do not accept it.",
+    "category": "Recycling & Waste Sorting"
+  },
+  {
+    "questionId": "REC-010",
+    "question": "What is 'Wish-cycling'?",
+    "options": ["Wishing for a new bike", "Throwing something in the recycling hoping it's recyclable", "Recycling gifts", "Cycling to work"],
+    "correctAnswer": "Throwing something in the recycling hoping it's recyclable",
+    "explanation": "Putting non-recyclable items in the bin 'hoping' they are recyclable actually hurts the recycling process.",
+    "category": "Recycling & Waste Sorting"
+  },
+  {
+    "questionId": "REC-011",
+    "question": "Are receipts typically recyclable?",
+    "options": ["Yes, they are paper", "No, they often contain BPA and thermal coating", "Only if crumpled", "Yes, in the compost"],
+    "correctAnswer": "No, they often contain BPA and thermal coating",
+    "explanation": "Most receipts are thermal paper containing chemicals that shouldn't be in the recycling stream.",
+    "category": "Recycling & Waste Sorting"
+  },
+  {
+    "questionId": "REC-012",
+    "question": "What is the best way to dispose of old medicines?",
+    "options": ["Flush down the toilet", "Throw in trash", "Take to a pharmacy take-back program", "Give to a friend"],
+    "correctAnswer": "Take to a pharmacy take-back program",
+    "explanation": "Flushing medicine pollutes water systems. Safe disposal ensures they don't harm the environment.",
+    "category": "Recycling & Waste Sorting"
+  },
+  {
+    "questionId": "REC-013",
+    "question": "What should you do with broken glass cups or mirrors?",
+    "options": ["Recycle bin", "Wrap safely and put in trash", "Compost", "Leave on the curb"],
+    "correctAnswer": "Wrap safely and put in trash",
+    "explanation": "Tempered glass (cookware, mirrors) melts at different temperatures than bottle glass and cannot be recycled together.",
+    "category": "Recycling & Waste Sorting"
+  },
+  {
+    "questionId": "REC-014",
+    "question": "Why is it important to flatten cardboard boxes?",
+    "options": ["It saves space in the truck and bin", "It makes them look nicer", "It removes the glue", "It makes them waterproof"],
+    "correctAnswer": "It saves space in the truck and bin",
+    "explanation": "Flattening boxes allows trucks to carry more material, making the collection process more efficient.",
+    "category": "Recycling & Waste Sorting"
+  },
+  {
+    "questionId": "REC-015",
+    "question": "Which represents 'Upcycling'?",
+    "options": ["Melting a bottle to make a new bottle", "Turning an old ladder into a bookshelf", "Throwing a ladder away", "Buying a new ladder"],
+    "correctAnswer": "Turning an old ladder into a bookshelf",
+    "explanation": "Upcycling involves creatively reusing waste materials to create a product of higher quality or value.",
+    "category": "Recycling & Waste Sorting"
+  },
+  {
+    "questionId": "LIN-001",
+    "question": "What is a Linear Economy?",
+    "options": ["Take, Make, Dispose", "Reduce, Reuse, Recycle", "Borrow, Use, Return", "Grow, Eat, Compost"],
+    "correctAnswer": "Take, Make, Dispose",
+    "explanation": "A linear economy extracts resources, makes a product, and throws it away after use.",
+    "category": "Linear Economy vs Circular Economy"
+  },
+  {
+    "questionId": "LIN-002",
+    "question": "What is the main goal of a Circular Economy?",
+    "options": ["To create more trash", "To keep resources in use for as long as possible", "To sell more cheap products", "To burn all waste"],
+    "correctAnswer": "To keep resources in use for as long as possible",
+    "explanation": "A circular economy aims to eliminate waste by continually reusing resources.",
+    "category": "Linear Economy vs Circular Economy"
+  },
+  {
+    "questionId": "LIN-003",
+    "question": "Which product is an example of linear design?",
+    "options": ["A disposable plastic straw", "A refillable glass bottle", "A modular phone", "A rented bicycle"],
+    "correctAnswer": "A disposable plastic straw",
+    "explanation": "It is designed to be used once and then thrown away forever.",
+    "category": "Linear Economy vs Circular Economy"
+  },
+  {
+    "questionId": "LIN-004",
+    "question": "Which practice supports a circular economy?",
+    "options": ["Repairing a broken toaster", "Buying a cheap toaster and throwing it away", "Burying the toaster", "Burning the toaster"],
+    "correctAnswer": "Repairing a broken toaster",
+    "explanation": "Repairing extends the life of the product, preventing waste and the need for new materials.",
+    "category": "Linear Economy vs Circular Economy"
+  },
+  {
+    "questionId": "LIN-005",
+    "question": "What is 'Planned Obsolescence'?",
+    "options": ["Planning a holiday", "Designing products to break or become outdated quickly", "Planning to recycle", "Building things to last forever"],
+    "correctAnswer": "Designing products to break or become outdated quickly",
+    "explanation": "This is a linear economy trick to force consumers to buy new products more often.",
+    "category": "Linear Economy vs Circular Economy"
+  },
+  {
+    "questionId": "LIN-006",
+    "question": "In a circular economy, waste is viewed as:",
+    "options": ["Useless garbage", "A resource for new products", "Something to hide", "A problem for the government"],
+    "correctAnswer": "A resource for new products",
+    "explanation": "Circular systems try to turn 'waste' into input for the next cycle.",
+    "category": "Linear Economy vs Circular Economy"
+  },
+  {
+    "questionId": "LIN-007",
+    "question": "Which is a 'Product-as-a-Service' model?",
+    "options": ["Buying a lightbulb", "Renting lighting service instead of buying bulbs", "Throwing away a lamp", "Manufacturing lamps"],
+    "correctAnswer": "Renting lighting service instead of buying bulbs",
+    "explanation": "Companies own the product and maintain it; the customer just pays to use it. This encourages durable design.",
+    "category": "Linear Economy vs Circular Economy"
+  },
+  {
+    "questionId": "LIN-008",
+    "question": "What happens to biological materials (like food) in a circular economy?",
+    "options": ["They are sent to landfill", "They are returned to the earth as compost", "They are burned", "They are ignored"],
+    "correctAnswer": "They are returned to the earth as compost",
+    "explanation": "Biological nutrients should return to the soil to grow new life.",
+    "category": "Linear Economy vs Circular Economy"
+  },
+  {
+    "questionId": "LIN-009",
+    "question": "What happens to technical materials (like metal/plastic) in a circular economy?",
+    "options": ["They are composted", "They are circulated through reuse and recycling", "They are buried", "They are thrown in the ocean"],
+    "correctAnswer": "They are circulated through reuse and recycling",
+    "explanation": "Technical nutrients cannot compost, so they must be recovered and reused.",
+    "category": "Linear Economy vs Circular Economy"
+  },
+  {
+    "questionId": "LIN-010",
+    "question": "Why is the linear economy bad for the environment?",
+    "options": ["It creates too much money", "It depletes natural resources and creates massive waste", "It makes products too durable", "It uses too little energy"],
+    "correctAnswer": "It depletes natural resources and creates massive waste",
+    "explanation": "We cannot keep taking finite resources and throwing them away on a finite planet.",
+    "category": "Linear Economy vs Circular Economy"
+  },
+  {
+    "questionId": "LIN-011",
+    "question": "A modular smartphone helps the circular economy because:",
+    "options": ["It looks cool", "You can replace just the broken part (like a camera) instead of the whole phone", "It is cheaper to throw away", "It uses more glue"],
+    "correctAnswer": "You can replace just the broken part (like a camera) instead of the whole phone",
+    "explanation": "Modularity allows for repair and upgrades without waste.",
+    "category": "Linear Economy vs Circular Economy"
+  },
+  {
+    "questionId": "LIN-012",
+    "question": "Which of these concepts belongs to the Circular Economy?",
+    "options": ["Landfill", "Cradle to Grave", "Cradle to Cradle", "Single-use"],
+    "correctAnswer": "Cradle to Cradle",
+    "explanation": "Cradle to Cradle means materials circulate in healthy, safe metabolisms, rather than ending in a 'grave' (landfill).",
+    "category": "Linear Economy vs Circular Economy"
+  },
+  {
+    "questionId": "LIN-013",
+    "question": "How does the 'Sharing Economy' (like car-sharing) fit here?",
+    "options": ["It doesn't", "It increases production of cars", "It maximizes the usage of a single product among many people", "It makes people walk more"],
+    "correctAnswer": "It maximizes the usage of a single product among many people",
+    "explanation": "If one car serves 10 people, fewer cars need to be manufactured.",
+    "category": "Linear Economy vs Circular Economy"
+  },
+  {
+    "questionId": "LIN-014",
+    "question": "What is 'Remanufacturing'?",
+    "options": ["Making a product from scratch", "Rebuilding a product to original specifications using reused parts", "Recycling paper", "Fixing a typo"],
+    "correctAnswer": "Rebuilding a product to original specifications using reused parts",
+    "explanation": "It restores products to 'like-new' quality, saving energy and materials.",
+    "category": "Linear Economy vs Circular Economy"
+  },
+  {
+    "questionId": "LIN-015",
+    "question": "The Linear Economy is often described as:",
+    "options": ["Sustainable", "Restorative", "Wasteful", "Natural"],
+    "correctAnswer": "Wasteful",
+    "explanation": "Because it discards materials that still have value.",
+    "category": "Linear Economy vs Circular Economy"
+  },
+  {
+    "questionId": "REP-001",
+    "question": "What is the primary benefit of repairing an item?",
+    "options": ["It costs more than buying new", "It extends the product's life and prevents waste", "It makes the product look brand new", "It takes a lot of time"],
+    "correctAnswer": "It extends the product's life and prevents waste",
+    "explanation": "Keeping an item in use is always better than recycling or landfill.",
+    "category": "Repair, Reuse & Second-Life"
+  },
+  {
+    "questionId": "REP-002",
+    "question": "What professional helps repair shoes?",
+    "options": ["Tailor", "Cobbler", "Carpenter", "Chef"],
+    "correctAnswer": "Cobbler",
+    "explanation": "Cobblers can replace soles and heels, doubling the life of quality shoes.",
+    "category": "Repair, Reuse & Second-Life"
+  },
+  {
+    "questionId": "REP-003",
+    "question": "What is 'Visible Mending'?",
+    "options": ["Hiding a hole with invisible tape", "Repairing clothes in a way that shows the repair as art", "Throwing clothes away", "Buying new clothes"],
+    "correctAnswer": "Repairing clothes in a way that shows the repair as art",
+    "explanation": "It celebrates the history of the garment rather than hiding the damage.",
+    "category": "Repair, Reuse & Second-Life"
+  },
+  {
+    "questionId": "REP-004",
+    "question": "Why buy second-hand furniture?",
+    "options": ["It is usually weaker", "It saves resources and is often cheaper", "It increases factory pollution", "It creates more trash"],
+    "correctAnswer": "It saves resources and is often cheaper",
+    "explanation": "Buying used prevents a new item from being made and keeps the old one out of the landfill.",
+    "category": "Repair, Reuse & Second-Life"
+  },
+  {
+    "questionId": "REP-005",
+    "question": "What does 'Refurbished' mean for electronics?",
+    "options": ["Broken and useless", "New in box", "Inspected, repaired, and tested to work like new", "Fake"],
+    "correctAnswer": "Inspected, repaired, and tested to work like new",
+    "explanation": "Refurbished tech is a reliable way to buy electronics without the environmental cost of new manufacturing.",
+    "category": "Repair, Reuse & Second-Life"
+  },
+  {
+    "questionId": "REP-006",
+    "question": "Which common household item makes a great reusable cleaning rag?",
+    "options": ["New paper towels", "Old t-shirts", "Plastic wrap", "Cardboard"],
+    "correctAnswer": "Old t-shirts",
+    "explanation": "Cotton t-shirts are absorbent and can replace disposable paper towels.",
+    "category": "Repair, Reuse & Second-Life"
+  },
+  {
+    "questionId": "REP-007",
+    "question": "What is the 'Right to Repair'?",
+    "options": ["The right to buy new things", "Laws requiring manufacturers to let consumers fix their own devices", "Free repairs for everyone", "The right to break things"],
+    "correctAnswer": "Laws requiring manufacturers to let consumers fix their own devices",
+    "explanation": "It prevents companies from making products impossible to open or fix.",
+    "category": "Repair, Reuse & Second-Life"
+  },
+  {
+    "questionId": "REP-008",
+    "question": "How can you give a glass pasta sauce jar a second life?",
+    "options": ["Smash it", "Use it to store leftovers or pantry items", "Melt it in the oven", "Throw it in the river"],
+    "correctAnswer": "Use it to store leftovers or pantry items",
+    "explanation": "Glass jars are durable, food-safe, and free storage containers.",
+    "category": "Repair, Reuse & Second-Life"
+  },
+  {
+    "questionId": "REP-009",
+    "question": "What is a 'Library of Things'?",
+    "options": ["A place to borrow books", "A place to borrow tools and appliances instead of buying them", "A museum", "A store"],
+    "correctAnswer": "A place to borrow tools and appliances instead of buying them",
+    "explanation": "It promotes access over ownership, saving money and storage space.",
+    "category": "Repair, Reuse & Second-Life"
+  },
+  {
+    "questionId": "REP-010",
+    "question": "Regular maintenance (like cleaning filters) helps appliances:",
+    "options": ["Break faster", "Run efficiently and last longer", "Use more energy", "Look ugly"],
+    "correctAnswer": "Run efficiently and last longer",
+    "explanation": "Taking care of what you have is the first step of sustainability.",
+    "category": "Repair, Reuse & Second-Life"
+  },
+  {
+    "questionId": "REP-011",
+    "question": "Instead of throwing away a boring wooden chair, you could:",
+    "options": ["Burn it", "Sand and repaint it", "Buy a plastic one", "Break it"],
+    "correctAnswer": "Sand and repaint it",
+    "explanation": "Refinishing furniture gives it a fresh look without buying new.",
+    "category": "Repair, Reuse & Second-Life"
+  },
+  {
+    "questionId": "REP-012",
+    "question": "Donating clothes is better than trash, but what is the best first option?",
+    "options": ["Swapping with friends or repairing", "Burning", "Burying", "Buying more"],
+    "correctAnswer": "Swapping with friends or repairing",
+    "explanation": "Donation centers are often overwhelmed. Keeping clothes in your local circle extends their life best.",
+    "category": "Repair, Reuse & Second-Life"
+  },
+  {
+    "questionId": "REP-013",
+    "question": "What is 'Vintage' shopping?",
+    "options": ["Buying new clothes that look old", "Buying authentic older items from previous decades", "Buying groceries", "Buying cheap fast fashion"],
+    "correctAnswer": "Buying authentic older items from previous decades",
+    "explanation": "Vintage items are a form of reuse that values quality from the past.",
+    "category": "Repair, Reuse & Second-Life"
+  },
+  {
+    "questionId": "REP-014",
+    "question": "Which of these items is typically easy to repair?",
+    "options": ["A bicycle", "A glued-shut plastic toy", "A single-use camera", "A fast-fashion shirt"],
+    "correctAnswer": "A bicycle",
+    "explanation": "Bicycles are designed with standard parts that can be adjusted and replaced.",
+    "category": "Repair, Reuse & Second-Life"
+  },
+  {
+    "questionId": "REP-015",
+    "question": "Why is 'Repurposing' different from 'Recycling'?",
+    "options": ["It isn't", "Repurposing uses the item as is for a new function; recycling breaks it down to raw materials", "Repurposing costs money", "Recycling is faster"],
+    "correctAnswer": "Repurposing uses the item as is for a new function; recycling breaks it down to raw materials",
+    "explanation": "Repurposing (reuse) uses less energy than the industrial recycling process.",
+    "category": "Repair, Reuse & Second-Life"
+  },
+  {
+    "questionId": "SOC-001",
+    "question": "What is a major daily challenge for low-income families?",
+    "options": ["Deciding where to vacation", "Food insecurity and housing costs", "Too many clothes", "Choosing a luxury car"],
+    "correctAnswer": "Food insecurity and housing costs",
+    "explanation": "Many families struggle to afford basic nutritious meals and safe shelter.",
+    "category": "Social Awareness"
+  },
+  {
+    "questionId": "SOC-002",
+    "question": "How does education help low-income communities?",
+    "options": ["It doesn't", "It provides skills for better job opportunities", "It costs them money", "It takes up time"],
+    "correctAnswer": "It provides skills for better job opportunities",
+    "explanation": "Education is a key pathway out of the cycle of poverty.",
+    "category": "Social Awareness"
+  },
+  {
+    "questionId": "SOC-003",
+    "question": "What type of donation is often most helpful for families in crisis?",
+    "options": ["Old fancy dresses", "Basic essentials like food, hygiene items, or school supplies", "Broken toys", "Expired food"],
+    "correctAnswer": "Basic essentials like food, hygiene items, or school supplies",
+    "explanation": "Practical items reduce the immediate financial burden on the family.",
+    "category": "Social Awareness"
+  },
+  {
+    "questionId": "SOC-004",
+    "question": "Children in orphanages often need support with:",
+    "options": ["Video games", "Emotional stability and mentorship", "Expensive trips", "Fashion"],
+    "correctAnswer": "Emotional stability and mentorship",
+    "explanation": "Beyond food and shelter, guidance and emotional care are vital for development.",
+    "category": "Social Awareness"
+  },
+  {
+    "questionId": "SOC-005",
+    "question": "What happens when orphans 'age out' of the system (turn 18)?",
+    "options": ["They become rich", "They often face housing and job instability without family support", "They stay in the orphanage forever", "They automatically get a job"],
+    "correctAnswer": "They often face housing and job instability without family support",
+    "explanation": "Support programs are crucial to help them transition to independent adult life.",
+    "category": "Social Awareness"
+  },
+  {
+    "questionId": "SOC-006",
+    "question": "How can volunteers best help orphanages?",
+    "options": ["Visiting once for a selfie", "Providing consistent long-term tutoring or skills training", "Sending candy", "Ignoring them"],
+    "correctAnswer": "Providing consistent long-term tutoring or skills training",
+    "explanation": "Consistency builds trust and real skills; fleeting visits can cause attachment issues.",
+    "category": "Social Awareness"
+  },
+  {
+    "questionId": "SOC-007",
+    "question": "What is a common emotional struggle in Old Folks Homes?",
+    "options": ["Loneliness and isolation", "Too much partying", "Having too many visitors", "Boredom from too many hobbies"],
+    "correctAnswer": "Loneliness and isolation",
+    "explanation": "Many elderly people lack regular social contact, which affects their mental health.",
+    "category": "Social Awareness"
+  },
+  {
+    "questionId": "SOC-008",
+    "question": "Why is mobility support important for the elderly?",
+    "options": ["It makes them run fast", "It prevents falls and maintains independence", "It looks cool", "It is required by law"],
+    "correctAnswer": "It prevents falls and maintains independence",
+    "explanation": "Aids like walkers or rails help seniors live safely and confidently.",
+    "category": "Social Awareness"
+  },
+  {
+    "questionId": "SOC-009",
+    "question": "How does spending time with the elderly help them?",
+    "options": ["It annoys them", "It improves cognitive health and mood", "It makes them tired", "It costs money"],
+    "correctAnswer": "It improves cognitive health and mood",
+    "explanation": "Social interaction keeps the mind active and reduces depression.",
+    "category": "Social Awareness"
+  },
+  {
+    "questionId": "SOC-010",
+    "question": "Aside from health, what is a major burden for cancer patients?",
+    "options": ["High financial cost of treatment", "Too much free time", "Gaining weight", "Traveling for fun"],
+    "correctAnswer": "High financial cost of treatment",
+    "explanation": "Medication, therapy, and hospital stays create immense financial stress.",
+    "category": "Social Awareness"
+  },
+  {
+    "questionId": "SOC-011",
+    "question": "Why is emotional support important for cancer patients?",
+    "options": ["It cures the disease", "It helps them cope with fear and anxiety", "It makes treatment faster", "It is fun"],
+    "correctAnswer": "It helps them cope with fear and anxiety",
+    "explanation": "Fighting a serious illness is mentally exhausting for patients and families.",
+    "category": "Social Awareness"
+  },
+  {
+    "questionId": "SOC-012",
+    "question": "Early detection of cancer usually leads to:",
+    "options": ["More expensive treatment", "Better survival rates", "No treatment needed", "Worse outcomes"],
+    "correctAnswer": "Better survival rates",
+    "explanation": "Screenings helps catch cancer when it is most treatable.",
+    "category": "Social Awareness"
+  },
+  {
+    "questionId": "SOC-013",
+    "question": "What is the biggest threat to wildlife today?",
+    "options": ["Zoos", "Habitat loss due to human expansion", "Too much food", "Rain"],
+    "correctAnswer": "Habitat loss due to human expansion",
+    "explanation": "Destruction of forests and wetlands leaves animals with nowhere to live.",
+    "category": "Social Awareness"
+  },
+  {
+    "questionId": "SOC-014",
+    "question": "Why is 'Biodiversity' important?",
+    "options": ["It looks nice", "It keeps ecosystems resilient and healthy", "It creates more zoos", "It stops rain"],
+    "correctAnswer": "It keeps ecosystems resilient and healthy",
+    "explanation": "A variety of species ensures nature can provide food, air, and water cycles.",
+    "category": "Social Awareness"
+  },
+  {
+    "questionId": "SOC-015",
+    "question": "What is 'Poaching'?",
+    "options": ["Cooking eggs", "Illegal hunting of wild animals", "Feeding animals", "Taking photos of animals"],
+    "correctAnswer": "Illegal hunting of wild animals",
+    "explanation": "Poaching drives species like rhinos and tigers toward extinction.",
+    "category": "Social Awareness"
+  },
+  {
+    "questionId": "SOC-016",
+    "question": "How do community cleanups help society?",
+    "options": ["They don't", "They foster pride and reduce local pollution", "They make people rich", "They create trash"],
+    "correctAnswer": "They foster pride and reduce local pollution",
+    "explanation": "Clean neighborhoods are safer and healthier for residents.",
+    "category": "Social Awareness"
+  },
+  {
+    "questionId": "SOC-017",
+    "question": "Which groups are often most affected by pollution?",
+    "options": ["Rich communities", "Low-income and vulnerable communities", "Nobody", "Tourists"],
+    "correctAnswer": "Low-income and vulnerable communities",
+    "explanation": "Factories and dumps are often built near poorer neighborhoods, causing health issues.",
+    "category": "Social Awareness"
+  },
+  {
+    "questionId": "SOC-018",
+    "question": "Why is environmental education important for kids?",
+    "options": ["It is boring", "It builds future habits of care and responsibility", "It keeps them inside", "It is expensive"],
+    "correctAnswer": "It builds future habits of care and responsibility",
+    "explanation": "Teaching children early creates a generation that values the planet.",
+    "category": "Social Awareness"
+  },
+  {
+    "questionId": "ENV-001",
+    "question": "Approximately how long does a plastic bottle take to decompose?",
+    "options": ["1 year", "10 years", "450 years", "Forever"],
+    "correctAnswer": "450 years",
+    "explanation": "Plastic does not rot like food; it breaks into smaller pieces over centuries.",
+    "category": "Environment & Pollution"
+  },
+  {
+    "questionId": "ENV-002",
+    "question": "What are 'Microplastics'?",
+    "options": ["Tiny toys", "Tiny plastic particles less than 5mm in size", "Credit cards", "Plastic bags"],
+    "correctAnswer": "Tiny plastic particles less than 5mm in size",
+    "explanation": "Microplastics pollute oceans and enter the food chain, harming animals and humans.",
+    "category": "Environment & Pollution"
+  },
+  {
+    "questionId": "ENV-003",
+    "question": "Which gas is primarily responsible for the greenhouse effect?",
+    "options": ["Oxygen", "Carbon Dioxide (CO2)", "Helium", "Nitrogen"],
+    "correctAnswer": "Carbon Dioxide (CO2)",
+    "explanation": "CO2 traps heat in the atmosphere, warming the planet.",
+    "category": "Environment & Pollution"
+  },
+  {
+    "questionId": "ENV-004",
+    "question": "What causes ocean acidification?",
+    "options": ["Fish", "Boats", "Absorption of excess CO2 from the air", "Sand"],
+    "correctAnswer": "Absorption of excess CO2 from the air",
+    "explanation": "Acidic oceans harm coral reefs and shellfish.",
+    "category": "Environment & Pollution"
+  },
+  {
+    "questionId": "ENV-005",
+    "question": "What is a major cause of deforestation?",
+    "options": ["Beavers", "Agriculture and cattle ranching", "Camping", "Wind"],
+    "correctAnswer": "Agriculture and cattle ranching",
+    "explanation": "Forests are cut down to make space for farms and livestock.",
+    "category": "Environment & Pollution"
+  },
+  {
+    "questionId": "ENV-006",
+    "question": "What is the main source of urban air pollution?",
+    "options": ["Trees", "Vehicle exhaust and industry", "Cooking", "Bicycles"],
+    "correctAnswer": "Vehicle exhaust and industry",
+    "explanation": "Cars and factories release particulate matter that damages lungs.",
+    "category": "Environment & Pollution"
+  },
+  {
+    "questionId": "ENV-007",
+    "question": "What happens when fertilizer runs off into rivers?",
+    "options": ["Fish get stronger", "It causes algae blooms that kill fish", "The water gets cleaner", "Nothing"],
+    "correctAnswer": "It causes algae blooms that kill fish",
+    "explanation": "Excess nutrients deplete oxygen in the water, creating 'dead zones.'",
+    "category": "Environment & Pollution"
+  },
+  {
+    "questionId": "ENV-008",
+    "question": "Which powerful greenhouse gas is released from landfills?",
+    "options": ["Oxygen", "Methane", "Argon", "Steam"],
+    "correctAnswer": "Methane",
+    "explanation": "Rotting food in landfills produces methane, which is more potent than CO2.",
+    "category": "Environment & Pollution"
+  },
+  {
+    "questionId": "ENV-009",
+    "question": "What is the 'Great Pacific Garbage Patch'?",
+    "options": ["A landfill in California", "A massive accumulation of floating plastic in the ocean", "A recycling center", "A new island"],
+    "correctAnswer": "A massive accumulation of floating plastic in the ocean",
+    "explanation": "Ocean currents trap plastic waste in massive swirling gyres.",
+    "category": "Environment & Pollution"
+  },
+  {
+    "questionId": "ENV-010",
+    "question": "Why are bees important to the environment?",
+    "options": ["They make honey", "They are pollinators for food crops and wild plants", "They eat mosquitoes", "They look yellow"],
+    "correctAnswer": "They are pollinators for food crops and wild plants",
+    "explanation": "Without bees, many fruits and vegetables would not grow.",
+    "category": "Environment & Pollution"
+  },
+  {
+    "questionId": "ENV-011",
+    "question": "What is 'Light Pollution'?",
+    "options": ["Too much sunlight", "Excessive artificial light at night disrupting wildlife", "Neon signs", "Flashlights"],
+    "correctAnswer": "Excessive artificial light at night disrupting wildlife",
+    "explanation": "It confuses migrating birds and baby turtles, and disrupts human sleep cycles.",
+    "category": "Environment & Pollution"
+  },
+  {
+    "questionId": "ENV-012",
+    "question": "Soil degradation is caused by:",
+    "options": ["Worms", "Over-farming and chemical use", "Rain", "Planting trees"],
+    "correctAnswer": "Over-farming and chemical use",
+    "explanation": "Healthy soil is alive; chemicals and over-tilling kill the nutrients needed to grow food.",
+    "category": "Environment & Pollution"
+  },
+  {
+    "questionId": "ENV-013",
+    "question": "The melting of polar ice caps leads to:",
+    "options": ["Lower sea levels", "Rising sea levels", "More land", "Colder summers"],
+    "correctAnswer": "Rising sea levels",
+    "explanation": "Rising seas threaten coastal cities and islands.",
+    "category": "Environment & Pollution"
+  },
+  {
+    "questionId": "ENV-014",
+    "question": "What is 'Noise Pollution'?",
+    "options": ["Loud music", "Harmful or annoying levels of noise", "Talking", "Singing"],
+    "correctAnswer": "Harmful or annoying levels of noise",
+    "explanation": "Chronic noise from traffic and industry stresses wildlife and damages human health.",
+    "category": "Environment & Pollution"
+  },
+  {
+    "questionId": "ENV-015",
+    "question": "Which of these takes the longest to break down?",
+    "options": ["Banana peel", "Wool sock", "Glass bottle", "Newspaper"],
+    "correctAnswer": "Glass bottle",
+    "explanation": "Glass can take thousands to millions of years to wear down, though it is non-toxic.",
+    "category": "Environment & Pollution"
+  }
+]
