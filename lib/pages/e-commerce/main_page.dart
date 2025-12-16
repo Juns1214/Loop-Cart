@@ -187,6 +187,7 @@ class _MainPageState extends State<MainPage> {
                             Row(
                               children: [
                                 IconButton(onPressed: () {
+                                  Navigator.pushNamed(context, '/waste-sorting-assistant');
                                 }, icon: const Icon(Icons.notifications_outlined, size: 28)),
                                 const CartIconWithBadge(),
                               ],

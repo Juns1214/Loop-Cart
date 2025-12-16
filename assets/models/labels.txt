@@ -1,0 +1,10 @@
+0 Trash
+1 Shoes
+2 Plastic
+3 Paper
+4 Metal
+5 Glass
+6 Food Waste
+7 E-Waste
+8 Clothes
+9 Cardboard

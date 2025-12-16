@@ -23,6 +23,7 @@ import '../pages/e-commerce/preowned_main_page.dart';
 import '../pages/e-commerce/category_filter.dart';
 import '../pages/quiz/quiz_start_page.dart';
 import './../pages/feature/green_coin.dart';
+import '../pages/feature/waste_sorting_assistant.dart';
 
 //1. Set up routes
 final Map routes = {
@@ -60,6 +61,7 @@ final Map routes = {
   "/category-filter": (context) => const CategoryFilterPage(),
   "/quiz-start-page": (context) => const QuizStartPage(),
   "/green-coin": (context) => const GreenCoinPage(),
+  "/waste-sorting-assistant": (context) => const WasteClassificationPage(),
 };
 
 //2. Set up Route Generator (FIXED)
