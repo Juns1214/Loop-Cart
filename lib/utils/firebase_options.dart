@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -28,15 +25,9 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -48,6 +39,16 @@ class DefaultFirebaseOptions {
         );
     }
   }
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyCdUSow1d0tpclZ4x05OUrgflViZ8v7fPw',
+    appId: '1:334458899561:web:e98b98ecd36f3ebdec66f8',
+    messagingSenderId: '334458899561',
+    projectId: 'loopcart-61151',
+    authDomain: 'loopcart-61151.firebaseapp.com',
+    storageBucket: 'loopcart-61151.firebasestorage.app',
+    measurementId: 'G-KF24G9KECT',
+  );
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCgErR6FYv5AHFgLsCOpzKuigAdxdf5VgI',
@@ -63,6 +64,29 @@ class DefaultFirebaseOptions {
     messagingSenderId: '334458899561',
     projectId: 'loopcart-61151',
     storageBucket: 'loopcart-61151.firebasestorage.app',
+    androidClientId: '334458899561-jkaedrc25ic8l1c1v9bb5nfur5muie19.apps.googleusercontent.com',
+    iosClientId: '334458899561-1cm7k7kdjard67vq1lm7cl554aug8vjj.apps.googleusercontent.com',
     iosBundleId: 'com.example.flutterApplication1',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyBfSOKN0aCZQ45WQ9YFWiZYomEcBnCY9QY',
+    appId: '1:334458899561:ios:254ca4879343ba5eec66f8',
+    messagingSenderId: '334458899561',
+    projectId: 'loopcart-61151',
+    storageBucket: 'loopcart-61151.firebasestorage.app',
+    androidClientId: '334458899561-jkaedrc25ic8l1c1v9bb5nfur5muie19.apps.googleusercontent.com',
+    iosClientId: '334458899561-1cm7k7kdjard67vq1lm7cl554aug8vjj.apps.googleusercontent.com',
+    iosBundleId: 'com.example.flutterApplication1',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyCdUSow1d0tpclZ4x05OUrgflViZ8v7fPw',
+    appId: '1:334458899561:web:e90ebe386fad2ab1ec66f8',
+    messagingSenderId: '334458899561',
+    projectId: 'loopcart-61151',
+    authDomain: 'loopcart-61151.firebaseapp.com',
+    storageBucket: 'loopcart-61151.firebasestorage.app',
+    measurementId: 'G-R2BG3BH2WN',
   );
 }

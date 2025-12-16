@@ -316,7 +316,7 @@ class _QuestionResultCard extends StatelessWidget {
                 isCorrectAnswer: isCorrectAnswer,
                 isUserAnswer: isUserAnswer,
               );
-            }).toList(),
+            }),
 
             // Explanation
             Container(

@@ -3,10 +3,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
-import 'package:share_plus/share_plus.dart'; // Make sure to add this to pubspec.yaml
-import '../../utils/bar_chart.dart'; // Import the new chart
+import 'package:share_plus/share_plus.dart';
+import '../../utils/bar_chart.dart';
 import '../../utils/router.dart';
-import '../../widget/section_header.dart'; // Using your provided widget
+import '../../widget/section_header.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,6 +25,19 @@ class MyApp extends StatelessWidget {
       onGenerateRoute: onGenerateRoute,
     );
   }
+}
+
+class RecyclingCategory {
+  final String name;
+  final IconData icon;
+  final Color color;
+  final int greenCoins;
+  const RecyclingCategory({
+    required this.name,
+    required this.icon,
+    required this.color,
+    required this.greenCoins,
+  });
 }
 
 class DashboardPage extends StatefulWidget {
@@ -47,6 +60,48 @@ class _DashboardPageState extends State<DashboardPage> {
   // Gamification Data
   List<Map<String, dynamic>> badges = [];
 
+  // Recycling Categories
+  static const List<RecyclingCategory> recyclingCategories = [
+    RecyclingCategory(
+      name: 'Plastic',
+      icon: Icons.water_drop_outlined,
+      color: Color(0xFF4CAF50),
+      greenCoins: 15,
+    ),
+    RecyclingCategory(
+      name: 'Paper',
+      icon: Icons.description_outlined,
+      color: Color(0xFF8D6E63),
+      greenCoins: 10,
+    ),
+    RecyclingCategory(
+      name: 'Glass',
+      icon: Icons.wine_bar_outlined,
+      color: Color(0xFF00BCD4),
+      greenCoins: 20,
+    ),
+    RecyclingCategory(
+      name: 'Metal',
+      icon: Icons.recycling,
+      color: Color(0xFF9E9E9E),
+      greenCoins: 25,
+    ),
+    RecyclingCategory(
+      name: 'Electronics',
+      icon: Icons.devices_outlined,
+      color: Color(0xFFFF9800),
+      greenCoins: 30,
+    ),
+    RecyclingCategory(
+      name: 'Cardboard',
+      icon: Icons.inventory_2_outlined,
+      color: Color(0xFF795548),
+      greenCoins: 10,
+    ),
+  ];
+
+  Map<String, int> recyclingStats = {};
+
   @override
   void initState() {
     super.initState();
@@ -59,7 +114,7 @@ class _DashboardPageState extends State<DashboardPage> {
       final userId = _auth.currentUser?.uid;
       if (userId == null) return;
 
-      // 1. Parallel Data Fetching for speed
+      // Parallel Data Fetching
       final results = await Future.wait([
         FirebaseFirestore.instance.collection('user_profile').doc(userId).get(),
         FirebaseFirestore.instance
@@ -76,12 +131,12 @@ class _DashboardPageState extends State<DashboardPage> {
             .get(),
       ]);
 
-      // 2. Process User Profile
+      // Process User Profile
       final userDoc = results[0] as DocumentSnapshot;
       final coins =
           (userDoc.data() as Map<String, dynamic>?)?['greenCoins'] ?? 0;
 
-      // 3. Process Donations
+      // Process Donations
       final donationDocs = (results[1] as QuerySnapshot).docs;
       Map<String, double> tempTotals = {
         'Low Income': 0,
@@ -115,11 +170,24 @@ class _DashboardPageState extends State<DashboardPage> {
         }
       }
 
-      // 4. Process Counts
-      final recycled = (results[2] as QuerySnapshot).size;
+      // Process Recycling Stats by Category
+      final recyclingDocs = (results[2] as QuerySnapshot).docs;
+      Map<String, int> tempRecyclingStats = {};
+      for (var cat in recyclingCategories) {
+        tempRecyclingStats[cat.name] = 0;
+      }
+
+      for (var doc in recyclingDocs) {
+        final category = (doc.data() as Map<String, dynamic>)['category'] as String?;
+        if (category != null && tempRecyclingStats.containsKey(category)) {
+          tempRecyclingStats[category] = tempRecyclingStats[category]! + 1;
+        }
+      }
+
+      final recycled = recyclingDocs.length;
       final repaired = (results[3] as QuerySnapshot).size;
 
-      // 5. Calculate Badges
+      // Calculate Badges
       _calculateBadges(recycled, repaired, totalDonated);
 
       if (mounted) {
@@ -128,8 +196,8 @@ class _DashboardPageState extends State<DashboardPage> {
           recycleAmount = recycled;
           repairCount = repaired;
           totalDonation = totalDonated;
+          recyclingStats = tempRecyclingStats;
 
-          // Convert map to generic ChartData list
           chartData = tempTotals.entries
               .map((e) => ChartData(e.key, e.value))
               .toList();
@@ -185,7 +253,7 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50], // Slightly off-white background
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         backgroundColor: const Color(0xFFD6F7C3),
         elevation: 0,
@@ -241,7 +309,128 @@ class _DashboardPageState extends State<DashboardPage> {
                           ),
                           const SizedBox(height: 24),
 
-                          // 2. Donation Chart
+                          // 2. Recycling Category Breakdown (NEW)
+                          const SectionHeader(
+                            title: "Recycling Breakdown",
+                            subtitle: "Items recycled by category",
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 10,
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                ...recyclingCategories.map((category) {
+                                  final count = recyclingStats[category.name] ?? 0;
+                                  final totalCoins = count * category.greenCoins;
+
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 16),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.all(10),
+                                          decoration: BoxDecoration(
+                                            color: category.color.withOpacity(0.1),
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                          child: Icon(
+                                            category.icon,
+                                            color: category.color,
+                                            size: 24,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Text(
+                                                    category.name,
+                                                    style: const TextStyle(
+                                                      fontWeight: FontWeight.w600,
+                                                      fontSize: 14,
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    "$count items",
+                                                    style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight: FontWeight.bold,
+                                                      color: category.color,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Text(
+                                                    "${category.greenCoins} coins each",
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: Colors.grey[600],
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    padding: const EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 2,
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.green.shade50,
+                                                      borderRadius:
+                                                          BorderRadius.circular(8),
+                                                    ),
+                                                    child: Row(
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: [
+                                                        const Icon(
+                                                          Icons.eco,
+                                                          size: 12,
+                                                          color: Colors.green,
+                                                        ),
+                                                        const SizedBox(width: 4),
+                                                        Text(
+                                                          "$totalCoins",
+                                                          style: const TextStyle(
+                                                            fontSize: 12,
+                                                            fontWeight: FontWeight.bold,
+                                                            color: Colors.green,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }).toList(),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+
+                          // 3. Donation Chart
                           const SectionHeader(
                             title: "Donation Overview",
                             subtitle: "Where your contributions are going",
@@ -289,32 +478,78 @@ class _DashboardPageState extends State<DashboardPage> {
                           ),
                           const SizedBox(height: 24),
 
-                          // 3. Achievements / Badges Section (New)
+                          // 4. Achievements / Badges Section (IMPROVED SIZE)
                           const SectionHeader(
                             title: "Achievements",
                             subtitle: "Unlock badges by reaching milestones",
                           ),
-                          SizedBox(
-                            height: 110,
-                            child: ListView.separated(
-                              scrollDirection: Axis.horizontal,
-                              itemCount: badges.length,
-                              separatorBuilder: (_, __) =>
-                                  const SizedBox(width: 12),
-                              itemBuilder: (context, index) {
-                                final badge = badges[index];
-                                return _BadgeCard(
-                                  badge: badge,
-                                  onTap: badge['unlocked']
-                                      ? () => _shareBadge(badge['name'])
-                                      : null,
-                                );
-                              },
+                          Container(
+                            padding: const EdgeInsets.all(20),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 10,
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                SizedBox(
+                                  height: 140,
+                                  child: ListView.separated(
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: badges.length,
+                                    separatorBuilder: (_, __) =>
+                                        const SizedBox(width: 12),
+                                    itemBuilder: (context, index) {
+                                      final badge = badges[index];
+                                      return _BadgeCard(badge: badge);
+                                    },
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: ElevatedButton.icon(
+                                    onPressed: () {
+                                      final unlockedBadges = badges
+                                          .where((b) => b['unlocked'] == true)
+                                          .map((b) => b['name'])
+                                          .join(', ');
+                                      if (unlockedBadges.isEmpty) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                                'Unlock badges to share your achievements!'),
+                                          ),
+                                        );
+                                      } else {
+                                        Share.share(
+                                          'I unlocked these badges: $unlockedBadges on the Sustainability App! 🌍✨ #GoGreen',
+                                        );
+                                      }
+                                    },
+                                    icon: const Icon(Icons.share, size: 20),
+                                    label: const Text('Share Achievements'),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: const Color(0xFF2E5BFF),
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(vertical: 14),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           const SizedBox(height: 24),
 
-                          // 4. Goals Section
+                          // 5. Goals Section
                           const SectionHeader(
                             title: "Monthly Goals",
                             subtitle: "Track your progress targets",
@@ -356,8 +591,6 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
     );
   }
-
-  // --- Helper Widgets (Private to this file to keep file count low) ---
 
   Widget _buildSummaryHeader() {
     return Container(
@@ -491,29 +724,28 @@ class _StatCard extends StatelessWidget {
 
 class _BadgeCard extends StatelessWidget {
   final Map<String, dynamic> badge;
-  final VoidCallback? onTap;
 
-  const _BadgeCard({required this.badge, this.onTap});
+  const _BadgeCard({required this.badge});
 
   @override
   Widget build(BuildContext context) {
     final bool unlocked = badge['unlocked'];
 
     return GestureDetector(
-      onTap: unlocked
-          ? onTap
-          : () {
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text("Locked: ${badge['desc']}"),
-                  duration: const Duration(seconds: 2),
-                ),
-              );
-            },
+      onTap: () {
+        if (!unlocked) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("Locked: ${badge['desc']}"),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      },
       child: Container(
-        width: 100,
-        padding: const EdgeInsets.all(12),
+        width: 110,
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: unlocked ? Colors.white : Colors.grey[100],
           borderRadius: BorderRadius.circular(16),
@@ -528,24 +760,19 @@ class _BadgeCard extends StatelessWidget {
             Icon(
               badge['icon'],
               color: unlocked ? badge['color'] : Colors.grey,
-              size: 32,
+              size: 36,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Text(
               badge['name'],
               textAlign: TextAlign.center,
               maxLines: 2,
               style: TextStyle(
-                fontSize: 11,
+                fontSize: 12,
                 fontWeight: FontWeight.bold,
                 color: unlocked ? Colors.black87 : Colors.grey,
               ),
             ),
-            if (unlocked)
-              const Padding(
-                padding: EdgeInsets.only(top: 4),
-                child: Icon(Icons.share, size: 14, color: Colors.black54),
-              ),
           ],
         ),
       ),

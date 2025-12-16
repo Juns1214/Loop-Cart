@@ -137,8 +137,9 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate() ||
-        !_addressFormKey.currentState!.validate())
+        !_addressFormKey.currentState!.validate()) {
       return;
+    }
     if (_image == null) {
       ScaffoldMessenger.of(
         context,
@@ -250,12 +251,7 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
               const SizedBox(height: 8),
               ImagePickerWidget(
                 imageFile: _image,
-                onTap: () async {
-                  final f = await ImagePicker().pickImage(
-                    source: ImageSource.gallery,
-                  );
-                  if (f != null) setState(() => _image = File(f.path));
-                },
+                onImageSelected: (file) => setState(() => _image = file),
                 label: "Upload Item Photo",
               ),
               const SizedBox(height: 24),

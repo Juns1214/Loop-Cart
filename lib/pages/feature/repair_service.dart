@@ -49,11 +49,11 @@ class RepairServicePage extends StatefulWidget {
 class _RepairServicePageState extends State<RepairServicePage> {
   final _formKey = GlobalKey<FormState>();
   final _addressFormKey = GlobalKey<AddressFormState>();
-  
+
   // Controllers
   final _itemNameController = TextEditingController();
   final _descriptionController = TextEditingController();
-  
+
   // Address Controllers
   final _line1Controller = TextEditingController();
   final _line2Controller = TextEditingController();
@@ -62,7 +62,7 @@ class _RepairServicePageState extends State<RepairServicePage> {
   String? selectedState; // Changed to String?
 
   final User? user = FirebaseAuth.instance.currentUser;
-  
+
   File? _image;
   DateTime selectedDate = DateTime.now();
   TimeOfDay selectedTime = const TimeOfDay(hour: 14, minute: 0);
@@ -102,7 +102,10 @@ class _RepairServicePageState extends State<RepairServicePage> {
       return;
     }
     try {
-      DocumentSnapshot doc = await FirebaseFirestore.instance.collection('user_profile').doc(user!.uid).get();
+      DocumentSnapshot doc = await FirebaseFirestore.instance
+          .collection('user_profile')
+          .doc(user!.uid)
+          .get();
       if (doc.exists) {
         final data = doc.data() as Map<String, dynamic>;
         final addr = data['address'] as Map<String, dynamic>?;
@@ -148,21 +151,29 @@ class _RepairServicePageState extends State<RepairServicePage> {
 
     // Direct lookup from STATE_FEES map
     setState(() {
-      calculatedDeliveryFee = STATE_FEES[selectedState] ?? 15.0; // Default to 15.0 if not found
+      calculatedDeliveryFee =
+          STATE_FEES[selectedState] ?? 15.0; // Default to 15.0 if not found
     });
   }
 
   Future<void> _handleSubmit() async {
-    if (!_formKey.currentState!.validate() || !_addressFormKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please complete all fields')));
+    if (!_formKey.currentState!.validate() ||
+        !_addressFormKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please complete all fields')),
+      );
       return;
     }
     if (_image == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please upload an image')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Please upload an image')));
       return;
     }
     if (selectedRepair == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please select a repair option')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a repair option')),
+      );
       return;
     }
 
@@ -185,24 +196,38 @@ class _RepairServicePageState extends State<RepairServicePage> {
         "deliveryFee": calculatedDeliveryFee ?? 15.0,
       };
 
-      DocumentReference ref = await FirebaseFirestore.instance.collection("repair_record").add(data);
+      DocumentReference ref = await FirebaseFirestore.instance
+          .collection("repair_record")
+          .add(data);
 
       if (mounted) {
         if (isCustom) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Request submitted!'), backgroundColor: Colors.green));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Request submitted!'),
+              backgroundColor: Colors.green,
+            ),
+          );
           Navigator.pop(context);
         } else {
-          Navigator.push(context, MaterialPageRoute(
-            builder: (_) => Payment(orderData: {
-              'repair_option': selectedRepair!,
-              'repairRecordId': ref.id,
-              'deliveryFee': calculatedDeliveryFee,
-            }),
-          ));
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => Payment(
+                orderData: {
+                  'repair_option': selectedRepair!,
+                  'repairRecordId': ref.id,
+                  'deliveryFee': calculatedDeliveryFee,
+                },
+              ),
+            ),
+          );
         }
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
 
@@ -214,7 +239,10 @@ class _RepairServicePageState extends State<RepairServicePage> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: BackButton(color: Colors.black),
-        title: const Text('Repair Service', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Repair Service',
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
       body: _isLoadingAddress
@@ -226,8 +254,11 @@ class _RepairServicePageState extends State<RepairServicePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SectionHeader(title: "Item Information", subtitle: "Schedule a repair to extend your item's life."),
-                    
+                    const SectionHeader(
+                      title: "Item Information",
+                      subtitle: "Schedule a repair to extend your item's life.",
+                    ),
+
                     CustomTextField(
                       controller: _itemNameController,
                       label: "Product Name",
@@ -236,9 +267,20 @@ class _RepairServicePageState extends State<RepairServicePage> {
                     ),
                     const SizedBox(height: 24),
 
-                    const Text("Product Image", style: TextStyle(fontFamily: 'Manrope', fontSize: 15, color: Color(0xFF1B5E20), fontWeight: FontWeight.bold)),
+                    const Text(
+                      "Product Image",
+                      style: TextStyle(
+                        fontFamily: 'Manrope',
+                        fontSize: 15,
+                        color: Color(0xFF1B5E20),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     const SizedBox(height: 8),
-                    ImagePickerWidget(imageFile: _image, onTap: pickImage),
+                    ImagePickerWidget(
+                      imageFile: _image,
+                      onImageSelected: (file) => setState(() => _image = file),
+                    ),
                     const SizedBox(height: 24),
 
                     CustomTextField(
@@ -251,7 +293,10 @@ class _RepairServicePageState extends State<RepairServicePage> {
 
                     const SectionHeader(title: "Schedule & Location"),
                     SyncfusionDateTimePicker(
-                      onDateTimeSelected: (d, t) => setState(() { selectedDate = d; selectedTime = t; }),
+                      onDateTimeSelected: (d, t) => setState(() {
+                        selectedDate = d;
+                        selectedTime = t;
+                      }),
                     ),
                     const SizedBox(height: 24),
 
@@ -280,8 +325,21 @@ class _RepairServicePageState extends State<RepairServicePage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Text("Delivery Fee", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
-                            Text("RM ${calculatedDeliveryFee!.toStringAsFixed(2)}", style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: Colors.green)),
+                            const Text(
+                              "Delivery Fee",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.green,
+                              ),
+                            ),
+                            Text(
+                              "RM ${calculatedDeliveryFee!.toStringAsFixed(2)}",
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                color: Colors.green,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -290,15 +348,29 @@ class _RepairServicePageState extends State<RepairServicePage> {
                     const SectionHeader(title: "Repair Options"),
                     RepairOptionSelector(
                       initialSelection: selectedRepair,
-                      onSelectionChanged: (r) => setState(() => selectedRepair = r),
+                      onSelectionChanged: (r) =>
+                          setState(() => selectedRepair = r),
                     ),
                     const SizedBox(height: 32),
 
                     Row(
                       children: [
-                        Expanded(child: CustomButton(text: "Cancel", backgroundColor: Colors.white, textColor: const Color(0xFF2E5BFF), onPressed: () => Navigator.pop(context))),
+                        Expanded(
+                          child: CustomButton(
+                            text: "Cancel",
+                            backgroundColor: Colors.white,
+                            textColor: const Color(0xFF2E5BFF),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ),
                         const SizedBox(width: 12),
-                        Expanded(child: CustomButton(text: "Confirm", backgroundColor: const Color(0xFF2E5BFF), onPressed: _handleSubmit)),
+                        Expanded(
+                          child: CustomButton(
+                            text: "Confirm",
+                            backgroundColor: const Color(0xFF2E5BFF),
+                            onPressed: _handleSubmit,
+                          ),
+                        ),
                       ],
                     ),
                   ],

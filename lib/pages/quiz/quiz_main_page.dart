@@ -23,7 +23,7 @@ class _QuizPageState extends State<QuizPage> {
   ];
 
   List<QuizQuestion>? _questions;
-  Map<int, String> _userAnswers = {};
+  final Map<int, String> _userAnswers = {};
   int _currentQuestionIndex = 0;
   bool _isLoading = true;
   String? _error;
@@ -224,7 +224,7 @@ class _QuizPageState extends State<QuizPage> {
                     isSelected: selectedAnswer == optionLetter,
                     onTap: () => _selectAnswer(optionLetter),
                   );
-                }).toList(),
+                }),
               ],
             ),
           ),
