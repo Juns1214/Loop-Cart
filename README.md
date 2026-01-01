@@ -1,6 +1,6 @@
-# flutter_application_1
+# Loop Cart
 
-So far I've just done the UI layout but haven't done the onClick function yet
+A circular economy E-comemrce Application
 
 ## Getting Started
 
