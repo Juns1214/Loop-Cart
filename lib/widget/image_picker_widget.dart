@@ -37,7 +37,7 @@ class ImagePickerWidget extends StatelessWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: Colors.black,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -87,7 +87,7 @@ class ImagePickerWidget extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade300),
+          border: Border.all(color: Colors.black),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -159,7 +159,7 @@ class ImagePickerWidget extends StatelessWidget {
           border: Border.all(
             color: onImageSelected != null 
                 ? const Color(0xFF4CAF50) // Green for classification page
-                : Colors.grey.shade400, // Gray for other pages
+                : Colors.black, // Gray for other pages
             width: onImageSelected != null ? 2 : 1,
           ),
           borderRadius: BorderRadius.circular(12),

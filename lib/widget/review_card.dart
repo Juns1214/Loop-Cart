@@ -62,7 +62,7 @@ class ReviewCard extends StatelessWidget {
                         Flexible(
                           child: Text(
                             userName,
-                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.black87),
+                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.black),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -86,7 +86,7 @@ class ReviewCard extends StatelessWidget {
                           const SizedBox(width: 8),
                           Text(
                             '• $formattedDate',
-                            style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                            style: TextStyle(fontSize: 12, color: Colors.black, fontWeight: FontWeight.bold),
                           ),
                         ],
                       ],
@@ -100,14 +100,14 @@ class ReviewCard extends StatelessWidget {
             const SizedBox(height: 12),
             Text(
               reviewTitle,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
             ),
           ],
           if (reviewText.isNotEmpty) ...[
             const SizedBox(height: 8),
             Text(
               reviewText,
-              style: TextStyle(fontSize: 15, color: Colors.grey.shade800, height: 1.5), // Darker text
+              style: TextStyle(fontSize: 15, color: Colors.black, height: 1.5, fontWeight: FontWeight.bold), // Darker text
             ),
           ],
         ],

@@ -367,30 +367,31 @@ class _PreownedMainPageState extends State<PreownedMainPage> {
         height: 60,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          gradient: const LinearGradient(
-            colors: [Color(0xFF66BB6A), Color(0xFF388E3C)],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
+          color: const Color(0xFF388E3C), // Matches the new green theme
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFF388E3C).withOpacity(0.4),
+              color: Colors.black.withOpacity(0.2),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
           ],
         ),
         child: FloatingActionButton(
+          // Ensure this points to your Sell/Post product logic
           onPressed: () => _handleNavigation(2),
           backgroundColor: Colors.transparent,
           elevation: 0,
           child: const Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.add, size: 28),
+              Icon(Icons.add, size: 28, color: Colors.white),
               Text(
                 'Sell',
-                style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
             ],
           ),

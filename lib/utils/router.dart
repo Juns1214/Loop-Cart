@@ -36,7 +36,9 @@ final Map routes = {
   "/shopping-cart": (context) => ShoppingCart(),
   "/checkout": (context, {arguments}) => Checkout(
     selectedItems: arguments['selectedItems'] as List<Map<String, dynamic>>,
-    userAddress: arguments['userAddress'] as Map<String, dynamic>?,
+    userAddress: arguments['userAddress'] is Map<String, dynamic>
+        ? arguments['userAddress'] as Map<String, dynamic>
+        : null,
   ),
   "/payment": (context, {arguments}) =>
       Payment(orderData: arguments as Map<String, dynamic>? ?? {}),

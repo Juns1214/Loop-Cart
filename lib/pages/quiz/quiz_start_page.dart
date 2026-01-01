@@ -171,7 +171,8 @@ class _QuizStartPageState extends State<QuizStartPage> {
                 'Test your knowledge and earn 5 Green Coins!\nAnswer 6 questions from different categories.',
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.grey[600],
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
                   height: 1.5,
                 ),
                 textAlign: TextAlign.center,
@@ -213,7 +214,8 @@ class _QuizStartPageState extends State<QuizStartPage> {
                 'You can play once per day',
                 style: TextStyle(
                   fontSize: 14,
-                  color: Colors.grey[500],
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
                   fontStyle: FontStyle.italic,
                 ),
               ),

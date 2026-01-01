@@ -9,9 +9,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import '../../utils/router.dart';
 import '../../widget/custom_text_field.dart';
-import '../../widget/social_signin_button.dart';
 import '../../widget/custom_button.dart';
-import '../../widget/logo_widget.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -92,7 +90,6 @@ class _SignUpPageState extends State<SignUpPage> {
     }
   }
 
-  // Example usage in your Login Page
   Future<void> _handleGoogleSignIn() async {
     try {
       // No context passed here anymore
@@ -125,7 +122,12 @@ class _SignUpPageState extends State<SignUpPage> {
           child: Column(
             children: [
               const SizedBox(height: 10),
-              const LogoWidget(size: 150),
+              Image.asset(
+                'assets/images/icon/LogoIcon.png',
+                height: 150,
+                width: 150,
+                fit: BoxFit.contain,
+              ),
               const SizedBox(height: 20),
               const Text(
                 "Create an account",
@@ -233,10 +235,25 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    SocialSignInButton(
-                      iconPath: 'assets/images/icon/google_icon.png',
+                    InkWell(
                       onTap: _handleGoogleSignIn,
-                      size: 36,
+                      customBorder: const CircleBorder(),
+                      child: Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Image.asset(
+                            'assets/images/icon/google_icon.png',
+                            height: 30,
+                            width: 30,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 20),
                     RichText(

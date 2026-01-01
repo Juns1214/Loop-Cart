@@ -14,9 +14,9 @@ class SectionHeader extends StatelessWidget {
         Text(
           title,
           style: const TextStyle(
-            fontSize: 18, // Slightly larger for better visibility
-            fontWeight: FontWeight.w800,
-            color: Color(0xFF1A1A1A), // Darker black for contrast
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF1A1A1A),
             fontFamily: 'Manrope',
           ),
         ),
@@ -24,9 +24,11 @@ class SectionHeader extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             subtitle!,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey.shade700, // Darker grey, not faded
+            style: const TextStyle( // Changed to const
+              fontSize: 15,
+              fontWeight: FontWeight.bold, // This should now work
+              color: Colors.black,
+              fontFamily: 'Manrope', // Added fontFamily
               height: 1.4,
             ),
           ),

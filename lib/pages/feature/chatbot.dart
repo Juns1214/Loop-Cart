@@ -219,7 +219,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
           const SizedBox(height: 8),
           Text(
             "Ask me anything about sustainability!",
-            style: TextStyle(fontSize: 15, color: Colors.grey.shade700),
+            style: TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.bold),
           ),
         ],
       ),
@@ -236,7 +236,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
           style: TextStyle(
             color: const Color(0xFF388E3C),
             fontStyle: FontStyle.italic,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.bold,
             fontSize: 12,
           ),
         ),
@@ -265,7 +265,7 @@ class _ChatBotScreenState extends State<ChatBotScreen> {
               style: const TextStyle(color: Colors.black87), // Dark text for typing
               decoration: InputDecoration(
                 hintText: "Ask about recycling...",
-                hintStyle: TextStyle(color: Colors.grey.shade500),
+                hintStyle: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 filled: true,
                 fillColor: Colors.grey.shade50,
@@ -345,16 +345,16 @@ class _ChatBubble extends StatelessWidget {
                 color: isUser ? Colors.white : const Color(0xFF1B5E20), // Dark Green text for bot
                 fontSize: 16,
                 height: 1.4,
-                fontWeight: isUser ? FontWeight.w500 : FontWeight.w400,
+                fontWeight: isUser ? FontWeight.bold : FontWeight.bold,
               ),
             ),
             const SizedBox(height: 6),
             Text(
               time,
               style: TextStyle(
-                color: isUser ? Colors.white.withOpacity(0.9) : Colors.grey.shade600,
-                fontSize: 11,
-                fontWeight: FontWeight.w500,
+                color: isUser ? Colors.white.withOpacity(0.9) : Colors.black,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
               ),
             ),
           ],

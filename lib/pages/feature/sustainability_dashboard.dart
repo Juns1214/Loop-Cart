@@ -261,7 +261,7 @@ class _DashboardPageState extends State<DashboardPage> {
         title: const Text(
           'Impact Dashboard',
           style: TextStyle(
-            fontWeight: FontWeight.w800,
+            fontWeight: FontWeight.bold,
             color: Color(0xFF1B5E20),
           ),
         ),
@@ -360,7 +360,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                                   Text(
                                                     category.name,
                                                     style: const TextStyle(
-                                                      fontWeight: FontWeight.w600,
+                                                      fontWeight: FontWeight.bold,
                                                       fontSize: 14,
                                                     ),
                                                   ),
@@ -383,7 +383,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                                     "${category.greenCoins} coins each",
                                                     style: TextStyle(
                                                       fontSize: 12,
-                                                      color: Colors.grey[600],
+                                                      color: Colors.black,
+                                                      fontWeight: FontWeight.bold,
                                                     ),
                                                   ),
                                                   Container(
@@ -424,7 +425,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                       ],
                                     ),
                                   );
-                                }).toList(),
+                                }),
                               ],
                             ),
                           ),
@@ -458,12 +459,12 @@ class _DashboardPageState extends State<DashboardPage> {
                                       "Total: RM ${totalDonation.toStringAsFixed(0)}",
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.grey[800],
+                                        color: Colors.black,
                                       ),
                                     ),
                                     const Icon(
                                       Icons.bar_chart,
-                                      color: Colors.grey,
+                                      color: Colors.black,
                                     ),
                                   ],
                                 ),
@@ -609,15 +610,14 @@ class _DashboardPageState extends State<DashboardPage> {
             "Impact Balance",
             style: TextStyle(
               color: Color(0xFF1B5E20),
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
             decoration: BoxDecoration(
-              color: const Color(0xFF1B5E20),
               borderRadius: BorderRadius.circular(30),
               boxShadow: [
                 BoxShadow(
@@ -630,14 +630,14 @@ class _DashboardPageState extends State<DashboardPage> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(
-                  Icons.monetization_on,
-                  color: Colors.yellowAccent,
-                  size: 28,
+                Image.asset(  
+                  'assets/images/icon/Green Coin.png',
+                  width: 48,
+                  height: 48,
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  "$greenCoin GC",
+                  "$greenCoin Green Coin",
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 24,
@@ -651,7 +651,7 @@ class _DashboardPageState extends State<DashboardPage> {
           const Text(
             "Every action counts towards a greener future.",
             textAlign: TextAlign.center,
-            style: TextStyle(color: Color(0xFF2E7D32), fontSize: 13),
+            style: TextStyle(color: Color(0xFF2E7D32), fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ],
       ),
@@ -712,8 +712,8 @@ class _StatCard extends StatelessWidget {
             label,
             style: TextStyle(
               fontSize: 13,
-              color: Colors.grey[700],
-              fontWeight: FontWeight.w500,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
             ),
           ),
         ],
@@ -833,8 +833,8 @@ class _GoalRow extends StatelessWidget {
                     "$currentStr / $targetStr",
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey[800],
-                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ],

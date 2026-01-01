@@ -95,7 +95,10 @@ class _UserProfileState extends State<UserProfile> {
               await FirebaseAuth.instance.signOut();
               if (context.mounted) {
                 Navigator.pushNamedAndRemoveUntil(
-                    context, '/login', (route) => false);
+                  context,
+                  '/login',
+                  (route) => false,
+                );
               }
             },
             child: const Text('Logout', style: TextStyle(color: Colors.red)),
@@ -113,7 +116,11 @@ class _UserProfileState extends State<UserProfile> {
         elevation: 0,
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87, size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: Colors.black87,
+            size: 20,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
@@ -128,18 +135,20 @@ class _UserProfileState extends State<UserProfile> {
         centerTitle: true,
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF388E3C)))
+          ? const Center(
+              child: CircularProgressIndicator(color: Color(0xFF388E3C)),
+            )
           : SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
               child: Column(
                 children: [
                   _buildProfileHeader(),
                   const SizedBox(height: 24),
-                  
+
                   // Profile Details Card
                   if (userData != null) ...[
-                     _buildInfoSection(),
-                     const SizedBox(height: 24),
+                    _buildInfoSection(),
+                    const SizedBox(height: 24),
                   ],
 
                   // Menu Sections
@@ -149,7 +158,8 @@ class _UserProfileState extends State<UserProfile> {
                       _buildMenuItem(
                         icon: Icons.shopping_bag_outlined,
                         title: 'My Activity',
-                        onTap: () => Navigator.pushNamed(context, '/my-activity'),
+                        onTap: () =>
+                            Navigator.pushNamed(context, '/my-activity'),
                       ),
                       _buildMenuItem(
                         icon: Icons.monetization_on_outlined,
@@ -159,14 +169,17 @@ class _UserProfileState extends State<UserProfile> {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  
+
                   _buildMenuSection(
                     title: 'Quick Actions',
                     items: [
                       _buildMenuItem(
                         icon: Icons.pie_chart_outline_rounded,
                         title: 'Sustainability Dashboard',
-                        onTap: () => Navigator.pushNamed(context, '/sustainability-dashboard'),
+                        onTap: () => Navigator.pushNamed(
+                          context,
+                          '/sustainability-dashboard',
+                        ),
                       ),
                       _buildMenuItem(
                         icon: Icons.support_agent_rounded,
@@ -176,7 +189,7 @@ class _UserProfileState extends State<UserProfile> {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  
+
                   // Logout Button
                   Container(
                     decoration: BoxDecoration(
@@ -184,7 +197,7 @@ class _UserProfileState extends State<UserProfile> {
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(color: Colors.red.withOpacity(0.1)),
                       boxShadow: [
-                         BoxShadow(
+                        BoxShadow(
                           color: Colors.red.withOpacity(0.05),
                           blurRadius: 10,
                           offset: const Offset(0, 4),
@@ -199,7 +212,10 @@ class _UserProfileState extends State<UserProfile> {
                           color: Colors.red.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: const Icon(Icons.logout_rounded, color: Colors.red),
+                        child: const Icon(
+                          Icons.logout_rounded,
+                          color: Colors.red,
+                        ),
                       ),
                       title: const Text(
                         'Logout',
@@ -241,11 +257,12 @@ class _UserProfileState extends State<UserProfile> {
               child: CircleAvatar(
                 radius: 60,
                 backgroundColor: Colors.grey[200],
-                backgroundImage: userData?['profileImageURL'] != null &&
+                backgroundImage:
+                    userData?['profileImageURL'] != null &&
                         userData!['profileImageURL'].isNotEmpty
                     ? MemoryImage(base64Decode(userData!['profileImageURL']))
                     : const AssetImage('assets/images/icon/LogoIcon.png')
-                        as ImageProvider,
+                          as ImageProvider,
               ),
             ),
             Positioned(
@@ -281,29 +298,50 @@ class _UserProfileState extends State<UserProfile> {
           style: TextStyle(
             fontSize: 14,
             fontFamily: 'Manrope',
-            color: Colors.grey[700], // Darker grey
-            fontWeight: FontWeight.w500,
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
           ),
         ),
         const SizedBox(height: 16),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 12,
+          ), // Increased padding
           decoration: BoxDecoration(
-            color: const Color(0xFFFFF8E1), // Light amber bg
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: const Color(0xFFFFD54F)),
+            color: const Color(
+              0xFFE8F5E9,
+            ), // Light green background (Material Green 50)
+            borderRadius: BorderRadius.circular(24), // Slightly larger radius
+            border: Border.all(
+              color: const Color(0xFF81C784),
+              width: 1.5,
+            ), // Light green border
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF388E3C).withOpacity(0.1),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.monetization_on, color: Color(0xFFFFA000), size: 20),
-              const SizedBox(width: 8),
+              Image.asset(
+                'assets/images/icon/Green Coin.png',
+                width: 28, // Increased size
+                height: 28,
+              ),
+              const SizedBox(width: 10),
               Text(
                 '${userData?['greenCoins'] ?? 0} Green Coins',
                 style: const TextStyle(
-                  fontSize: 14,
+                  fontSize: 16, // Increased font size
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFFFFA000),
+                  color: Color(
+                    0xFF2E7D32,
+                  ), // Dark green text for better contrast
                   fontFamily: 'Manrope',
                 ),
               ),
@@ -322,7 +360,7 @@ class _UserProfileState extends State<UserProfile> {
       final parts = [
         addr['line1'],
         addr['city'],
-        addr['state']
+        addr['state'],
       ].where((e) => e != null && e.toString().isNotEmpty).join(', ');
       if (parts.isNotEmpty) formattedAddress = parts;
     }
@@ -343,17 +381,29 @@ class _UserProfileState extends State<UserProfile> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildDetailRow(Icons.phone_outlined, 'Phone', userData?['phoneNumber'] ?? 'Not set'),
+          _buildDetailRow(
+            Icons.phone_outlined,
+            'Phone',
+            userData?['phoneNumber'] ?? 'Not set',
+          ),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 12),
             child: Divider(height: 1),
           ),
-          _buildDetailRow(Icons.calendar_today_outlined, 'Date of Birth', userData?['dateOfBirth'] ?? 'Not set'),
+          _buildDetailRow(
+            Icons.calendar_today_outlined,
+            'Date of Birth',
+            userData?['dateOfBirth'] ?? 'Not set',
+          ),
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 12),
             child: Divider(height: 1),
           ),
-          _buildDetailRow(Icons.location_on_outlined, 'Location', formattedAddress),
+          _buildDetailRow(
+            Icons.location_on_outlined,
+            'Location',
+            formattedAddress,
+          ),
         ],
       ),
     );
@@ -390,7 +440,10 @@ class _UserProfileState extends State<UserProfile> {
     );
   }
 
-  Widget _buildMenuSection({required String title, required List<Widget> items}) {
+  Widget _buildMenuSection({
+    required String title,
+    required List<Widget> items,
+  }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -461,7 +514,11 @@ class _UserProfileState extends State<UserProfile> {
           fontFamily: 'Manrope',
         ),
       ),
-      trailing: Icon(Icons.arrow_forward_ios_rounded, size: 16, color: Colors.grey[400]),
+      trailing: Icon(
+        Icons.arrow_forward_ios_rounded,
+        size: 16,
+        color: Colors.grey[400],
+      ),
     );
   }
 }

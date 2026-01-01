@@ -277,7 +277,7 @@ Be direct and specific. No fluff.
               style: TextStyle(
                 fontSize: 14,
                 color: Color(0xFF388E3C),
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.bold
               ),
             ),
           ],
@@ -343,22 +343,24 @@ Be direct and specific. No fluff.
               style: TextStyle(
                 fontSize: 14,
                 height: 1.5,
-                color: Colors.black87,
+                color: Colors.black,
+                fontWeight: FontWeight.bold
               ),
             ),
           ),
           SizedBox(height: 8),
           Row(
             children: [
-              Icon(Icons.auto_awesome, size: 11, color: Colors.grey[500]),
+              Icon(Icons.auto_awesome, size: 11, color: Colors.black),
               SizedBox(width: 4),
               Expanded(
                 child: Text(
                   'AI-powered price vs quality insight',
                   style: TextStyle(
                     fontSize: 10,
-                    color: Colors.grey[500],
+                    color: Colors.black,
                     fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.bold
                   ),
                 ),
               ),

@@ -82,7 +82,7 @@ class _RepairOptionSelectorState extends State<RepairOptionSelector> {
       children: [
         Container(
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.shade300),
+            border: Border.all(color: Colors.black),
             borderRadius: BorderRadius.circular(12),
             color: Colors.white,
           ),
@@ -90,7 +90,7 @@ class _RepairOptionSelectorState extends State<RepairOptionSelector> {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: categories.length,
-            separatorBuilder: (_, __) => Divider(height: 1, color: Colors.grey.shade200),
+            separatorBuilder: (_, __) => Divider(height: 1, color: Colors.black),
             itemBuilder: (context, index) {
               final category = categories[index];
               if (category == 'Custom Repair') return _buildCustomRepairTile();
@@ -109,9 +109,9 @@ class _RepairOptionSelectorState extends State<RepairOptionSelector> {
     return Column(
       children: [
         ListTile(
-          tileColor: isExpanded ? Colors.grey[50] : Colors.white,
+          tileColor: isExpanded ? Colors.black : Colors.white,
           title: Text(category, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.black87)),
-          trailing: Icon(isExpanded ? Icons.expand_less : Icons.expand_more, color: Colors.grey[700]),
+          trailing: Icon(isExpanded ? Icons.expand_less : Icons.expand_more, color: Colors.black),
           onTap: () => setState(() => expandedCategoryIndex = isExpanded ? null : index),
         ),
         if (isExpanded)
@@ -143,7 +143,7 @@ class _RepairOptionSelectorState extends State<RepairOptionSelector> {
     final isSelected = _isCustomRepair;
     return ListTile(
       tileColor: isSelected ? const Color(0xFFE3F2FD) : Colors.white,
-      leading: Icon(Icons.build_outlined, color: isSelected ? const Color(0xFF2E5BFF) : Colors.grey[700]),
+      leading: Icon(Icons.build_outlined, color: isSelected ? const Color(0xFF2E5BFF) : Colors.black),
       title: Text('Custom Repair', style: TextStyle(fontSize: 15, fontWeight: isSelected ? FontWeight.bold : FontWeight.w600, color: isSelected ? const Color(0xFF2E5BFF) : Colors.black87)),
       trailing: isSelected ? const Icon(Icons.check_circle, color: Color(0xFF2E5BFF)) : null,
       onTap: _showCustomRepairDialog,

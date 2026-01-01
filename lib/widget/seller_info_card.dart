@@ -29,7 +29,7 @@ class SellerInfoCard extends StatelessWidget {
             children: [
               Text(
                 name.isNotEmpty ? name : 'Unknown Seller',
-                style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.black87),
+                style: const TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.black),
               ),
               const SizedBox(height: 4),
               subtitle,

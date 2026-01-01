@@ -31,7 +31,6 @@ class AuthMethod {
   }
 
   // Sign in with Google
-  // Removed BuildContext param
   Future<UserCredential?> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
@@ -60,7 +59,6 @@ class AuthMethod {
 
       return userCredential;
     } catch (e) {
-      // Rethrow error so the UI can catch it and show Fluttertoast
       rethrow;
     }
   }
@@ -79,7 +77,6 @@ class AuthMethod {
   }
 
   // Sign out
-  // Removed BuildContext param
   Future<void> signOut() async {
     await Future.wait([
       _auth.signOut(),
@@ -88,7 +85,6 @@ class AuthMethod {
   }
 
   // Delete account
-  // Removed BuildContext param
   Future<void> deleteAccount() async {
     await _auth.currentUser?.delete();
   }

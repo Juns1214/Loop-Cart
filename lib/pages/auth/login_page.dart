@@ -9,14 +9,10 @@ import 'auth_method.dart';
 import 'package:flutter_application_1/utils/firebase_options.dart';
 import '../../widget/custom_text_field.dart';
 import '../../widget/custom_button.dart';
-import '../../widget/logo_widget.dart';
-import '../../widget/social_signin_button.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
   runApp(const MyApp());
 }
@@ -99,7 +95,12 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             children: [
               const SizedBox(height: 10),
-              const LogoWidget(size: 250),
+              Image.asset(
+                'assets/images/icon/LogoIcon.png',
+                height: 250,
+                width: 250,
+                fit: BoxFit.contain,
+              ),
               const SizedBox(height: 20),
               const Text(
                 "Hi, Welcome Back! 👋",
@@ -175,9 +176,26 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    SocialSignInButton(
-                      iconPath: 'assets/images/icon/google_icon.png',
+
+                    InkWell(
                       onTap: _handleGoogleSignIn,
+                      customBorder: const CircleBorder(),
+                      child: Container(
+                        height: 40,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Image.asset(
+                            'assets/images/icon/google_icon.png',
+                            height: 30,
+                            width: 30,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 40),
                     RichText(

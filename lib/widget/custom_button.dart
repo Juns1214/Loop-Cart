@@ -4,23 +4,22 @@ class CustomButton extends StatelessWidget {
   final String text;
   final VoidCallback onPressed;
   
-  // Customization options (all have defaults, so you don't HAVE to pass them)
   final Color backgroundColor;
   final Color textColor;
   final double fontSize;
-  final Size? minimumSize; // Pass Size(double.infinity, 50) for full width
+  final Size? minimumSize;
   final String fontFamily;
   final double borderRadius;
-  final bool isLoading; // Pass true to show a spinner instead of text
+  final bool isLoading; 
 
   const CustomButton({
     super.key,
     required this.text,
     required this.onPressed,
-    this.backgroundColor = const Color(0xFF388E3C), // Default App Green
+    this.backgroundColor = const Color(0xFF388E3C), 
     this.textColor = Colors.white,
     this.fontSize = 18,
-    this.minimumSize, // Let Flutter decide size, or override it
+    this.minimumSize,
     this.fontFamily = 'Manrope',
     this.borderRadius = 12.0,
     this.isLoading = false,
@@ -29,10 +28,11 @@ class CustomButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
+      //condition ? valueIfTrue : valueIfFalse
       onPressed: isLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: backgroundColor,
-        minimumSize: minimumSize ?? const Size(120, 54), // Default size if none provided
+        minimumSize: minimumSize ?? const Size(120, 54), 
         elevation: 2,
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         shape: RoundedRectangleBorder(
@@ -54,7 +54,7 @@ class CustomButton extends StatelessWidget {
                 fontFamily: fontFamily,
                 fontSize: fontSize,
                 color: textColor,
-                fontWeight: FontWeight.bold, // Bold for better readability
+                fontWeight: FontWeight.bold, 
                 letterSpacing: 0.5,
               ),
             ),

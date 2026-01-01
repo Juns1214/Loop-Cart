@@ -28,14 +28,20 @@ class BottomNavBar extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _NavItem(
-                    icon: Icons.build_outlined, activeIcon: Icons.build,
-                    label: 'Repair', index: 0, 
-                    currentIndex: currentIndex, onTap: onTap
+                    icon: Icons.build_outlined,
+                    activeIcon: Icons.build,
+                    label: 'Repair',
+                    index: 0,
+                    currentIndex: currentIndex,
+                    onTap: onTap,
                   ),
                   _NavItem(
-                    icon: Icons.recycling_outlined, activeIcon: Icons.recycling,
-                    label: 'Recycle', index: 1, 
-                    currentIndex: currentIndex, onTap: onTap
+                    icon: Icons.recycling_outlined,
+                    activeIcon: Icons.recycling,
+                    label: 'Recycle',
+                    index: 1,
+                    currentIndex: currentIndex,
+                    onTap: onTap,
                   ),
                 ],
               ),
@@ -46,14 +52,20 @@ class BottomNavBar extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   _NavItem(
-                    icon: Icons.analytics_outlined, activeIcon: Icons.analytics,
-                    label: 'Analytics', index: 3, 
-                    currentIndex: currentIndex, onTap: onTap
+                    icon: Icons.analytics_outlined,
+                    activeIcon: Icons.analytics,
+                    label: 'Analytics',
+                    index: 3,
+                    currentIndex: currentIndex,
+                    onTap: onTap,
                   ),
                   _NavItem(
-                    icon: Icons.support_agent_outlined, activeIcon: Icons.support_agent_rounded,
-                    label: 'ChatBot', index: 4, 
-                    currentIndex: currentIndex, onTap: onTap
+                    icon: Icons.support_agent_outlined,
+                    activeIcon: Icons.support_agent_rounded,
+                    label: 'ChatBot',
+                    index: 4,
+                    currentIndex: currentIndex,
+                    onTap: onTap,
                   ),
                 ],
               ),
@@ -85,25 +97,29 @@ class _NavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isSelected = currentIndex == index;
-    final Color color = isSelected ? const Color(0xFF2E7D32) : Colors.grey.shade600; // 0xFF2E7D32 is a sharp green
+
+    // CHANGED: Fixed Green Color (Visual for the main page)
+    const Color brandGreen = Color(0xFF388E3C);
 
     return InkWell(
       onTap: () => onTap(index),
-      borderRadius: BorderRadius.circular(12),
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(isSelected ? activeIcon : icon, color: color, size: 26),
+            // Icon stays the same green whether selected or not
+            Icon(isSelected ? activeIcon : icon, color: brandGreen, size: 26),
             const SizedBox(height: 2),
             Text(
               label,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 11,
-                color: color,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                color: brandGreen, // Green text
+                fontWeight: FontWeight.bold,
               ),
             ),
           ],

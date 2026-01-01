@@ -33,7 +33,6 @@ class OnboardingPage extends StatefulWidget {
 }
 
 class _OnboardingPageState extends State<OnboardingPage> {
-  // We can define the list directly here now
   final List<Widget> pages = const [
     OnboardingContent(
       lottiePath: 'assets/lottie/online shopping delivery.json',
@@ -62,12 +61,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const SizedBox(height: 80),
+            const SizedBox(height: 30),
             Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () {Navigator.pushReplacementNamed(context, "/login");},
                   child: const Text(
                     "Skip",
                     style: TextStyle(
@@ -83,18 +82,15 @@ class _OnboardingPageState extends State<OnboardingPage> {
             Expanded(child: Swiper(pages: pages)),
             const SizedBox(height: 40),
             
-            // REPLACED: ElevatedButton with CustomButton
             CustomButton(
               text: "Next",
               onPressed: () {
                 Navigator.pushReplacementNamed(context, "/login");
               },
-              backgroundColor: const Color(0xFF87C159), // Your specific green
+              backgroundColor: const Color(0xFF87C159), 
               textColor: Colors.black,
               fontFamily: 'Roboto',
               fontSize: 20,
-              // Adjust padding by using minimumSize logic or keep it default
-              // Your original had symmetric(horizontal: 100), let's approx that:
               minimumSize: const Size(250, 50), 
             ),
             const SizedBox(height: 30),

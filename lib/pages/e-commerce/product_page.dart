@@ -115,7 +115,7 @@ class _ProductPageState extends State<ProductPage> {
                                   _buildStarRating(avgRating),
                                   const SizedBox(width: 8),
                                   Text(avgRating.toStringAsFixed(1), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                                  Text(' (${reviews.length} reviews)', style: TextStyle(color: Colors.grey.shade600, fontSize: 14)),
+                                  Text(' (${reviews.length} reviews)', style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold)),
                                 ],
                               )
                             else 
@@ -123,7 +123,7 @@ class _ProductPageState extends State<ProductPage> {
                                 children: [
                                   const Icon(Icons.recycling, size: 16, color: Colors.blue),
                                   const SizedBox(width: 4),
-                                  Text('Pre-owned Condition', style: TextStyle(color: Colors.grey.shade700, fontWeight: FontWeight.bold)),
+                                  Text('Pre-owned Condition', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
                                 ],
                               ),
 
@@ -132,7 +132,7 @@ class _ProductPageState extends State<ProductPage> {
                             const SizedBox(height: 8),
                             Text(
                               widget.product['description'] ?? 'No description.', 
-                              style: TextStyle(fontSize: 15, color: Colors.grey.shade800, height: 1.6)
+                              style: TextStyle(fontSize: 15, color: Colors.black, height: 1.6, fontWeight: FontWeight.bold)
                             ),
                           ],
                         ),
@@ -178,7 +178,7 @@ class _ProductPageState extends State<ProductPage> {
                             if (reviews.isEmpty)
                                Padding(
                                  padding: const EdgeInsets.all(24),
-                                 child: Center(child: Text('No reviews yet.', style: TextStyle(color: Colors.grey.shade600))),
+                                 child: Center(child: Text('No reviews yet.', style: TextStyle(color: Colors.black))),
                                )
                             else 
                                Column(children: reviews.map((r) => ReviewCard(review: r)).toList())
@@ -198,8 +198,8 @@ class _ProductPageState extends State<ProductPage> {
                     backgroundColor: const Color(0xFF388E3C),
                     icon: isAddingToCart 
                       ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : const Icon(Icons.shopping_cart),
-                    label: Text(isAddingToCart ? 'Adding...' : 'Add to Cart', style: const TextStyle(fontWeight: FontWeight.bold)),
+                      : const Icon(Icons.shopping_cart, color: Colors.white),
+                    label: Text(isAddingToCart ? 'Adding...' : 'Add to Cart', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
                   ),
                 ),
               ],

@@ -11,9 +11,9 @@ class CustomTextField extends StatelessWidget {
   final String? Function(String?)? validator;
   final List<TextInputFormatter>? inputFormatters;
   final ValueChanged<String>? onChanged;
-  final int maxLines; // Added
-  final bool readOnly; // Added
-  final VoidCallback? onTap; // Added
+  final int maxLines; 
+  final bool readOnly;
+  final VoidCallback? onTap; 
 
   const CustomTextField({
     super.key,
@@ -41,8 +41,8 @@ class CustomTextField extends StatelessWidget {
           style: const TextStyle(
             fontFamily: 'Manrope',
             fontSize: 15,
-            color: Color(0xFF1B5E20), // Kept your green brand color
-            fontWeight: FontWeight.w700,
+            color: Color(0xFF1B5E20), 
+            fontWeight: FontWeight.bold,
           ),
         ),
         const SizedBox(height: 8),
@@ -56,8 +56,8 @@ class CustomTextField extends StatelessWidget {
           readOnly: readOnly,
           onTap: onTap,
           style: const TextStyle(
-            color: Colors.black87, // Dark text for input
-            fontWeight: FontWeight.w500,
+            color: Colors.black87,
+            fontWeight: FontWeight.bold,
             fontSize: 16,
           ),
           decoration: InputDecoration(
@@ -77,13 +77,14 @@ class CustomTextField extends StatelessWidget {
             ),
             hintText: hintText,
             hintStyle: TextStyle(
-              color: Colors.grey.shade500, // Distinct but not too faded
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
               fontSize: 14,
             ),
             prefixText: prefixText,
             prefixStyle: const TextStyle(
               color: Colors.black87,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.bold,
               fontSize: 16,
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),

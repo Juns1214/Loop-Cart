@@ -93,7 +93,7 @@ class _WasteClassificationPageState extends State<WasteClassificationPage> {
             onPressed: () => Navigator.pop(context),
             child: const Text(
               'OK',
-              style: TextStyle(color: Color(0xFF4CAF50)),
+              style: TextStyle(color: Color(0xFF4CAF50), fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -144,6 +144,7 @@ class _WasteClassificationPageState extends State<WasteClassificationPage> {
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
+                      fontWeight: FontWeight.bold,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -211,6 +212,7 @@ class _WasteClassificationPageState extends State<WasteClassificationPage> {
                               style: TextStyle(
                                 fontSize: 13,
                                 color: Colors.orange.shade900,
+                                fontWeight: FontWeight.bold,
                                 height: 1.4,
                               ),
                             ),
@@ -245,7 +247,7 @@ class _WasteClassificationPageState extends State<WasteClassificationPage> {
                         'Start by uploading an image',
                         style: TextStyle(
                           fontSize: 16,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.bold,
                           color: Colors.black87,
                         ),
                       ),
@@ -253,7 +255,8 @@ class _WasteClassificationPageState extends State<WasteClassificationPage> {
                       const Text(
                         'Our AI will help identify the waste category and provide recycling guidance',
                         style: TextStyle(
-                          fontSize: 14,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                           color: Colors.black54,
                         ),
                         textAlign: TextAlign.center,

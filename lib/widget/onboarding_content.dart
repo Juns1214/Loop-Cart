@@ -39,14 +39,18 @@ class OnboardingContent extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          Text(
-            description,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontFamily: 'Roboto',
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF424242),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30.0),
+            child: Text(
+              description,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontFamily: 'Roboto',
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF424242),
+              ),
             ),
           ),
         ],

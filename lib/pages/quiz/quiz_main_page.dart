@@ -102,7 +102,7 @@ class _QuizPageState extends State<QuizPage> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black),
+          icon: const Icon(Icons.close, color: Colors.grey),
           onPressed: () => _showExitDialog(),
         ),
         title: const Text(
@@ -136,7 +136,7 @@ class _QuizPageState extends State<QuizPage> {
             Text(
               _error!,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey[600]),
+              style: TextStyle(color: Colors.black),
             ),
             const SizedBox(height: 24),
             CustomButton(
@@ -176,7 +176,7 @@ class _QuizPageState extends State<QuizPage> {
                   'Question ${_currentQuestionIndex + 1} of ${_questions!.length}',
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.grey[600],
+                    color: Colors.black,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -305,9 +305,9 @@ class _QuizOptionTile extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF388E3C).withOpacity(0.1) : Colors.grey[50],
+            color: isSelected ? const Color(0xFF388E3C).withOpacity(0.1) : Colors.white,
             border: Border.all(
-              color: isSelected ? const Color(0xFF388E3C) : Colors.grey[300]!,
+              color: isSelected ? const Color(0xFF388E3C) : Colors.grey.shade300, // Changed from Colors.black
               width: isSelected ? 2 : 1,
             ),
             borderRadius: BorderRadius.circular(12),
@@ -321,7 +321,7 @@ class _QuizOptionTile extends StatelessWidget {
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: isSelected ? const Color(0xFF388E3C) : Colors.grey[400]!,
+                    color: isSelected ? const Color(0xFF388E3C) : Colors.grey.shade400,
                     width: 2,
                   ),
                   color: isSelected ? const Color(0xFF388E3C) : Colors.transparent,
@@ -332,13 +332,17 @@ class _QuizOptionTile extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               
-              // Option Letter
+              // Option Letter - FIXED: Now shows white background when not selected
               Container(
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: isSelected ? const Color(0xFF388E3C) : Colors.grey[300],
+                  color: isSelected ? const Color(0xFF388E3C) : Colors.grey.shade100, // Changed from Colors.black
                   shape: BoxShape.circle,
+                  border: Border.all(
+                    color: isSelected ? const Color(0xFF388E3C) : Colors.grey.shade300,
+                    width: 1,
+                  ),
                 ),
                 child: Center(
                   child: Text(
@@ -346,21 +350,21 @@ class _QuizOptionTile extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: isSelected ? Colors.white : Colors.black87,
+                      color: isSelected ? Colors.white : Colors.black87, // Now visible when not selected
                     ),
                   ),
                 ),
               ),
               const SizedBox(width: 16),
               
-              // Option Text
+              // Option Text - FIXED: Always black and bold
               Expanded(
                 child: Text(
                   text,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 16,
-                    color: isSelected ? Colors.black87 : Colors.black54,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                    color: Colors.black87, // Always black
+                    fontWeight: FontWeight.w600, // Always bold
                     height: 1.4,
                   ),
                 ),

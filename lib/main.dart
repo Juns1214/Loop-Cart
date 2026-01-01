@@ -4,14 +4,14 @@ import 'package:lottie/lottie.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_application_1/utils/firebase_options.dart';
 import 'utils/router.dart';
-import 'widget/logo_widget.dart'; 
-import 'widget/custom_button.dart'; 
+import 'widget/custom_button.dart';
 
-void main()  async{
+void main() async {
+  //Ensures Flutter is ready before running code
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  //Initializes Firebase services uses the Firebase config for your platform
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  //Hides the system UI (status bar & navigation bar) for full-screen mode
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
   runApp(const MyApp());
 }
@@ -41,14 +41,18 @@ class GetStartedPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // REPLACED: Image.asset with LogoWidget
-            const LogoWidget(size: 150), 
+            Image.asset(
+              'assets/images/icon/LogoIcon.png',
+              height: 150,
+              width: 150,
+              fit: BoxFit.contain,
+            ),
 
             const SizedBox(height: 20),
 
             const Text(
               "Shop Smart,\nLoop Forever.",
-              textAlign: TextAlign.center, // Good practice for multiline
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontFamily: 'AbhayaLibre',
                 fontSize: 45,
@@ -70,7 +74,6 @@ class GetStartedPage extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // REPLACED: ElevatedButton with CustomButton
             CustomButton(
               text: "Get Started",
               onPressed: () {
@@ -78,7 +81,7 @@ class GetStartedPage extends StatelessWidget {
               },
               backgroundColor: const Color(0xFF7CB342),
               textColor: const Color(0xFF1B5E20),
-              fontFamily: 'AbhayaLibre', // Preserving your font choice
+              fontFamily: 'AbhayaLibre',
               fontSize: 30,
               minimumSize: const Size(200, 50),
             ),
