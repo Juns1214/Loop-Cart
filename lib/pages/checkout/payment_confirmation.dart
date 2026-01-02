@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:intl/intl.dart';
-import '../checkout/order_status.dart';
-import '../../widget/custom_button.dart'; // Ensure this import path is correct
+import '../../widget/custom_button.dart';
 
 class PaymentConfirmation extends StatefulWidget {
   final Map<String, dynamic> orderData;
@@ -23,136 +22,127 @@ class PaymentConfirmation extends StatefulWidget {
 }
 
 class _PaymentConfirmationState extends State<PaymentConfirmation> {
-  // --- Data Helpers ---
-  String _getPaymentType() => widget.orderData['type'] ?? 'purchase';
+  String get _paymentType => widget.orderData['type'] ?? 'purchase';
+  int get _greenCoinsEarned =>
+      widget.orderData['greenCoinsEarned'] ??
+      widget.orderData['greenCoinsToEarn'] ??
+      0;
 
-  // --- Main Build ---
   @override
   Widget build(BuildContext context) {
-    final type = _getPaymentType();
+    final type = _paymentType;
+    final isPurchase = type == 'purchase';
+    final isDonation = type == 'donation';
+    final isRepair = type == 'repair';
 
-    // Determine content based on type
-    String title = 'Payment Successful!';
-    String subtitle = 'Your transaction has been completed.';
-    Color primaryColor = const Color(0xFF388E3C); // Default Green
-    List<Widget> summaryChildren = [];
-    int greenCoinsEarned =
-        widget.orderData['greenCoinsEarned'] ??
-        widget.orderData['greenCoinsToEarn'] ??
-        0;
-
-    // Logic Switch
-    if (type == 'donation') {
-      primaryColor = const Color(0xFF2E5BFF); // Blue
-      title = 'Donation Successful!';
-      subtitle =
-          'Thank you for making a difference!\nYour contribution helps save our planet.';
-      summaryChildren = _buildDonationSummaryRows();
-    } else if (type == 'repair') {
-      primaryColor = const Color(0xFF2E5BFF); // Blue
-      subtitle =
-          'Your repair service has been confirmed.\nWe\'ll contact you soon!';
-      summaryChildren = _buildRepairSummaryRows();
-    } else {
-      // Purchase
-      subtitle =
-          'Your order has been placed successfully.\nThank you for your purchase!';
-      summaryChildren = _buildPurchaseSummaryRows();
-    }
+    final primaryColor = isPurchase
+        ? const Color(0xFF2E7D32)
+        : const Color(0xFF1976D2);
+    final title = isDonation
+        ? 'Donation Successful!'
+        : isRepair
+        ? 'Service Confirmed!'
+        : 'Payment Successful!';
+    final subtitle = isDonation
+        ? 'Thank you for making a difference!\nYour contribution helps save our planet.'
+        : isRepair
+        ? 'Your repair service has been confirmed.\nWe\'ll contact you soon!'
+        : 'Your order has been placed successfully.\nThank you for your purchase!';
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF1F8F4),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black),
+          icon: const Icon(Icons.close, color: Color(0xFF1B5E20), size: 24),
           onPressed: () =>
               Navigator.of(context).popUntil((route) => route.isFirst),
         ),
+        title: const Text(
+          'Confirmation',
+          style: TextStyle(
+            fontFamily: 'Roboto',
+            fontWeight: FontWeight.w700,
+            fontSize: 20,
+            color: Color(0xFF1B5E20),
+          ),
+        ),
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // 1. Success Animation & Header
             _SuccessHeader(
               title: title,
               subtitle: subtitle,
               color: primaryColor,
             ),
-
-            const SizedBox(height: 30),
-
-            // 2. Summary Card
+            const SizedBox(height: 24),
             _SummaryCard(
-              title: type == 'donation'
+              title: isDonation
                   ? 'Donation Summary'
-                  : type == 'repair'
+                  : isRepair
                   ? 'Service Summary'
                   : 'Order Summary',
               children: [
-                _LabelValueRow('Transaction ID:', widget.transactionId),
+                _LabelValueRow('Transaction ID', widget.transactionId),
                 _LabelValueRow(
-                  'Date:',
+                  'Date',
                   DateFormat('MMM dd, yyyy').format(DateTime.now()),
                 ),
-                _LabelValueRow('Payment Method:', widget.paymentMethod),
-                const Divider(height: 24),
-                ...summaryChildren,
+                _LabelValueRow('Payment Method', widget.paymentMethod),
+                const Divider(height: 24, thickness: 1.5),
+                if (isPurchase)
+                  ..._buildPurchaseSummary()
+                else if (isDonation)
+                  ..._buildDonationSummary()
+                else
+                  ..._buildRepairSummary(),
               ],
             ),
-
-            // 3. Green Coins (Conditional)
-            if (greenCoinsEarned > 0) ...[
-              const SizedBox(height: 20),
-              _GreenCoinsEarnedCard(coins: greenCoinsEarned),
+            if (_greenCoinsEarned > 0) ...[
+              const SizedBox(height: 16),
+              _GreenCoinsEarnedCard(coins: _greenCoinsEarned),
             ],
-
-            const SizedBox(height: 30),
-
-            // 4. Action Buttons
-            if (type == 'purchase')
-              CustomButton(
-                text: "View Order Status",
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          OrderStatus(orderId: widget.orderId),
-                    ),
-                  );
-                },
-                backgroundColor: primaryColor,
-                minimumSize: const Size(double.infinity, 54),
+            const SizedBox(height: 24),
+            CustomButton(
+              text: "View My Activity",
+              onPressed: () => Navigator.of(context).pushNamedAndRemoveUntil(
+                '/my-activity',
+                (route) => route.isFirst,
               ),
-
+              backgroundColor: primaryColor,
+              minimumSize: const Size(double.infinity, 56),
+              borderRadius: 16,
+            ),
             const SizedBox(height: 12),
-
             SizedBox(
               width: double.infinity,
               child: OutlinedButton.icon(
                 onPressed: () =>
                     Navigator.of(context).popUntil((route) => route.isFirst),
                 icon: Icon(
-                  type == 'purchase'
+                  isPurchase
                       ? Icons.shopping_bag_outlined
                       : Icons.home_outlined,
+                  size: 20,
                 ),
                 label: Text(
-                  type == 'purchase' ? "Continue Shopping" : "Back to Home",
+                  isPurchase ? "Continue Shopping" : "Back to Home",
+                  style: const TextStyle(
+                    fontFamily: 'Roboto',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: primaryColor,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   side: BorderSide(color: primaryColor, width: 2),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  textStyle: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    borderRadius: BorderRadius.circular(16),
                   ),
                 ),
               ),
@@ -164,106 +154,91 @@ class _PaymentConfirmationState extends State<PaymentConfirmation> {
     );
   }
 
-  // --- Specific Logic Builders ---
-
-  List<Widget> _buildPurchaseSummaryRows() {
+  List<Widget> _buildPurchaseSummary() {
     int totalItems = 0;
     double calculatedItemsTotal = 0.0;
 
-    // Safely calculate totals even if 'itemsTotal' is missing
     if (widget.orderData['items'] != null) {
       for (var item in widget.orderData['items']) {
         int qty = (item['quantity'] as int? ?? 1);
         double price = (item['productPrice'] ?? item['price'] ?? 0).toDouble();
-
         totalItems += qty;
         calculatedItemsTotal += (price * qty);
       }
     }
 
-    // Use passed value if available, otherwise use our calculation
-    double finalItemsTotal = widget.orderData['itemsTotal'] != null
+    final finalItemsTotal = widget.orderData['itemsTotal'] != null
         ? (widget.orderData['itemsTotal'] as num).toDouble()
         : calculatedItemsTotal;
-
     final shippingDisplay = widget.orderData['shippingMethod'] == 'Express'
         ? 'Express (2-3 days)'
         : 'Standard (5-6 days)';
-
-    // Safely handle other potentially null numbers
-    double shippingCost = (widget.orderData['shippingCost'] as num? ?? 0)
+    final shippingCost = (widget.orderData['shippingCost'] as num? ?? 0)
         .toDouble();
-    double packagingCost = (widget.orderData['packagingCost'] as num? ?? 0)
+    final packagingCost = (widget.orderData['packagingCost'] as num? ?? 0)
         .toDouble();
-    double discount = (widget.orderData['discount'] as num? ?? 0).toDouble();
-    double grandTotal =
+    final discount = (widget.orderData['discount'] as num? ?? 0).toDouble();
+    final grandTotal =
         (widget.orderData['grandTotal'] as num? ??
                 (finalItemsTotal + shippingCost + packagingCost - discount))
             .toDouble();
 
     return [
-      _LabelValueRow('Order ID:', widget.orderId),
+      _LabelValueRow('Order ID', widget.orderId),
       _LabelValueRow(
-        'Items ($totalItems):',
+        'Items ($totalItems)',
         'RM ${finalItemsTotal.toStringAsFixed(2)}',
       ),
       _LabelValueRow(
-        'Shipping ($shippingDisplay):',
+        'Shipping ($shippingDisplay)',
         shippingCost == 0 ? 'FREE' : 'RM ${shippingCost.toStringAsFixed(2)}',
       ),
-      _LabelValueRow('Packaging:', 'RM ${packagingCost.toStringAsFixed(2)}'),
+      _LabelValueRow('Packaging', 'RM ${packagingCost.toStringAsFixed(2)}'),
       if (discount > 0)
         _LabelValueRow(
-          'Discount:',
+          'Discount',
           '-RM ${discount.toStringAsFixed(2)}',
-          valueColor: Colors.red,
+          valueColor: const Color(0xFFD32F2F),
         ),
-
       const Divider(height: 24, thickness: 1.5),
-
       _TotalRow(
         label: 'Total Paid',
         amount: grandTotal,
-        color: const Color(0xFF388E3C),
+        color: const Color(0xFF2E7D32),
       ),
     ];
   }
 
-  List<Widget> _buildDonationSummaryRows() {
+  List<Widget> _buildDonationSummary() {
     return [
-      _LabelValueRow('Category:', widget.orderData['category'] ?? 'General'),
+      _LabelValueRow('Category', widget.orderData['category'] ?? 'General'),
       const Divider(height: 24, thickness: 1.5),
       _TotalRow(
         label: 'Donation Amount',
         amount: widget.orderData['amount'],
-        color: const Color(0xFF2E5BFF),
+        color: const Color(0xFF1976D2),
       ),
     ];
   }
 
-  List<Widget> _buildRepairSummaryRows() {
+  List<Widget> _buildRepairSummary() {
     return [
       _LabelValueRow(
-        'Service Type:',
+        'Service Type',
         widget.orderData['repairType'] ?? 'General Repair',
       ),
       const Divider(height: 24, thickness: 1.5),
       _TotalRow(
         label: 'Service Fee',
         amount: widget.orderData['amount'],
-        color: const Color(0xFF2E5BFF),
+        color: const Color(0xFF1976D2),
       ),
     ];
   }
 }
 
-// ==============================================================================
-// REUSABLE WIDGETS (Extracted to clean up the main logic)
-// ==============================================================================
-
 class _SuccessHeader extends StatelessWidget {
-  final String title;
-  final String subtitle;
+  final String title, subtitle;
   final Color color;
 
   const _SuccessHeader({
@@ -274,31 +249,52 @@ class _SuccessHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Lottie.asset(
-          'assets/lottie/Success.json',
-          width: 180,
-          height: 180,
-          repeat: false,
-        ),
-        const SizedBox(height: 10),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 26,
-            fontWeight: FontWeight.bold,
-            color: color,
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: color.withOpacity(0.1),
+            blurRadius: 16,
+            offset: const Offset(0, 4),
           ),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 8),
-        Text(
-          subtitle,
-          style: TextStyle(fontSize: 16, color: Colors.grey[800], height: 1.4),
-          textAlign: TextAlign.center,
-        ),
-      ],
+        ],
+      ),
+      child: Column(
+        children: [
+          Lottie.asset(
+            'assets/lottie/Success.json',
+            width: 160,
+            height: 160,
+            repeat: true,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: TextStyle(
+              fontFamily: 'Roboto',
+              fontSize: 26,
+              fontWeight: FontWeight.w800,
+              color: color,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            subtitle,
+            style: TextStyle(
+              fontFamily: 'Roboto',
+              fontSize: 15,
+              color: Colors.black,
+              height: 1.5,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -315,20 +311,41 @@ class _SummaryCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey[300]!),
+        border: Border.all(
+          color: const Color(0xFF2E7D32).withOpacity(0.2),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF2E7D32).withOpacity(0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
+          Row(
+            children: [
+              const Icon(
+                Icons.receipt_long,
+                color: Color(0xFF2E7D32),
+                size: 22,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontFamily: 'Roboto',
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF1B5E20),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 16),
           ...children,
@@ -339,8 +356,7 @@ class _SummaryCard extends StatelessWidget {
 }
 
 class _LabelValueRow extends StatelessWidget {
-  final String label;
-  final String value;
+  final String label, value;
   final Color? valueColor;
 
   const _LabelValueRow(this.label, this.value, {this.valueColor});
@@ -348,25 +364,29 @@ class _LabelValueRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             label,
             style: TextStyle(
+              fontFamily: 'Roboto',
               fontSize: 15,
-              color: Colors.grey[700],
-              fontWeight: FontWeight.w500,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
             ),
           ),
+          const SizedBox(width: 16),
           Expanded(
             child: Text(
               value,
               style: TextStyle(
+                fontFamily: 'Roboto',
                 fontSize: 15,
-                color: valueColor ?? Colors.black87,
-                fontWeight: FontWeight.bold,
+                color: valueColor ?? const Color(0xFF212121),
+                fontWeight: FontWeight.w700,
               ),
               textAlign: TextAlign.right,
             ),
@@ -379,7 +399,7 @@ class _LabelValueRow extends StatelessWidget {
 
 class _TotalRow extends StatelessWidget {
   final String label;
-  final dynamic amount; // can be int or double
+  final dynamic amount;
   final Color color;
 
   const _TotalRow({
@@ -390,26 +410,32 @@ class _TotalRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          '$label:',
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            '$label:',
+            style: const TextStyle(
+              fontFamily: 'Roboto',
+              fontSize: 18,
+              fontWeight: FontWeight.w800,
+              color: Color(0xFF212121),
+            ),
           ),
-        ),
-        Text(
-          'RM ${(amount is int ? amount.toDouble() : amount).toStringAsFixed(2)}',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: color,
+          Text(
+            'RM ${(amount is int ? amount.toDouble() : amount).toStringAsFixed(2)}',
+            style: TextStyle(
+              fontFamily: 'Roboto',
+              fontSize: 22,
+              fontWeight: FontWeight.w800,
+              color: color,
+              letterSpacing: -0.5,
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -422,64 +448,100 @@ class _GreenCoinsEarnedCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [Color(0xFFF0FDF4), Color(0xFFDCFCE7)],
+          colors: [Color(0xFFE8F5E9), Color(0xFFC8E6C9)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF388E3C).withOpacity(0.3)),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFF66BB6A), width: 2),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF2E7D32).withOpacity(0.15),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Row(
         children: [
           Container(
-            width: 48,
-            height: 48,
-            decoration: const BoxDecoration(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
               color: Colors.white,
               shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF2E7D32).withOpacity(0.2),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Center(
               child: Image.asset(
                 'assets/images/icon/Green Coin.png',
-                width: 28,
-                height: 28,
+                width: 32,
+                height: 32,
                 errorBuilder: (_, __, ___) =>
-                    const Icon(Icons.eco, color: Color(0xFF388E3C)),
+                    const Icon(Icons.eco, color: Color(0xFF2E7D32), size: 32),
               ),
             ),
           ),
           const SizedBox(width: 16),
-          Expanded(
+          const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Green Coins Earned',
+                Text(
+                  'Green Coins Earned!',
                   style: TextStyle(
-                    color: Color(0xFF388E3C),
+                    fontFamily: 'Roboto',
+                    color: Color(0xFF1B5E20),
                     fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
+                SizedBox(height: 2),
                 Text(
-                  'You earned $coins coins!',
+                  'Added to your account',
                   style: TextStyle(
-                    color: const Color(0xFF388E3C).withOpacity(0.9),
+                    fontFamily: 'Roboto',
+                    color: Color(0xFF2E7D32),
                     fontSize: 14,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
             ),
           ),
-          Text(
-            '+$coins',
-            style: const TextStyle(
-              color: Color(0xFF388E3C),
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: BoxDecoration(
+              gradient: const LinearGradient(
+                colors: [Color(0xFF2E7D32), Color(0xFF388E3C)],
+              ),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF2E7D32).withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Text(
+              '+$coins',
+              style: const TextStyle(
+                fontFamily: 'Roboto',
+                color: Colors.white,
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
+              ),
             ),
           ),
         ],

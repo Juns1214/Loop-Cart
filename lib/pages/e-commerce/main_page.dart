@@ -5,7 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_application_1/utils/bottom_nav_bar.dart';
 import '../../utils/router.dart';
 import '../preference/preference_service.dart';
-import '../../utils/shopping_cart.dart';
+import '../../utils/shopping_cart_icon.dart';
 import '../../widget/app_drawer.dart';
 import '../../widget/filter_button.dart';
 import '../../widget/search_filter_bar.dart';

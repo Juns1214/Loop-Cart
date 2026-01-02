@@ -19,7 +19,6 @@ class ProductShareHandler {
     return 'TXN$timestamp$random';
   }
 
-  /// Share product and earn green coins (max 5 times per day)
   static Future<void> shareProduct({
     required BuildContext context,
     required Map<String, dynamic> product,
@@ -37,7 +36,6 @@ class ProductShareHandler {
     }
 
     try {
-      // 1. Check today's share count
       final todayDate = _getTodayDateMalaysia();
       final shareCountDoc = await FirebaseFirestore.instance
           .collection('user_share_tracking')
@@ -49,10 +47,8 @@ class ProductShareHandler {
         todayShareCount = shareCountDoc.data()?['shareCount'] ?? 0;
       }
 
-      // 2. Determine if user gets coins
       bool willEarnCoins = todayShareCount < maxSharesPerDay;
 
-      // 3. Create share message
       String productName = product['name'] ?? 'Product';
       String productPrice = 'RM ${(product['price'] ?? 0).toStringAsFixed(2)}';
       String productType = isPreowned ? 'Pre-owned' : 'New';
@@ -65,13 +61,11 @@ Price: $productPrice
 Download our app to shop sustainably!
 ''';
 
-      // 4. Share the product
       final result = await Share.share(
         shareMessage,
         subject: 'Check out $productName',
       );
 
-      // 5. If share was successful, update tracking and reward coins
       if (result.status == ShareResultStatus.success) {
         if (willEarnCoins) {
           await _rewardShareCoins(
@@ -81,7 +75,6 @@ Download our app to shop sustainably!
             productName: productName,
           );
 
-          // Calculate remaining AFTER incrementing
           int remainingShares = maxSharesPerDay - (todayShareCount + 1);
 
           if (context.mounted) {
@@ -117,7 +110,6 @@ Download our app to shop sustainably!
     final transactionId = _generateTransactionId();
     final batch = FirebaseFirestore.instance.batch();
 
-    // 1. Update share tracking
     final trackingRef = FirebaseFirestore.instance
         .collection('user_share_tracking')
         .doc('${userId}_$todayDate');
@@ -129,14 +121,12 @@ Download our app to shop sustainably!
       'lastShareAt': FieldValue.serverTimestamp(),
     }, SetOptions(merge: true));
 
-    // 2. Update user coins
     final userRef = FirebaseFirestore.instance
         .collection('user_profile')
         .doc(userId);
 
     batch.update(userRef, {'greenCoins': FieldValue.increment(coinsPerShare)});
 
-    // 3. Create transaction record
     final transactionRef = FirebaseFirestore.instance
         .collection('green_coin_transactions')
         .doc(transactionId);
@@ -167,7 +157,6 @@ Download our app to shop sustainably!
     );
   }
 
-  /// Get remaining shares for today (optional - for UI display)
   static Future<int> getRemainingShares(String userId) async {
     try {
       final todayDate = _getTodayDateMalaysia();

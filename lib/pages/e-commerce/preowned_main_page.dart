@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_application_1/utils/bottom_nav_bar.dart';
-import 'package:flutter_application_1/utils/shopping_cart.dart';
+import 'package:flutter_application_1/utils/shopping_cart_icon.dart';
 import '../../widget/filter_button.dart';
 import '../../widget/search_filter_bar.dart';
 import '../../widget/product_card.dart';

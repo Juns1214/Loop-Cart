@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../checkout/checkout.dart';
-import '../../widget/custom_button.dart'; 
+import '../../widget/custom_button.dart';
 
 class ShoppingCart extends StatefulWidget {
   const ShoppingCart({super.key});
@@ -24,8 +24,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
     _loadCartItems();
   }
 
-  // --- Logic Methods ---
-
   Future<void> _loadCartItems() async {
     if (currentUser == null) {
       if (mounted) setState(() => isLoading = false);
@@ -38,7 +36,7 @@ class _ShoppingCartState extends State<ShoppingCart> {
           .where('userId', isEqualTo: currentUser!.uid)
           .get();
 
-      List<Map<String, dynamic>> loadedItems = snapshot.docs.map((doc) {
+      final loadedItems = snapshot.docs.map((doc) {
         final data = doc.data();
         data['docId'] = doc.id;
         return data;
@@ -48,9 +46,8 @@ class _ShoppingCartState extends State<ShoppingCart> {
         setState(() {
           cartItems = loadedItems;
           isLoading = false;
-          // Reset selection if items change significantly, or keep valid ones
           selectedItems = selectedItems.intersection(
-            loadedItems.map((e) => e['docId'] as String).toSet()
+            loadedItems.map((e) => e['docId'] as String).toSet(),
           );
         });
       }
@@ -63,51 +60,46 @@ class _ShoppingCartState extends State<ShoppingCart> {
   Future<void> _updateQuantity(String docId, int newQuantity) async {
     if (newQuantity < 1) return;
 
-    try {
-      await FirebaseFirestore.instance
-          .collection('cart_items')
-          .doc(docId)
-          .update({
-        'quantity': newQuantity,
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
+    setState(() {
+      final index = cartItems.indexWhere((item) => item['docId'] == docId);
+      if (index != -1) cartItems[index]['quantity'] = newQuantity;
+    });
 
-      setState(() {
-        final index = cartItems.indexWhere((item) => item['docId'] == docId);
-        if (index != -1) {
-          cartItems[index]['quantity'] = newQuantity;
-        }
+    try {
+      await FirebaseFirestore.instance.collection('cart_items').doc(docId).update({
+        'quantity': newQuantity,
       });
     } catch (e) {
       debugPrint('Error updating quantity: $e');
+      _loadCartItems();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to update quantity'), backgroundColor: Colors.red),
+          _buildSnackBar('Failed to update quantity', isError: true),
         );
       }
     }
   }
 
   Future<void> _removeItem(String docId) async {
+    final removedItem = cartItems.firstWhere((item) => item['docId'] == docId);
+    
+    setState(() {
+      cartItems.removeWhere((item) => item['docId'] == docId);
+      selectedItems.remove(docId);
+      if (cartItems.isEmpty) selectAll = false;
+    });
+
     try {
       await FirebaseFirestore.instance.collection('cart_items').doc(docId).delete();
-
-      setState(() {
-        cartItems.removeWhere((item) => item['docId'] == docId);
-        selectedItems.remove(docId);
-        if (cartItems.isEmpty) selectAll = false;
-      });
-
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Item removed'), backgroundColor: Color(0xFF388E3C)),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(_buildSnackBar('Item removed'));
       }
     } catch (e) {
       debugPrint('Error removing item: $e');
+      setState(() => cartItems.add(removedItem));
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to remove item'), backgroundColor: Colors.red),
+          _buildSnackBar('Failed to remove item', isError: true),
         );
       }
     }
@@ -120,25 +112,17 @@ class _ShoppingCartState extends State<ShoppingCart> {
           .collection('user_profile')
           .doc(currentUser!.uid)
           .get();
-      if (doc.exists) {
-        return (doc.data()?['address'] as Map<String, dynamic>?);
-      }
+      return doc.exists ? (doc.data()?['address'] as Map<String, dynamic>?) : null;
     } catch (e) {
       debugPrint('Error loading address: $e');
+      return null;
     }
-    return null;
   }
-
-  // --- Selection Logic ---
 
   void _toggleSelectAll() {
     setState(() {
       selectAll = !selectAll;
-      if (selectAll) {
-        selectedItems = cartItems.map((item) => item['docId'] as String).toSet();
-      } else {
-        selectedItems.clear();
-      }
+      selectedItems = selectAll ? cartItems.map((item) => item['docId'] as String).toSet() : {};
     });
   }
 
@@ -149,21 +133,15 @@ class _ShoppingCartState extends State<ShoppingCart> {
         selectAll = false;
       } else {
         selectedItems.add(docId);
-        if (selectedItems.length == cartItems.length && cartItems.isNotEmpty) {
-          selectAll = true;
-        }
+        selectAll = selectedItems.length == cartItems.length;
       }
     });
   }
 
   double _calculateSelectedTotal() {
-    double total = 0;
-    for (var item in cartItems) {
-      if (selectedItems.contains(item['docId'])) {
-        total += (item['productPrice'] ?? 0) * (item['quantity'] ?? 1);
-      }
-    }
-    return total;
+    return cartItems
+        .where((item) => selectedItems.contains(item['docId']))
+        .fold(0.0, (sum, item) => sum + ((item['productPrice'] ?? 0) * (item['quantity'] ?? 1)).toDouble());
   }
 
   int _calculateGreenCoins() {
@@ -181,93 +159,88 @@ class _ShoppingCartState extends State<ShoppingCart> {
   Future<void> _proceedToCheckout() async {
     if (selectedItems.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select items to checkout'), backgroundColor: Colors.orange),
+        _buildSnackBar('Please select items to checkout', isWarning: true),
       );
       return;
     }
 
     final userAddress = await _loadUserAddress();
-    final selectedItemsData = cartItems
-        .where((item) => selectedItems.contains(item['docId']))
-        .toList();
+    final selectedItemsData = cartItems.where((item) => selectedItems.contains(item['docId'])).toList();
 
     if (mounted) {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => Checkout(
-            selectedItems: selectedItemsData,
-            userAddress: userAddress,
-          ),
+          builder: (context) => Checkout(selectedItems: selectedItemsData, userAddress: userAddress),
         ),
       ).then((_) => _loadCartItems());
     }
   }
 
-  // --- Main Build ---
+  SnackBar _buildSnackBar(String message, {bool isError = false, bool isWarning = false}) {
+    return SnackBar(
+      content: Text(message, style: const TextStyle(fontFamily: 'Roboto', fontWeight: FontWeight.w500)),
+      backgroundColor: isError ? const Color(0xFFD32F2F) : isWarning ? const Color(0xFFF57C00) : const Color(0xFF2E7D32),
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: const EdgeInsets.all(16),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final int greenCoinsToEarn = _calculateGreenCoins();
+    final greenCoinsToEarn = _calculateGreenCoins();
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: const Color(0xFFF1F8F4),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Color(0xFF1B5E20), size: 20),
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           'Shopping Cart',
-          style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+          style: TextStyle(fontFamily: 'Roboto', fontWeight: FontWeight.w700, fontSize: 20, color: Color(0xFF1B5E20), letterSpacing: 0.5),
         ),
         centerTitle: true,
         actions: [
           if (cartItems.isNotEmpty)
-            TextButton(
+            TextButton.icon(
               onPressed: _toggleSelectAll,
-              child: Text(
-                selectAll ? 'Deselect All' : 'Select All',
-                style: const TextStyle(color: Color(0xFF388E3C), fontWeight: FontWeight.w600),
+              icon: Icon(selectAll ? Icons.check_circle : Icons.check_circle_outline, size: 18, color: const Color(0xFF2E7D32)),
+              label: Text(
+                selectAll ? 'Deselect' : 'Select All',
+                style: const TextStyle(fontFamily: 'Roboto', color: Color(0xFF2E7D32), fontWeight: FontWeight.w600, fontSize: 14),
               ),
             ),
         ],
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF388E3C)))
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFF2E7D32), strokeWidth: 3))
           : cartItems.isEmpty
               ? const _EmptyCartView()
               : Column(
                   children: [
-                    // 1. Green Coins Banner
-                    if (greenCoinsToEarn > 0)
-                      _GreenCoinsBanner(coins: greenCoinsToEarn),
-
-                    // 2. Cart List
+                    if (greenCoinsToEarn > 0) _GreenCoinsBanner(coins: greenCoinsToEarn),
                     Expanded(
                       child: RefreshIndicator(
-                        color: const Color(0xFF388E3C),
+                        color: const Color(0xFF2E7D32),
                         onRefresh: _loadCartItems,
                         child: ListView.builder(
-                          padding: const EdgeInsets.only(bottom: 20),
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           itemCount: cartItems.length,
-                          itemBuilder: (context, index) {
-                            final item = cartItems[index];
-                            return _CartItemTile(
-                              item: item,
-                              isSelected: selectedItems.contains(item['docId']),
-                              onToggle: () => _toggleItemSelection(item['docId']),
-                              onQuantityChanged: (qty) => _updateQuantity(item['docId'], qty),
-                              onRemove: () => _removeItem(item['docId']),
-                            );
-                          },
+                          itemBuilder: (context, index) => _CartItemTile(
+                            item: cartItems[index],
+                            isSelected: selectedItems.contains(cartItems[index]['docId']),
+                            onToggle: () => _toggleItemSelection(cartItems[index]['docId']),
+                            onQuantityChanged: (qty) => _updateQuantity(cartItems[index]['docId'], qty),
+                            onRemove: () => _removeItem(cartItems[index]['docId']),
+                          ),
                         ),
                       ),
                     ),
-
-                    // 3. Bottom Checkout Bar
                     _CheckoutBottomBar(
                       itemCount: selectedItems.length,
                       totalPrice: _calculateSelectedTotal(),
@@ -279,10 +252,6 @@ class _ShoppingCartState extends State<ShoppingCart> {
   }
 }
 
-// ==============================================================================
-// SUB-WIDGETS (Extracted for readability)
-// ==============================================================================
-
 class _EmptyCartView extends StatelessWidget {
   const _EmptyCartView();
 
@@ -292,17 +261,15 @@ class _EmptyCartView extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.shopping_cart_outlined, size: 100, color: Colors.grey[400]),
-          const SizedBox(height: 16),
-          Text(
-            'Your cart is empty',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+          Container(
+            padding: const EdgeInsets.all(24),
+            decoration: const BoxDecoration(color: Color(0xFFE8F5E9), shape: BoxShape.circle),
+            child: const Icon(Icons.shopping_cart_outlined, size: 80, color: Color(0xFF66BB6A)),
           ),
+          const SizedBox(height: 24),
+          const Text('Your cart is empty', style: TextStyle(fontFamily: 'Roboto', fontSize: 24, fontWeight: FontWeight.w700, color: Color(0xFF1B5E20))),
           const SizedBox(height: 8),
-          Text(
-            'Add items to get started',
-            style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-          ),
+          Text('Start shopping for sustainable products!', style: TextStyle(fontFamily: 'Roboto', fontSize: 16, fontWeight: FontWeight.w400, color: Colors.grey[600])),
         ],
       ),
     );
@@ -316,35 +283,40 @@ class _GreenCoinsBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(12),
+      margin: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFFF0FDF4), Color(0xFFDCFCE7)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF388E3C).withOpacity(0.3)),
+        gradient: const LinearGradient(colors: [Color(0xFFE8F5E9), Color(0xFFC8E6C9)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: const Color(0xFF66BB6A), width: 2),
+        boxShadow: [BoxShadow(color: Color(0xFF2E7D32), blurRadius: 8, offset: Offset(0, 4))],
       ),
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
-            decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-            child: Image.asset(
-              'assets/images/icon/Green Coin.png',
-              width: 24, height: 24,
-              errorBuilder: (_, __, ___) => const Icon(Icons.eco, color: Color(0xFF388E3C), size: 24),
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.circle,
+              boxShadow: [BoxShadow(color: Color(0xFF2E7D32), blurRadius: 8, offset: Offset(0, 2))],
             ),
+            child: Image.asset('assets/images/icon/Green Coin.png', width: 28, height: 28,
+                errorBuilder: (_, __, ___) => const Icon(Icons.eco, color: Color(0xFF2E7D32), size: 28)),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
-            child: Text(
-              'You\'ll earn $coins Green Coins with this purchase!',
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF388E3C)),
+            child: RichText(
+              text: TextSpan(
+                style: const TextStyle(fontFamily: 'Roboto', fontSize: 15, color: Color(0xFF1B5E20), fontWeight: FontWeight.w500),
+                children: [
+                  const TextSpan(text: 'You\'ll earn '),
+                  TextSpan(text: '$coins Green Coins', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: Color(0xFF2E7D32))),
+                  const TextSpan(text: ' with this purchase!'),
+                ],
+              ),
             ),
           ),
+          const Icon(Icons.arrow_forward_ios, size: 16, color: Color(0xFF2E7D32)),
         ],
       ),
     );
@@ -356,21 +328,16 @@ class _CheckoutBottomBar extends StatelessWidget {
   final double totalPrice;
   final VoidCallback? onCheckout;
 
-  const _CheckoutBottomBar({
-    required this.itemCount,
-    required this.totalPrice,
-    required this.onCheckout,
-  });
+  const _CheckoutBottomBar({required this.itemCount, required this.totalPrice, required this.onCheckout});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: Colors.white,
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 8, offset: const Offset(0, -2)),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 16, offset: const Offset(0, -4))],
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SafeArea(
         child: Row(
@@ -380,15 +347,11 @@ class _CheckoutBottomBar extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    'Total ($itemCount items)',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey[800]),
-                  ),
+                  Text('Total ($itemCount ${itemCount == 1 ? 'item' : 'items'})', 
+                      style: const TextStyle(fontFamily: 'Roboto', fontSize: 14, fontWeight: FontWeight.w500, color: Color(0xFF616161))),
                   const SizedBox(height: 4),
-                  Text(
-                    'RM ${totalPrice.toStringAsFixed(2)}',
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF388E3C)),
-                  ),
+                  Text('RM ${totalPrice.toStringAsFixed(2)}', 
+                      style: const TextStyle(fontFamily: 'Roboto', fontSize: 28, fontWeight: FontWeight.w800, color: Color(0xFF2E7D32), letterSpacing: -0.5)),
                 ],
               ),
             ),
@@ -396,13 +359,9 @@ class _CheckoutBottomBar extends StatelessWidget {
             CustomButton(
               text: "Checkout",
               onPressed: onCheckout ?? () {},
-              // CustomButton doesn't support disabled styling automatically based on null onPressed 
-              // like ElevatedButton, so we handle opacity or logic here if strict visual feedback is needed.
-              // However, since we are just replacing the widget, we'll rely on the logic passed in.
-              // To mimic disabled state visually if onPressed is practically null (handled by parent logic):
-              backgroundColor: onCheckout == null ? Colors.grey : const Color(0xFF388E3C),
-              minimumSize: const Size(140, 50),
-              borderRadius: 12,
+              backgroundColor: onCheckout == null ? Colors.grey[400]! : const Color(0xFF2E7D32),
+              minimumSize: const Size(150, 56),
+              borderRadius: 16,
             ),
           ],
         ),
@@ -428,143 +387,148 @@ class _CartItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final int quantity = item['quantity'] ?? 1;
-    final double price = (item['productPrice'] ?? 0).toDouble();
-    final bool isPreowned = item['isPreowned'] ?? false;
+    final quantity = item['quantity'] ?? 1;
+    final price = (item['productPrice'] ?? 0).toDouble();
+    final isPreowned = item['isPreowned'] ?? false;
 
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      elevation: 1,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      margin: const EdgeInsets.only(bottom: 12),
+      elevation: isSelected ? 4 : 1,
+      shadowColor: isSelected ? const Color(0xFF2E7D32).withOpacity(0.3) : Colors.black.withOpacity(0.1),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: isSelected ? const BorderSide(color: Color(0xFF2E7D32), width: 2) : BorderSide.none,
+      ),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Checkbox(
-              value: isSelected,
-              onChanged: (_) => onToggle(),
-              activeColor: const Color(0xFF388E3C),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+            Transform.scale(
+              scale: 1.2,
+              child: Checkbox(
+                value: isSelected,
+                onChanged: (_) => onToggle(),
+                activeColor: const Color(0xFF2E7D32),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+              ),
             ),
-            
-            // Image with Pre-owned Badge
+            const SizedBox(width: 8),
             Stack(
               children: [
                 ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
                   child: Container(
-                    width: 80, height: 80,
-                    color: Colors.grey[200],
+                    width: 90,
+                    height: 90,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      border: Border.all(color: Colors.grey[300]!),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     child: item['imageUrl'] != null && item['imageUrl'].isNotEmpty
                         ? Image.asset(item['imageUrl'], fit: BoxFit.cover,
-                            errorBuilder: (_,__,___) => const Icon(Icons.image, color: Colors.grey))
-                        : const Icon(Icons.image, color: Colors.grey),
+                            errorBuilder: (_, __, ___) => const Icon(Icons.image_outlined, color: Colors.grey, size: 40))
+                        : const Icon(Icons.image_outlined, color: Colors.grey, size: 40),
                   ),
                 ),
                 if (isPreowned)
                   Positioned(
-                    top: 4, left: 4,
+                    top: 6,
+                    left: 6,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF2E5BFF),
-                        borderRadius: BorderRadius.circular(6),
+                        gradient: const LinearGradient(colors: [Color(0xFF1976D2), Color(0xFF2196F3)]),
+                        borderRadius: BorderRadius.circular(8),
+                        boxShadow: [BoxShadow(color: Colors.blue.withOpacity(0.4), blurRadius: 4, offset: const Offset(0, 2))],
                       ),
-                      child: Row(
+                      child: const Row(
                         mainAxisSize: MainAxisSize.min,
-                        children: const [
-                          Icon(Icons.recycling, size: 10, color: Colors.white),
-                          SizedBox(width: 2),
-                          Text(
-                            'Pre-owned',
-                            style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
-                          ),
+                        children: [
+                          Icon(Icons.recycling, size: 11, color: Colors.white),
+                          SizedBox(width: 3),
+                          Text('Pre-owned', style: TextStyle(fontFamily: 'Roboto', color: Colors.white, fontSize: 10, fontWeight: FontWeight.w700, letterSpacing: 0.3)),
                         ],
                       ),
                     ),
                   ),
               ],
             ),
-            
             const SizedBox(width: 12),
-            
-            // Details
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     item['productName'] ?? 'Unknown Product',
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black87),
+                    style: const TextStyle(fontFamily: 'Roboto', fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF212121), height: 1.3),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   if (item['seller'] != null)
-                    Text(
-                      'By ${item['seller']}',
-                      style: TextStyle(fontSize: 13, color: Colors.grey[800]),
-                    ),
-                  
+                    Text('by ${item['seller']}', style: TextStyle(fontFamily: 'Roboto', fontSize: 13, fontWeight: FontWeight.w400, color: Colors.grey[600])),
                   if (isPreowned) ...[
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        const Icon(Icons.eco, size: 14, color: Color(0xFF388E3C)),
-                        const SizedBox(width: 4),
-                        Text(
-                          'Earn ${(price * quantity).floor()} Green Coins',
-                          style: const TextStyle(fontSize: 12, color: Color(0xFF388E3C), fontWeight: FontWeight.w600),
-                        ),
-                      ],
+                    const SizedBox(height: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(color: const Color(0xFFE8F5E9), borderRadius: BorderRadius.circular(8)),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.eco, size: 14, color: Color(0xFF2E7D32)),
+                          const SizedBox(width: 4),
+                          Text('Earn ${(price * quantity).floor()} coins',
+                              style: const TextStyle(fontFamily: 'Roboto', fontSize: 12, color: Color(0xFF2E7D32), fontWeight: FontWeight.w700)),
+                        ],
+                      ),
                     ),
                   ],
-                  
                   const SizedBox(height: 8),
-                  Text(
-                    'RM ${price.toStringAsFixed(2)}',
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF388E3C)),
-                  ),
-                  
-                  const SizedBox(height: 12),
-                  
-                  // Controls
+                  Text('RM ${price.toStringAsFixed(2)}',
+                      style: const TextStyle(fontFamily: 'Roboto', fontSize: 20, fontWeight: FontWeight.w800, color: Color(0xFF2E7D32), letterSpacing: -0.5)),
+                  const SizedBox(height: 10),
                   Row(
                     children: [
                       Container(
                         height: 36,
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey[300]!),
-                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.white,
+                          border: Border.all(color: const Color(0xFFBDBDBD), width: 1.5),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
-                              icon: const Icon(Icons.remove, size: 16),
+                              icon: const Icon(Icons.remove, size: 18),
                               onPressed: quantity > 1 ? () => onQuantityChanged(quantity - 1) : null,
                               padding: const EdgeInsets.symmetric(horizontal: 8),
-                              constraints: const BoxConstraints(),
+                              constraints: const BoxConstraints(minWidth: 36),
+                              color: quantity > 1 ? const Color(0xFF2E7D32) : Colors.grey[400],
                             ),
                             Container(
                               width: 32,
                               alignment: Alignment.center,
-                              child: Text('$quantity', style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
+                              child: Text('$quantity', style: const TextStyle(fontFamily: 'Roboto', fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF212121))),
                             ),
                             IconButton(
-                              icon: const Icon(Icons.add, size: 16),
+                              icon: const Icon(Icons.add, size: 18),
                               onPressed: () => onQuantityChanged(quantity + 1),
                               padding: const EdgeInsets.symmetric(horizontal: 8),
-                              constraints: const BoxConstraints(),
+                              constraints: const BoxConstraints(minWidth: 36),
+                              color: const Color(0xFF2E7D32),
                             ),
                           ],
                         ),
                       ),
                       const Spacer(),
                       IconButton(
-                        icon: const Icon(Icons.delete_outline, color: Colors.red),
+                        icon: const Icon(Icons.delete_outline, size: 24),
                         onPressed: onRemove,
+                        color: const Color(0xFFD32F2F),
+                        tooltip: 'Remove item',
                       ),
                     ],
                   ),

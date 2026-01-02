@@ -18,7 +18,6 @@ import '../pages/feature/sell_second_hand_product.dart';
 import '../pages/feature/sustainability_dashboard.dart';
 import '../pages/user_profile/user_profile.dart';
 import '../pages/user_profile/edit_profile.dart';
-import '../pages/checkout/order_status.dart';
 import '../pages/e-commerce/preowned_main_page.dart';
 import '../pages/e-commerce/category_filter.dart';
 import '../pages/quiz/quiz_start_page.dart';
@@ -60,8 +59,6 @@ final Map routes = {
   "/sustainability-dashboard": (context) => const DashboardPage(),
   "/user-profile": (context) => const UserProfile(),
   "/edit-profile": (context) => const EditProfile(),
-  "/order-status": (context, {arguments}) =>
-      OrderStatus(orderId: arguments['orderId'] as String),
   "/preowned-main-page": (context) => const PreownedMainPage(),
   "/category-filter": (context) => const CategoryFilterPage(),
   "/quiz-start-page": (context) => const QuizStartPage(),
