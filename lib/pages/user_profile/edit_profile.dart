@@ -9,14 +9,12 @@ import 'package:intl/intl.dart';
 import 'dart:convert';
 import 'dart:io';
 
-// Import your custom widgets
 import '../../utils/address_form.dart';
 import '../../utils/router.dart';
 import '../../widget/custom_text_field.dart';
 import '../../widget/custom_button.dart';
-import '../../widget/section_header.dart';
 
-// If running standalone
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -244,7 +242,7 @@ class _EditProfileState extends State<EditProfile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50], // Light grey bg
+      backgroundColor: Colors.grey[50], 
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.white,
@@ -280,7 +278,6 @@ class _EditProfileState extends State<EditProfile> {
                     _buildAvatarSection(),
                     const SizedBox(height: 32),
 
-                    // Personal Info Section
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
@@ -297,7 +294,7 @@ class _EditProfileState extends State<EditProfile> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SectionHeader(
+                          _buildSectionHeader(
                             title: 'Personal Information',
                             subtitle: 'Update your personal details',
                           ),
@@ -313,7 +310,7 @@ class _EditProfileState extends State<EditProfile> {
                             controller: _emailController,
                             label: 'Email',
                             hintText: 'Email address',
-                            readOnly: true, // Uses your custom widget property
+                            readOnly: true, 
                           ),
                           const SizedBox(height: 20),
                           CustomTextField(
@@ -341,7 +338,6 @@ class _EditProfileState extends State<EditProfile> {
 
                     const SizedBox(height: 24),
 
-                    // Address Section
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
@@ -358,7 +354,7 @@ class _EditProfileState extends State<EditProfile> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SectionHeader(
+                          _buildSectionHeader(
                             title: 'Address',
                             subtitle: 'Where should we deliver your orders?',
                           ),
@@ -369,7 +365,7 @@ class _EditProfileState extends State<EditProfile> {
                             cityController: _cityController,
                             postalController: _postalController,
                             selectedState:
-                                selectedState, // Updated parameter name
+                                selectedState, 
                             onStateChanged: (value) {
                               setState(() => selectedState = value);
                             },
@@ -380,7 +376,6 @@ class _EditProfileState extends State<EditProfile> {
 
                     const SizedBox(height: 32),
 
-                    // Save Button
                     CustomButton(
                       text: "Save Changes",
                       onPressed: _uploadProfileChanges,
@@ -397,6 +392,41 @@ class _EditProfileState extends State<EditProfile> {
             ),
     );
   }
+
+/// Section header - replaces SectionHeader widget
+Widget _buildSectionHeader({
+  required String title,
+  String? subtitle,
+}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        title,
+        style: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Color(0xFF1A1A1A),
+          fontFamily: 'Manrope',
+        ),
+      ),
+      if (subtitle != null) ...[
+        const SizedBox(height: 4),
+        Text(
+          subtitle,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+            fontFamily: 'Manrope',
+            height: 1.4,
+          ),
+        ),
+      ],
+      const SizedBox(height: 16),
+    ],
+  );
+}
 
   Widget _buildAvatarSection() {
     return Center(

@@ -1,7 +1,5 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import '../../widget/section_header.dart';
-import '../../widget/section_container.dart';
 import '../../widget/image_picker_widget.dart';
 import '../../utils/waste_classification.dart';
 import '../../widget/result_card.dart';
@@ -153,12 +151,12 @@ class _WasteClassificationPageState extends State<WasteClassificationPage> {
             ),
 
             // Image picker section
-            SectionContainer(
+            _buildSectionContainer(
               backgroundColor: const Color(0xFFF5F5F5),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SectionHeader(
+                  _buildSectionHeader(
                     title: 'Upload Image',
                     subtitle: 'Take a photo or choose from gallery',
                   ),
@@ -173,18 +171,18 @@ class _WasteClassificationPageState extends State<WasteClassificationPage> {
 
             // Loading or Result section
             if (_isLoading)
-              SectionContainer(
+              _buildSectionContainer(
                 backgroundColor: const Color(0xFFF5F5F5),
                 child: const LoadingWidget(),
               ),
 
             if (_result != null && !_isLoading)
-              SectionContainer(
+              _buildSectionContainer(
                 backgroundColor: const Color(0xFFF5F5F5),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SectionHeader(
+                    _buildSectionHeader(
                       title: 'Classification Result',
                     ),
                     ResultCard(result: _result!),
@@ -226,7 +224,7 @@ class _WasteClassificationPageState extends State<WasteClassificationPage> {
 
             // Placeholder for future content
             if (_result == null && !_isLoading && _selectedImage == null)
-              SectionContainer(
+              _buildSectionContainer(
                 backgroundColor: const Color(0xFFF5F5F5),
                 child: Container(
                   padding: const EdgeInsets.all(40),
@@ -272,4 +270,55 @@ class _WasteClassificationPageState extends State<WasteClassificationPage> {
       ),
     );
   }
+    // ==================== REUSABLE UI HELPERS ====================
+
+/// Section container - replaces SectionContainer widget
+Widget _buildSectionContainer({
+  required Widget child,
+  EdgeInsetsGeometry padding = const EdgeInsets.all(20),
+  Color backgroundColor = Colors.white,
+}) {
+  return Container(
+    width: double.infinity,
+    color: backgroundColor,
+    padding: padding,
+    margin: const EdgeInsets.only(bottom: 8),
+    child: child,
+  );
+}
+
+/// Section header - replaces SectionHeader widget
+Widget _buildSectionHeader({
+  required String title,
+  String? subtitle,
+}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        title,
+        style: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Color(0xFF1A1A1A),
+          fontFamily: 'Manrope',
+        ),
+      ),
+      if (subtitle != null) ...[
+        const SizedBox(height: 4),
+        Text(
+          subtitle,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+            fontFamily: 'Manrope',
+            height: 1.4,
+          ),
+        ),
+      ],
+      const SizedBox(height: 16),
+    ],
+  );
+}
 }

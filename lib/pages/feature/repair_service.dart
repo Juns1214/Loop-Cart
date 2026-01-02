@@ -15,11 +15,9 @@ import '../../utils/repair_option.dart';
 import '../../utils/router.dart';
 import '../checkout/payment.dart';
 
-// Widgets
 import '../../widget/custom_button.dart';
 import '../../widget/custom_text_field.dart';
 import '../../widget/image_picker_widget.dart';
-import '../../widget/section_header.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -254,7 +252,7 @@ class _RepairServicePageState extends State<RepairServicePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SectionHeader(
+                    _buildSectionHeader(
                       title: "Item Information",
                       subtitle: "Schedule a repair to extend your item's life.",
                     ),
@@ -291,7 +289,7 @@ class _RepairServicePageState extends State<RepairServicePage> {
                     ),
                     const SizedBox(height: 32),
 
-                    const SectionHeader(title: "Schedule & Location"),
+                    _buildSectionHeader(title: "Schedule & Location"),
                     SyncfusionDateTimePicker(
                       onDateTimeSelected: (d, t) => setState(() {
                         selectedDate = d;
@@ -345,7 +343,7 @@ class _RepairServicePageState extends State<RepairServicePage> {
                       ),
                     const SizedBox(height: 32),
 
-                    const SectionHeader(title: "Repair Options"),
+                    _buildSectionHeader(title: "Repair Options"),
                     RepairOptionSelector(
                       initialSelection: selectedRepair,
                       onSelectionChanged: (r) =>
@@ -379,4 +377,39 @@ class _RepairServicePageState extends State<RepairServicePage> {
             ),
     );
   }
+
+
+Widget _buildSectionHeader({
+  required String title,
+  String? subtitle,
+}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        title,
+        style: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Color(0xFF1A1A1A),
+          fontFamily: 'Manrope',
+        ),
+      ),
+      if (subtitle != null) ...[
+        const SizedBox(height: 4),
+        Text(
+          subtitle,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+            fontFamily: 'Manrope',
+            height: 1.4,
+          ),
+        ),
+      ],
+      const SizedBox(height: 16),
+    ],
+  );
+}
 }

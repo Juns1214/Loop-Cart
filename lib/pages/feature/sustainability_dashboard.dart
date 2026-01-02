@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../utils/bar_chart.dart';
 import '../../utils/router.dart';
-import '../../widget/section_header.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -310,7 +309,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           const SizedBox(height: 24),
 
                           // 2. Recycling Category Breakdown (NEW)
-                          const SectionHeader(
+                          _buildSectionHeader(
                             title: "Recycling Breakdown",
                             subtitle: "Items recycled by category",
                           ),
@@ -432,7 +431,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           const SizedBox(height: 24),
 
                           // 3. Donation Chart
-                          const SectionHeader(
+                          _buildSectionHeader(
                             title: "Donation Overview",
                             subtitle: "Where your contributions are going",
                           ),
@@ -480,7 +479,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           const SizedBox(height: 24),
 
                           // 4. Achievements / Badges Section (IMPROVED SIZE)
-                          const SectionHeader(
+                          _buildSectionHeader(
                             title: "Achievements",
                             subtitle: "Unlock badges by reaching milestones",
                           ),
@@ -551,7 +550,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           const SizedBox(height: 24),
 
                           // 5. Goals Section
-                          const SectionHeader(
+                          _buildSectionHeader(
                             title: "Monthly Goals",
                             subtitle: "Track your progress targets",
                           ),
@@ -592,6 +591,41 @@ class _DashboardPageState extends State<DashboardPage> {
             ),
     );
   }
+
+/// Section header - replaces SectionHeader widget
+Widget _buildSectionHeader({
+  required String title,
+  String? subtitle,
+}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        title,
+        style: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Color(0xFF1A1A1A),
+          fontFamily: 'Manrope',
+        ),
+      ),
+      if (subtitle != null) ...[
+        const SizedBox(height: 4),
+        Text(
+          subtitle,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+            fontFamily: 'Manrope',
+            height: 1.4,
+          ),
+        ),
+      ],
+      const SizedBox(height: 16),
+    ],
+  );
+}
 
   Widget _buildSummaryHeader() {
     return Container(

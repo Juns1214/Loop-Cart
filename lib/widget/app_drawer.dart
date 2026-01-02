@@ -16,16 +16,18 @@ class AppDrawer extends StatelessWidget {
             child: Row(
               children: [
                 const CircleAvatar(
-                  radius: 30,
-                  backgroundImage: AssetImage('assets/images/icon/LogoIcon.png'),
+                  radius: 40,
+                  backgroundImage: AssetImage(
+                    'assets/images/icon/LogoIcon.png',
+                  ),
                 ),
                 const SizedBox(width: 16),
                 const Text(
                   'Loop Cart',
                   style: TextStyle(
                     fontFamily: 'Manrope',
-                    color: Color(0xFF388E3C),
-                    fontSize: 18,
+                    color: Color(0xFF1B5E20),
+                    fontSize: 25,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -70,8 +72,10 @@ class AppDrawer extends StatelessWidget {
             title: 'Sustainability & Impact',
             iconPath: 'assets/images/icon/SustainabilityIcon.png',
             children: [
-              _buildDrawerItem(context, 'Green Coin', () {Navigator.pop(context);
-                Navigator.pushNamed(context, '/green-coin');}),
+              _buildDrawerItem(context, 'Green Coin', () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/green-coin');
+              }),
               _buildDrawerItem(context, 'Analytics Dashboard', () {
                 Navigator.pop(context);
                 onNavigate(3);
@@ -101,29 +105,67 @@ class AppDrawer extends StatelessWidget {
     );
   }
 
-  Widget _buildExpansionTile(BuildContext context,
-      {required String title,
-      required String iconPath,
-      required List<Widget> children}) {
+  Widget _buildExpansionTile(
+    BuildContext context, {
+    required String title,
+    required String iconPath,
+    required List<Widget> children,
+  }) {
     return ExpansionTile(
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.black87)),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontFamily: 'Roboto',
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: Colors.black87,
+        ),
+      ),
       leading: Image.asset(iconPath, fit: BoxFit.fill, width: 40, height: 40),
-      children: children.map((child) => Column(children: [const Divider(height: 1), child])).toList(),
+      // Wrap each item with a divider above it
+      children: children
+          .map((child) => Column(children: [const Divider(height: 1), child]))
+          .toList(),
     );
   }
 
-  Widget _buildDrawerItem(BuildContext context, String title, VoidCallback onTap) {
+  Widget _buildDrawerItem(
+    BuildContext context,
+    String title,
+    VoidCallback onTap,
+  ) {
     return ListTile(
       contentPadding: const EdgeInsets.symmetric(horizontal: 32),
-      title: Text(title, style: const TextStyle(fontSize: 14, color: Colors.black87)),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontFamily: 'Roboto',
+          fontSize: 18,
+          color: Colors.black87,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
       onTap: onTap,
     );
   }
 
-  Widget _buildListTile(BuildContext context, String title, String iconPath, VoidCallback onTap) {
+  Widget _buildListTile(
+    BuildContext context,
+    String title,
+    String iconPath,
+    VoidCallback onTap,
+  ) {
     return ListTile(
       leading: Image.asset(iconPath, fit: BoxFit.fill, width: 40, height: 40),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.black87)),
+      title: Text(
+        title,
+        style: const TextStyle(
+          fontFamily: 'Roboto',
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          color: Colors.black87,
+        ),
+      ),
       onTap: onTap,
     );
   }

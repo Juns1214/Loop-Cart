@@ -27,17 +27,20 @@ class _SwiperState extends State<Swiper> {
     super.initState();
     _pageController = PageController(initialPage: 0);
 
-    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      if (!mounted) return;
+    // Only start timer if there are pages to swipe
+    if (widget.pages.length > 1) {
+      _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+        if (!mounted) return;
 
-      _currentIndex = (_currentIndex + 1) % widget.pages.length;
+        _currentIndex = (_currentIndex + 1) % widget.pages.length;
 
-      _pageController.animateToPage(
-        _currentIndex,
-        duration: const Duration(milliseconds: 400),
-        curve: Curves.easeInOut,
-      );
-    });
+        _pageController.animateToPage(
+          _currentIndex,
+          duration: const Duration(milliseconds: 400),
+          curve: Curves.easeInOut,
+        );
+      });
+    }
   }
 
   @override
@@ -49,6 +52,21 @@ class _SwiperState extends State<Swiper> {
 
   @override
   Widget build(BuildContext context) {
+    // Handle empty pages
+    if (widget.pages.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    // Single page - no need for PageView
+    if (widget.pages.length == 1) {
+      return SizedBox(
+        height: widget.height,
+        width: widget.width,
+        child: widget.pages.first,
+      );
+    }
+
+    // Multiple pages - use PageView with indicators
     return Stack(
       children: [
         SizedBox(
@@ -60,9 +78,7 @@ class _SwiperState extends State<Swiper> {
               setState(() => _currentIndex = index);
             },
             itemCount: widget.pages.length,
-            itemBuilder: (context, index) {
-              return widget.pages[index];
-            },
+            itemBuilder: (context, index) => widget.pages[index],
           ),
         ),
         Positioned(

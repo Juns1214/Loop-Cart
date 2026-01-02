@@ -11,9 +11,9 @@ class CustomTextField extends StatelessWidget {
   final String? Function(String?)? validator;
   final List<TextInputFormatter>? inputFormatters;
   final ValueChanged<String>? onChanged;
-  final int maxLines; 
+  final int maxLines;
   final bool readOnly;
-  final VoidCallback? onTap; 
+  final VoidCallback? onTap;
 
   const CustomTextField({
     super.key,
@@ -41,7 +41,7 @@ class CustomTextField extends StatelessWidget {
           style: const TextStyle(
             fontFamily: 'Manrope',
             fontSize: 15,
-            color: Color(0xFF1B5E20), 
+            color: Color(0xFF1B5E20),
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -73,7 +73,7 @@ class CustomTextField extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: const BorderSide(color: Color(0xFF2E5BFF), width: 2),
+              borderSide: const BorderSide(color: Color(0xFF388E3C), width: 2),
             ),
             hintText: hintText,
             hintStyle: TextStyle(
@@ -87,7 +87,16 @@ class CustomTextField extends StatelessWidget {
               fontWeight: FontWeight.bold,
               fontSize: 16,
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
+            errorStyle: const TextStyle(
+              fontFamily: 'Manrope',
+              color: Colors.red,
+              fontSize: 12,
+              fontWeight: FontWeight.bold, // ← This makes the error text bold
+            ),
           ),
           validator: validator,
         ),

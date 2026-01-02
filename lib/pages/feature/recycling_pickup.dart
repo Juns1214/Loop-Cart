@@ -10,7 +10,6 @@ import '../../utils/address_form.dart';
 import '../../widget/custom_button.dart';
 import '../../widget/custom_text_field.dart';
 import '../../widget/image_picker_widget.dart';
-import '../../widget/section_header.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -233,7 +232,7 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SectionHeader(
+              _buildSectionHeader(
                 title: "Pickup Details",
                 subtitle: "Recycle items to earn Green Coins.",
               ),
@@ -325,7 +324,7 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
               ),
               const SizedBox(height: 32),
 
-              const SectionHeader(title: "Schedule & Location"),
+              _buildSectionHeader(title: "Schedule & Location"),
               SyncfusionDateTimePicker(
                 onDateTimeSelected: (d, t) => setState(() {
                   selectedDate = d;
@@ -359,4 +358,39 @@ class _RecyclingPickUpPageState extends State<RecyclingPickUpPage> {
       ),
     );
   }
+
+/// Section header - replaces SectionHeader widget
+Widget _buildSectionHeader({
+  required String title,
+  String? subtitle,
+}) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        title,
+        style: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Color(0xFF1A1A1A),
+          fontFamily: 'Manrope',
+        ),
+      ),
+      if (subtitle != null) ...[
+        const SizedBox(height: 4),
+        Text(
+          subtitle,
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+            fontFamily: 'Manrope',
+            height: 1.4,
+          ),
+        ),
+      ],
+      const SizedBox(height: 16),
+    ],
+  );
+}
 }

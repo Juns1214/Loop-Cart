@@ -24,6 +24,7 @@ import '../pages/e-commerce/category_filter.dart';
 import '../pages/quiz/quiz_start_page.dart';
 import './../pages/feature/green_coin.dart';
 import '../pages/feature/waste_sorting_assistant.dart';
+import '../pages/e-commerce/product_page.dart';
 
 //1. Set up routes
 final Map routes = {
@@ -35,7 +36,9 @@ final Map routes = {
   "/setup-preference": (context) => const SetupPreferencePage(),
   "/shopping-cart": (context) => ShoppingCart(),
   "/checkout": (context, {arguments}) => Checkout(
-    selectedItems: arguments['selectedItems'] as List<Map<String, dynamic>>,
+    selectedItems: List<Map<String, dynamic>>.from(
+        arguments['selectedItems'].map((item) => item as Map<String, dynamic>)
+    ),
     userAddress: arguments['userAddress'] is Map<String, dynamic>
         ? arguments['userAddress'] as Map<String, dynamic>
         : null,
@@ -64,6 +67,13 @@ final Map routes = {
   "/quiz-start-page": (context) => const QuizStartPage(),
   "/green-coin": (context) => const GreenCoinPage(),
   "/waste-sorting-assistant": (context) => const WasteClassificationPage(),
+  "/product-details": (context, {arguments}) {
+    final args = arguments as Map<String, dynamic>? ?? {};
+    return ProductPage(
+      product: args['product'] as Map<String, dynamic>,
+      isPreowned: args['isPreowned'] as bool? ?? false,
+    );
+  },
 };
 
 //2. Set up Route Generator (FIXED)

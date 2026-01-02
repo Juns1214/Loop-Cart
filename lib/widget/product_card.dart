@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
-import '../pages/e-commerce/product_page.dart';
-// Note: Removed preowned_product_page import as it is no longer needed
 
-class UniversalProductCard extends StatelessWidget {
+class ProductCard extends StatelessWidget {
   final Map<String, dynamic> productData;
-  final bool isGrid;      
-  final bool isPreowned;  
+  final bool isGrid;
+  final bool isPreowned;
 
-  const UniversalProductCard({
+  const ProductCard({
     super.key,
     required this.productData,
     this.isGrid = false,
@@ -16,39 +14,28 @@ class UniversalProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 1. Extract Data
-    String imageUrl = '';
-    if (isPreowned) {
-      imageUrl = productData['imageUrl1'] ?? productData['imageUrl'] ?? '';
-    } else {
-      imageUrl = productData['imageUrl'] ?? productData['image_url'] ?? '';
-    }
+    final imageUrl = _getImageUrl();
+    final name = productData['name'] ?? 'Unknown';
+    final price = (productData['price'] ?? 0).toDouble();
+    final category = productData['category'] ?? '';
+    final rating = (productData['rating'] ?? 0).toDouble();
 
-    final String name = productData['name'] ?? 'Unknown';
-    final double price = (productData['price'] ?? 0).toDouble();
-    final String category = productData['category'] ?? '';
-    final double rating = (productData['rating'] ?? 0).toDouble();
-
-    // 2. Dimensions
-    final double cardWidth = isGrid ? double.infinity : 160;
-    final double imageHeight = isGrid ? 140 : 120;
+    final cardWidth = isGrid ? null : 160.0;
+    final imageHeight = isGrid ? 140.0 : 120.0;
 
     return GestureDetector(
       onTap: () {
-        // UNIFIED NAVIGATION: Always go to ProductPage, pass the flag
-        Navigator.push(
+        Navigator.pushNamed(
           context,
-          MaterialPageRoute(
-            builder: (_) => ProductPage(
-              product: productData,
-              isPreowned: isPreowned, // Pass the flag
-            ),
-          ),
+          '/product-details',
+          arguments: {'product': productData, 'isPreowned': isPreowned},
         );
       },
       child: Container(
-        width: isGrid ? null : cardWidth,
-        margin: isGrid ? EdgeInsets.zero : const EdgeInsets.symmetric(horizontal: 8),
+        width: cardWidth,
+        margin: isGrid
+            ? EdgeInsets.zero
+            : const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
@@ -63,47 +50,55 @@ class UniversalProductCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image Area
+            // Product Image
             ClipRRect(
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(12),
+              ),
               child: Container(
                 height: imageHeight,
                 width: double.infinity,
                 color: Colors.grey.shade100,
                 child: imageUrl.isNotEmpty
-                    ? Image.asset( // Or Image.network if using URLs
+                    ? Image.asset(
                         imageUrl,
                         fit: BoxFit.cover,
                         errorBuilder: (_, __, ___) => const Center(
-                            child: Icon(Icons.image_not_supported, color: Colors.grey)),
+                          child: Icon(
+                            Icons.image_not_supported,
+                            color: Colors.grey,
+                          ),
+                        ),
                       )
-                    : const Center(child: Icon(Icons.image, color: Colors.grey)),
+                    : const Center(
+                        child: Icon(Icons.image, color: Colors.grey),
+                      ),
               ),
             ),
 
-            // Info Body
-            if (isGrid)
-              Expanded(child: _buildInfoContent(name, price, category, rating))
-            else
-              _buildInfoContent(name, price, category, rating),
+            // Product Info
+            isGrid
+                ? Expanded(child: _buildInfo(name, price, category, rating))
+                : _buildInfo(name, price, category, rating),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildInfoContent(String name, double price, String category, double rating) {
+  Widget _buildInfo(String name, double price, String category, double rating) {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Category Badge (Only show in Grid mode)
+
           if (isGrid && category.isNotEmpty) ...[
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
               decoration: BoxDecoration(
-                color: isPreowned ? Colors.blue.withOpacity(0.1) : const Color(0xFF388E3C).withOpacity(0.1),
+                color: (isPreowned ? Colors.blue : const Color(0xFF388E3C))
+                    .withOpacity(0.1),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
@@ -119,7 +114,7 @@ class UniversalProductCard extends StatelessWidget {
             const SizedBox(height: 6),
           ],
 
-          // Product Name
+          // Product name
           Text(
             name,
             maxLines: 1,
@@ -131,12 +126,10 @@ class UniversalProductCard extends StatelessWidget {
             ),
           ),
 
-          // Spacer for Grid alignment
-          if (isGrid) const Spacer() else const SizedBox(height: 4),
+          // Spacer
+          isGrid ? const Spacer() : const SizedBox(height: 4),
 
-          // SECONDARY INFO ROW
-          // For Pre-owned: We HIDE the seller/location row completely as requested.
-          // For Standard: We show the Star Rating.
+          // Rating
           if (!isPreowned) ...[
             Row(
               children: [
@@ -154,21 +147,27 @@ class UniversalProductCard extends StatelessWidget {
             ),
             const SizedBox(height: 4),
           ] else ...[
-             // Optional: You could add a small spacer here if the card looks too condensed
-             const SizedBox(height: 8), 
+            const SizedBox(height: 8),
           ],
-          
+
           // Price
           Text(
             'RM ${price.toStringAsFixed(2)}',
             style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w900,
-              color: Color(0xFF388E3C), 
+              color: Color(0xFF388E3C),
             ),
           ),
         ],
       ),
     );
+  }
+
+  String _getImageUrl() {
+    if (isPreowned) {
+      return productData['imageUrl1'] ?? productData['imageUrl'] ?? '';
+    }
+    return productData['imageUrl'] ?? productData['image_url'] ?? '';
   }
 }

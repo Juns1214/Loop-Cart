@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-// 1. Model Class for Type Safety
 class Product {
   final String id;
   final String name;
@@ -37,7 +36,6 @@ class Product {
     );
   }
 
-  // Helper for converting back to Map if needed for navigation
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -60,110 +58,99 @@ class CategoryFilterPage extends StatefulWidget {
 }
 
 class _CategoryFilterPageState extends State<CategoryFilterPage> {
-  // Constants
   static const Color _primaryColor = Color(0xFF388E3C);
+  static const Color _iconColor = Color(0xFF1B5E20);
   
+  final Map<String, IconData> _categoryIcons = {
+    'Clothing': Icons.checkroom,
+    'Dairy-Free': Icons.no_food,
+    'Eco-Friendly': Icons.nature,
+    'Fitness': Icons.fitness_center,
+    'Gluten-Free': Icons.local_dining,
+    'Gluten': Icons.bakery_dining,
+    'Halal Products': Icons.mosque,
+    'Non-Halal Products': Icons.no_meals,
+    'Nut': Icons.set_meal,
+    'Electronic & Gadget': Icons.computer,
+    'Vegan Products': Icons.eco,
+  };
+
   final List<String> _allCategories = [
     'Clothing', 'Dairy-Free', 'Eco-Friendly', 'Fitness',
     'Gluten-Free', 'Gluten', 'Halal Products', 'Non-Halal Products',
     'Nut', 'Electronic & Gadget', 'Vegan Products',
   ];
 
-  // State
   final Set<String> _selectedCategories = {};
-  List<Product> _allProductsCache = []; // Store all data here to avoid refetching
-  List<Product> _filteredResults = [];
+  List<Product> _allProducts = [];
+  List<Product> _filteredProducts = [];
   bool _isLoading = true;
-  bool _hasPreviewed = false;
+  bool _showPreview = false;
 
   @override
   void initState() {
     super.initState();
-    _fetchInitialData();
+    _loadProducts();
   }
 
-  // 2. Fetch data ONLY ONCE
-  Future<void> _fetchInitialData() async {
+  Future<void> _loadProducts() async {
     try {
-      QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('products').get();
-      
+      final snapshot = await FirebaseFirestore.instance.collection('products').get();
       setState(() {
-        _allProductsCache = snapshot.docs.map((doc) => Product.fromFirestore(doc)).toList();
-        _filteredResults = List.from(_allProductsCache); // Default to showing all
+        _allProducts = snapshot.docs.map((doc) => Product.fromFirestore(doc)).toList();
+        _filteredProducts = List.from(_allProducts);
         _isLoading = false;
       });
     } catch (e) {
-      debugPrint('Error loading products: $e');
       setState(() => _isLoading = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading data: $e'), backgroundColor: Colors.red),
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
         );
       }
     }
   }
 
-  // 3. Filter locally in memory (Instant)
-  void _runLocalFilter() {
-    if (_selectedCategories.isEmpty) {
-      setState(() {
-        _filteredResults = List.from(_allProductsCache);
-        _hasPreviewed = true;
-      });
-      return;
-    }
+  void _filterProducts() {
+    setState(() {
+      if (_selectedCategories.isEmpty) {
+        _filteredProducts = List.from(_allProducts);
+      } else {
+        _filteredProducts = _allProducts.where((product) {
+          final searchText = '${product.category} ${product.name} ${product.description}'.toLowerCase();
+          final productTags = product.tags.map((e) => e.toLowerCase()).toList();
 
-    setState(() => _isLoading = true);
-
-    // Simulate a brief delay for UI feedback (optional, remove if not needed)
-    Future.delayed(const Duration(milliseconds: 300), () {
-      final filtered = _allProductsCache.where((product) {
-        // Prepare search strings
-        final category = product.category.toLowerCase();
-        final name = product.name.toLowerCase();
-        final desc = product.description.toLowerCase();
-        final tags = product.tags.map((e) => e.toLowerCase()).toList();
-
-        // Check against selection
-        for (String selectedCat in _selectedCategories) {
-          String filterTerm = selectedCat.toLowerCase();
-          
-          bool matchesTag = tags.any((t) => t.contains(filterTerm));
-          bool matchesText = '$category $name $desc'.contains(filterTerm);
-
-          if (matchesText || matchesTag) return true;
-        }
-        return false;
-      }).toList();
-
-      if (mounted) {
-        setState(() {
-          _filteredResults = filtered;
-          _isLoading = false;
-          _hasPreviewed = true;
-        });
+          return _selectedCategories.any((category) {
+            final filter = category.toLowerCase();
+            return searchText.contains(filter) || productTags.any((tag) => tag.contains(filter));
+          });
+        }).toList();
       }
+      _showPreview = true;
     });
   }
 
   void _toggleCategory(String category) {
     setState(() {
-      if (_selectedCategories.contains(category)) {
-        _selectedCategories.remove(category);
-      } else {
-        _selectedCategories.add(category);
-      }
-      _hasPreviewed = false; // Reset preview state when selection changes
+      _selectedCategories.contains(category)
+          ? _selectedCategories.remove(category)
+          : _selectedCategories.add(category);
+      _showPreview = false;
     });
   }
 
-  void _applyAndReturn() {
-    // Ensure we send back Map<String, dynamic> to match original expectation
-    final resultList = _filteredResults.map((p) => p.toMap()).toList();
-    
+  void _clearAll() {
+    setState(() {
+      _selectedCategories.clear();
+      _filteredProducts = List.from(_allProducts);
+      _showPreview = false;
+    });
+  }
+
+  void _applyFilters() {
     Navigator.pop(context, {
       'selectedCategories': _selectedCategories.toList(),
-      'filteredProducts': resultList,
+      'filteredProducts': _filteredProducts.map((p) => p.toMap()).toList(),
     });
   }
 
@@ -171,61 +158,52 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
-      appBar: _buildAppBar(),
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Filter by Category',
+          style: TextStyle(
+            fontFamily: 'Manrope',
+            color: Colors.black,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: _clearAll,
+            child: const Text(
+              'Clear All',
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                color: _primaryColor,
+                fontSize: 15,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
       body: Column(
         children: [
-          _buildSelectionBanner(),
+          if (_selectedCategories.isNotEmpty) _buildSelectionBanner(),
           Expanded(child: _buildCategoryList()),
-          if (_hasPreviewed) _buildResultsPreviewBanner(),
-          _buildBottomActionArea(),
+          if (_showPreview) _buildPreviewBanner(),
+          _buildActionButtons(),
         ],
       ),
     );
   }
 
-  // --- UI WIDGETS EXTRACTED ---
-
-  AppBar _buildAppBar() {
-    return AppBar(
-      backgroundColor: Colors.white,
-      elevation: 0,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Colors.black),
-        onPressed: () => Navigator.pop(context),
-      ),
-      title: const Text(
-        'Filter by Category',
-        style: TextStyle(
-          fontFamily: 'Manrope', color: Colors.black, 
-          fontSize: 18, fontWeight: FontWeight.bold
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () {
-            setState(() {
-              _selectedCategories.clear();
-              _filteredResults = List.from(_allProductsCache);
-              _hasPreviewed = false;
-            });
-          },
-          child: const Text(
-            'Clear All',
-            style: TextStyle(
-              fontFamily: 'Manrope', color: _primaryColor, fontSize: 14
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildSelectionBanner() {
-    if (_selectedCategories.isEmpty) return const SizedBox.shrink();
-
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.all(16),
       color: _primaryColor.withOpacity(0.1),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -233,20 +211,22 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
           Text(
             '${_selectedCategories.length} ${_selectedCategories.length == 1 ? 'category' : 'categories'} selected',
             style: const TextStyle(
-              fontFamily: 'Manrope', color: _primaryColor, 
-              fontSize: 14, fontWeight: FontWeight.w600
+              fontFamily: 'Manrope',
+              color: _primaryColor,
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
             ),
           ),
           TextButton(
             onPressed: () => setState(() => _selectedCategories.addAll(_allCategories)),
-            style: TextButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
+            style: TextButton.styleFrom(padding: const EdgeInsets.all(8)),
             child: const Text(
               'Select All',
-              style: TextStyle(fontFamily: 'Manrope', color: _primaryColor, fontSize: 12),
+              style: TextStyle(
+                fontFamily: 'Manrope',
+                color: _primaryColor,
+                fontSize: 14,
+              ),
             ),
           ),
         ],
@@ -255,19 +235,22 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
   }
 
   Widget _buildCategoryList() {
-    if (_isLoading && _allProductsCache.isEmpty) {
-      return const Center(child: CircularProgressIndicator(color: _primaryColor));
+    if (_isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(color: _primaryColor),
+      );
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
       itemCount: _allCategories.length,
       itemBuilder: (context, index) {
         final category = _allCategories[index];
         final isSelected = _selectedCategories.contains(category);
+        final icon = _categoryIcons[category] ?? Icons.category;
 
         return Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          margin: const EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
@@ -277,10 +260,16 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
             ),
           ),
           child: CheckboxListTile(
+            secondary: Icon(
+              icon,
+              color: isSelected ? _primaryColor : _iconColor,
+              size: 24,
+            ),
             title: Text(
               category,
               style: TextStyle(
-                fontFamily: 'Manrope', fontSize: 15,
+                fontFamily: 'Manrope',
+                fontSize: 16,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
               ),
             ),
@@ -295,7 +284,7 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
     );
   }
 
-  Widget _buildResultsPreviewBanner() {
+  Widget _buildPreviewBanner() {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
@@ -306,13 +295,17 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
           const Text(
             'Results',
             style: TextStyle(
-              fontFamily: 'Manrope', fontSize: 16, fontWeight: FontWeight.bold
+              fontFamily: 'Manrope',
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
             ),
           ),
           Text(
-            '${_filteredResults.length} ${_filteredResults.length == 1 ? 'product' : 'products'}',
+            '${_filteredProducts.length} ${_filteredProducts.length == 1 ? 'product' : 'products'}',
             style: TextStyle(
-              fontFamily: 'Manrope', fontSize: 14, color: Colors.grey.shade600
+              fontFamily: 'Manrope',
+              fontSize: 15,
+              color: Colors.grey.shade600,
             ),
           ),
         ],
@@ -320,7 +313,7 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
     );
   }
 
-  Widget _buildBottomActionArea() {
+  Widget _buildActionButtons() {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -328,7 +321,8 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
-            blurRadius: 10, offset: const Offset(0, -5),
+            blurRadius: 10,
+            offset: const Offset(0, -5),
           ),
         ],
       ),
@@ -336,38 +330,40 @@ class _CategoryFilterPageState extends State<CategoryFilterPage> {
         children: [
           Expanded(
             child: OutlinedButton(
-              onPressed: (_isLoading && _allProductsCache.isEmpty) ? null : _runLocalFilter,
+              onPressed: _isLoading ? null : _filterProducts,
               style: OutlinedButton.styleFrom(
-                side: const BorderSide(color: _primaryColor),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                side: const BorderSide(color: _primaryColor, width: 2),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                padding: const EdgeInsets.symmetric(vertical: 16),
               ),
-              child: _isLoading && _filteredResults.isEmpty
-                  ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: _primaryColor))
-                  : const Text(
-                      'Preview',
-                      style: TextStyle(
-                        fontFamily: 'Manrope', color: _primaryColor, 
-                        fontSize: 16, fontWeight: FontWeight.w600
-                      ),
-                    ),
+              child: const Text(
+                'Preview',
+                style: TextStyle(
+                  fontFamily: 'Manrope',
+                  color: _primaryColor,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
             ),
           ),
           const SizedBox(width: 12),
           Expanded(
             flex: 2,
             child: ElevatedButton(
-              onPressed: (_isLoading && _allProductsCache.isEmpty) ? null : _applyAndReturn,
+              onPressed: _isLoading ? null : _applyFilters,
               style: ElevatedButton.styleFrom(
                 backgroundColor: _primaryColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                padding: const EdgeInsets.symmetric(vertical: 16),
               ),
               child: const Text(
                 'Apply Filters',
                 style: TextStyle(
-                  fontFamily: 'Manrope', color: Colors.white, 
-                  fontSize: 16, fontWeight: FontWeight.w600
+                  fontFamily: 'Manrope',
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ),

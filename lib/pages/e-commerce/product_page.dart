@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../feature/best_value_comparison.dart';
 import '../../utils/share_product.dart';
-import '../../widget/section_container.dart';
-import '../../widget/review_card.dart';
-import '../../widget/seller_info_card.dart';
-import '../../widget/product_image_header.dart';
+import '../../utils/product_page_logic.dart';
+import '../../utils/swiper.dart';
 
 class ProductPage extends StatefulWidget {
   final Map<String, dynamic> product;
   final bool isPreowned;
 
   const ProductPage({
-    super.key, 
+    super.key,
     required this.product,
-    this.isPreowned = false, 
+    this.isPreowned = false,
   });
 
   @override
@@ -37,203 +34,115 @@ class _ProductPageState extends State<ProductPage> {
 
   @override
   Widget build(BuildContext context) {
-    // 1. Determine Images
-    List<String> images = [];
-    if (widget.isPreowned) {
-      if (widget.product['imageUrl1'] != null) images.add(widget.product['imageUrl1']);
-      if (widget.product['imageUrl2'] != null) images.add(widget.product['imageUrl2']);
-      if (widget.product['imageUrl3'] != null) images.add(widget.product['imageUrl3']);
-    } else {
-      images.add(widget.product['imageUrl'] ?? widget.product['image_url'] ?? '');
-    }
-    if (images.isEmpty) images.add('');
-
-    // 2. Rating & Coins logic
-    double avgRating = (widget.product['rating'] ?? 0).toDouble();
-    int greenCoinsToEarn = ((widget.product['price'] ?? 0).toDouble()).floor();
+    final productData = ProductPageLogic.extractProductData(widget.product);
+    final images = ProductPageLogic.getProductImages(widget.product, widget.isPreowned);
+    final greenCoinsToEarn = ProductPageLogic.calculateGreenCoins(productData['price']);
 
     return Scaffold(
       backgroundColor: Colors.grey.shade50,
-      body: isLoading 
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF388E3C)))
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(color: Color(0xFF388E3C)),
+            )
           : Stack(
               children: [
                 SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // --- HEADER (Unified) ---
-                      ProductImageHeader(
-                        imageUrls: images,
-                        onBack: () => Navigator.pop(context),
-                        onShare: _handleShare,
-                        height: 300,
-                      ),
+                      // Image header (inlined)
+                      _buildImageHeader(images),
 
-                      // --- PRE-OWNED BANNER ---
-                      if (widget.isPreowned)
+                      // Green coins banner
+                      if (widget.isPreowned) 
                         _buildGreenCoinsBanner(greenCoinsToEarn),
 
-                      // --- PRODUCT INFO ---
-                      SectionContainer(
+                      // Product info
+                      _buildSection(
+                        child: _buildProductInfo(productData),
+                      ),
+
+                      // Seller info
+                      _buildSection(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // Category Badge
-                            if (widget.product['category'] != null)
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF388E3C).withOpacity(0.1), 
-                                  borderRadius: BorderRadius.circular(20)
-                                ),
-                                child: Text(
-                                  widget.product['category'], 
-                                  style: const TextStyle(fontSize: 12, color: Color(0xFF388E3C), fontWeight: FontWeight.bold)
-                                ),
+                            const Text(
+                              'Seller Information',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
                               ),
-                            const SizedBox(height: 12),
-                            
-                            // Name
-                            Text(
-                              widget.product['name'] ?? 'Unknown', 
-                              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black87)
-                            ),
-                            const SizedBox(height: 8),
-                            
-                            // Price
-                            Text(
-                              'RM ${(widget.product['price'] ?? 0).toStringAsFixed(2)}', 
-                              style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: Color(0xFF388E3C))
                             ),
                             const SizedBox(height: 16),
-
-                            // Rating Row (Only for Standard Products)
-                            if (!widget.isPreowned)
-                              Row(
-                                children: [
-                                  _buildStarRating(avgRating),
-                                  const SizedBox(width: 8),
-                                  Text(avgRating.toStringAsFixed(1), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                                  Text(' (${reviews.length} reviews)', style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold)),
-                                ],
-                              )
-                            else 
-                              Row(
-                                children: [
-                                  const Icon(Icons.recycling, size: 16, color: Colors.blue),
-                                  const SizedBox(width: 4),
-                                  Text('Pre-owned Condition', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-                                ],
-                              ),
-
-                            const SizedBox(height: 20),
-                            const Text('Description', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 8),
-                            Text(
-                              widget.product['description'] ?? 'No description.', 
-                              style: TextStyle(fontSize: 15, color: Colors.black, height: 1.6, fontWeight: FontWeight.bold)
-                            ),
+                            _buildSellerInfo(),
                           ],
                         ),
                       ),
 
-                      // --- SELLER INFO ---
-                      if (sellerData != null || widget.isPreowned)
-                        SectionContainer(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text('Seller Information', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                              const SizedBox(height: 16),
-                              SellerInfoCard(
-                                name: widget.isPreowned ? (widget.product['seller'] ?? 'Private Seller') : (sellerData?['name'] ?? ''),
-                                image: widget.isPreowned ? '' : (sellerData?['profileImage'] ?? ''),
-                                subtitle: widget.isPreowned 
-                                  ? const Text('Verified Seller', style: TextStyle(color: Colors.green))
-                                  : Row(
-                                      children: [
-                                        const Icon(Icons.star, color: Colors.amber, size: 16),
-                                        Text('${(sellerData?['ratings'] ?? 0).toStringAsFixed(1)}', style: const TextStyle(fontWeight: FontWeight.bold)),
-                                      ],
-                                    ),
-                              ),
-                            ],
-                          ),
-                        ),
-
-                      // --- REVIEWS ---
-                      SectionContainer(
+                      // Reviews
+                      _buildSection(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Customer Reviews', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                            const Text(
+                              'Customer Reviews',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                             const SizedBox(height: 16),
-                            
                             SmartValueButton(
-                              productId: widget.product['id'] ?? '', 
-                              isPreowned: widget.isPreowned
+                              productId: productData['id'],
+                              isPreowned: widget.isPreowned,
                             ),
-                            
                             if (reviews.isEmpty)
-                               Padding(
-                                 padding: const EdgeInsets.all(24),
-                                 child: Center(child: Text('No reviews yet.', style: TextStyle(color: Colors.black))),
-                               )
-                            else 
-                               Column(children: reviews.map((r) => ReviewCard(review: r)).toList())
+                              const Padding(
+                                padding: EdgeInsets.all(24),
+                                child: Center(
+                                  child: Text(
+                                    'No reviews yet.',
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                ),
+                              )
+                            else
+                              Column(
+                                children: reviews
+                                    .map((r) => _buildReviewCard(r))
+                                    .toList(),
+                              ),
                           ],
                         ),
                       ),
+
                       const SizedBox(height: 100),
                     ],
                   ),
                 ),
-                
-                // --- BOTTOM BUTTON ---
-                Positioned(
-                  bottom: 20, right: 20, left: 20,
-                  child: FloatingActionButton.extended(
-                    onPressed: isAddingToCart ? null : _addToCart,
-                    backgroundColor: const Color(0xFF388E3C),
-                    icon: isAddingToCart 
-                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : const Icon(Icons.shopping_cart, color: Colors.white),
-                    label: Text(isAddingToCart ? 'Adding...' : 'Add to Cart', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-                  ),
-                ),
+
+                // Add to cart button
+                _buildAddToCartButton(),
               ],
             ),
     );
   }
 
-  // --- Logic Helpers ---
 
   Future<void> _loadData() async {
     setState(() => isLoading = true);
-    try {
-      if (!widget.isPreowned) {
-        String sellerName = widget.product['seller'] ?? '';
-        if (sellerName.isNotEmpty) {
-          var sellerQ = await FirebaseFirestore.instance.collection('sellers').where('name', isEqualTo: sellerName).limit(1).get();
-          if (sellerQ.docs.isNotEmpty) sellerData = sellerQ.docs.first.data();
-        }
-      }
 
-      String pid = widget.product['id'] ?? '';
-      String collection = widget.isPreowned ? 'preowned_reviews' : 'reviews';
-      
-      if (pid.isNotEmpty) {
-        var reviewQ = await FirebaseFirestore.instance.collection(collection).where('productId', isEqualTo: pid).get();
-        var list = reviewQ.docs.map((d) => d.data()).toList();
-        list.sort((a, b) => (b['reviewDate'] ?? '').compareTo(a['reviewDate'] ?? ''));
-        reviews = list;
-      }
-      
-      setState(() => isLoading = false);
-    } catch (e) {
-      setState(() => isLoading = false);
-    }
+    final data = await ProductPageLogic.loadProductData(
+      product: widget.product,
+      isPreowned: widget.isPreowned,
+    );
+
+    setState(() {
+      sellerData = data['sellerData'];
+      reviews = data['reviews'];
+      isLoading = false;
+    });
   }
 
   Future<void> _handleShare() async {
@@ -246,66 +155,504 @@ class _ProductPageState extends State<ProductPage> {
 
   Future<void> _addToCart() async {
     if (currentUser == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login required'), backgroundColor: Colors.red));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Login required'),
+          backgroundColor: Colors.red,
+        ),
+      );
       return;
     }
+
     setState(() => isAddingToCart = true);
 
-    try {
-      String uid = currentUser!.uid;
-      String pid = widget.product['id'] ?? '';
-      
-      var cartQuery = await FirebaseFirestore.instance.collection('cart_items')
-          .where('userId', isEqualTo: uid)
-          .where('productId', isEqualTo: pid)
-          .limit(1)
-          .get();
-      
-      Map<String, dynamic> item;
-      
-      if (cartQuery.docs.isNotEmpty) {
-        var doc = cartQuery.docs.first;
-        await doc.reference.update({'quantity': (doc['quantity'] ?? 1) + 1});
-        item = doc.data();
-        item['quantity'] = (doc['quantity'] ?? 1) + 1;
-        item['docId'] = doc.id;
-      } else {
-        item = {
-          'userId': uid,
-          'productId': pid,
-          'productName': widget.product['name'],
-          'productPrice': (widget.product['price'] ?? 0).toDouble(),
-          'quantity': 1,
-          'imageUrl': widget.isPreowned 
-              ? (widget.product['imageUrl1'] ?? '') 
-              : (widget.product['imageUrl'] ?? ''),
-          'seller': widget.product['seller'],
-          'isPreowned': widget.isPreowned,
-          'dateAdded': FieldValue.serverTimestamp(),
-        };
-        var ref = await FirebaseFirestore.instance.collection('cart_items').add(item);
-        item['docId'] = ref.id;
-      }
+    final result = await ProductPageLogic.addToCart(
+      product: widget.product,
+      isPreowned: widget.isPreowned,
+      currentUser: currentUser!,
+    );
 
-      setState(() => isAddingToCart = false);
-      if (mounted) {
-         var uDoc = await FirebaseFirestore.instance.collection('user_profile').doc(uid).get();
-         Navigator.pushNamed(context, '/checkout', arguments: {'selectedItems': [item], 'userAddress': uDoc.exists ? uDoc['address'] : null});
-      }
-    } catch (e) {
-      setState(() => isAddingToCart = false);
+    setState(() => isAddingToCart = false);
+
+    if (result != null && mounted) {
+      Navigator.pushNamed(
+        context,
+        '/checkout',
+        arguments: {
+          'selectedItems': [result['cartItem']],
+          'userAddress': result['userAddress'],
+        },
+      );
     }
   }
 
-  // --- UI Helpers ---
+
+  Widget _buildImageHeader(List<String> imageUrls) {
+    final validImages = imageUrls.where((url) => url.isNotEmpty).toList();
+    final imageWidgets = validImages.isEmpty
+        ? [_buildImagePlaceholder()]
+        : validImages.map((url) => _buildProductImage(url)).toList();
+
+    return Stack(
+      children: [
+        // Image swiper or single image
+        Container(
+          height: 300,
+          color: Colors.white,
+          child: imageWidgets.length > 1
+              ? Swiper(pages: imageWidgets, height: 300)
+              : imageWidgets.first,
+        ),
+
+        // Back button
+        SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: _buildCircleButton(
+              Icons.arrow_back,
+              () => Navigator.pop(context),
+            ),
+          ),
+        ),
+
+        // Share button
+        Positioned(
+          top: 16,
+          right: 16,
+          child: SafeArea(
+            child: _buildCircleButton(
+              Icons.share,
+              _handleShare,
+              iconColor: const Color(0xFF388E3C),
+            ),
+          ),
+        ),
+
+        // Photo counter
+        if (imageWidgets.length > 1)
+          Positioned(
+            bottom: 16,
+            right: 16,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.7),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                '${imageWidgets.length} photos',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildCircleButton(
+    IconData icon,
+    VoidCallback onTap, {
+    Color iconColor = Colors.black87,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 8,
+          ),
+        ],
+      ),
+      child: IconButton(
+        icon: Icon(icon, color: iconColor),
+        onPressed: onTap,
+      ),
+    );
+  }
+
+  Widget _buildProductImage(String url) {
+    return Container(
+      width: double.infinity,
+      height: 300,
+      color: Colors.white,
+      child: Image.asset(
+        url,
+        fit: BoxFit.contain,
+        errorBuilder: (c, e, s) => _buildImagePlaceholder(
+          icon: Icons.image_not_supported,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImagePlaceholder({IconData icon = Icons.image}) {
+    return Container(
+      width: double.infinity,
+      height: 300,
+      color: Colors.grey.shade200,
+      child: Center(
+        child: Icon(icon, size: 60, color: Colors.grey.shade400),
+      ),
+    );
+  }
+
+
+  Widget _buildProductInfo(Map<String, dynamic> data) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Category badge
+        if (data['category'] != null) ...[
+          _buildCategoryBadge(data['category']),
+          const SizedBox(height: 12),
+        ],
+
+        // Product name
+        Text(
+          data['name'],
+          style: const TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 8),
+
+        // Price
+        Text(
+          'RM ${data['price'].toStringAsFixed(2)}',
+          style: const TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.w900,
+            color: Color(0xFF388E3C),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Rating or condition
+        if (!widget.isPreowned)
+          _buildRatingRow(data['rating'])
+        else
+          _buildConditionRow(),
+
+        const SizedBox(height: 20),
+
+        // Description
+        const Text(
+          'Description',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          data['description'],
+          style: const TextStyle(
+            fontSize: 15,
+            color: Colors.black,
+            height: 1.6,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSellerInfo() {
+    final name = ProductPageLogic.getSellerName(
+      widget.product,
+      sellerData,
+      widget.isPreowned,
+    );
+    final image = ProductPageLogic.getSellerImage(sellerData, widget.isPreowned);
+    final rating = ProductPageLogic.getSellerRating(sellerData);
+
+    final subtitle = widget.isPreowned
+        ? const Text(
+            'Verified Seller',
+            style: TextStyle(
+              color: Colors.green,
+              fontWeight: FontWeight.bold,
+            ),
+          )
+        : Row(
+            children: [
+              const Icon(Icons.star, color: Colors.amber, size: 16),
+              const SizedBox(width: 4),
+              Text(
+                rating.toStringAsFixed(1),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ],
+          );
+
+    return Row(
+      children: [
+        CircleAvatar(
+          radius: 28,
+          backgroundColor: const Color(0xFF388E3C).withOpacity(0.1),
+          backgroundImage: image.isNotEmpty ? AssetImage(image) : null,
+          child: image.isEmpty
+              ? const Icon(Icons.store, color: Color(0xFF388E3C), size: 28)
+              : null,
+        ),
+        const SizedBox(width: 16),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                name,
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(height: 4),
+              subtitle,
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildReviewCard(Map<String, dynamic> review) {
+    final rating = (review['rating'] ?? 0).toDouble();
+    final reviewTitle = review['reviewTitle'] ?? '';
+    final reviewText = review['reviewText'] ?? '';
+    final userName = review['userName'] ?? 'Anonymous';
+    final userProfileUrl = review['userProfileUrl'] ?? 
+        'assets/images/icon/anonymous_icon.jpg';
+    final formattedDate = ProductPageLogic.formatDate(review['reviewDate'] ?? '');
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.shade300),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: const Color(0xFF388E3C).withOpacity(0.1),
+                backgroundImage: userProfileUrl.isNotEmpty 
+                    ? AssetImage(userProfileUrl) 
+                    : null,
+                child: userProfileUrl.isEmpty
+                    ? const Icon(Icons.person, color: Color(0xFF388E3C), size: 20)
+                    : null,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            userName,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        _buildVerifiedBadge(),
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Row(
+                      children: [
+                        _buildReviewStarRating(rating),
+                        if (formattedDate.isNotEmpty) ...[
+                          const SizedBox(width: 8),
+                          Text(
+                            '• $formattedDate',
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          if (reviewTitle.isNotEmpty) ...[
+            const SizedBox(height: 12),
+            Text(
+              reviewTitle,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+          ],
+          if (reviewText.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(
+              reviewText,
+              style: const TextStyle(
+                fontSize: 15,
+                color: Colors.black,
+                height: 1.5,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+
+  Widget _buildSection({required Widget child}) {
+    return Container(
+      width: double.infinity,
+      color: Colors.white,
+      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.only(bottom: 8),
+      child: child,
+    );
+  }
+
+  Widget _buildCategoryBadge(String category) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: const Color(0xFF388E3C).withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        category,
+        style: const TextStyle(
+          fontSize: 12,
+          color: Color(0xFF388E3C),
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRatingRow(double rating) {
+    return Row(
+      children: [
+        _buildStarRating(rating),
+        const SizedBox(width: 8),
+        Text(
+          rating.toStringAsFixed(1),
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
+        Text(
+          ' (${reviews.length} reviews)',
+          style: const TextStyle(
+            color: Colors.black,
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildConditionRow() {
+    return Row(
+      children: const [
+        Icon(Icons.recycling, size: 16, color: Colors.blue),
+        SizedBox(width: 4),
+        Text(
+          'Pre-owned Condition',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
 
   Widget _buildStarRating(double rating) {
     return Row(
       children: List.generate(5, (i) {
-         if (rating >= i + 1) return const Icon(Icons.star, color: Colors.amber, size: 20);
-         if (rating >= i + 0.5) return const Icon(Icons.star_half, color: Colors.amber, size: 20);
-         return const Icon(Icons.star_border, color: Colors.amber, size: 20);
+        if (rating >= i + 1) {
+          return const Icon(Icons.star, color: Colors.amber, size: 20);
+        }
+        if (rating >= i + 0.5) {
+          return const Icon(Icons.star_half, color: Colors.amber, size: 20);
+        }
+        return const Icon(Icons.star_border, color: Colors.amber, size: 20);
       }),
+    );
+  }
+
+  Widget _buildReviewStarRating(double rating) {
+    return Row(
+      children: List.generate(5, (index) {
+        return Icon(
+          index < rating ? Icons.star : Icons.star_border,
+          color: Colors.amber,
+          size: 16,
+        );
+      }),
+    );
+  }
+
+  Widget _buildVerifiedBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: const Color(0xFF388E3C).withOpacity(0.1),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.verified, size: 10, color: Color(0xFF388E3C)),
+          SizedBox(width: 2),
+          Text(
+            'Verified',
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF388E3C),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -323,9 +670,44 @@ class _ProductPageState extends State<ProductPage> {
           const Icon(Icons.eco, color: Colors.green, size: 28),
           const SizedBox(width: 12),
           Expanded(
-            child: Text('Earn $coins Green Coins with this purchase!', style: TextStyle(color: Colors.green.shade800, fontWeight: FontWeight.bold)),
+            child: Text(
+              'Earn $coins Green Coins with this purchase!',
+              style: TextStyle(
+                color: Colors.green.shade800,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildAddToCartButton() {
+    return Positioned(
+      bottom: 20,
+      right: 20,
+      left: 20,
+      child: FloatingActionButton.extended(
+        onPressed: isAddingToCart ? null : _addToCart,
+        backgroundColor: const Color(0xFF388E3C),
+        icon: isAddingToCart
+            ? const SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : const Icon(Icons.shopping_cart, color: Colors.white),
+        label: Text(
+          isAddingToCart ? 'Adding...' : 'Add to Cart',
+          style: const TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
       ),
     );
   }

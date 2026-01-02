@@ -46,7 +46,7 @@ class BottomNavBar extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 60), // Space for FAB
+            const SizedBox(width: 60), 
             Expanded(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -98,9 +98,6 @@ class _NavItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final bool isSelected = currentIndex == index;
 
-    // CHANGED: Fixed Green Color (Visual for the main page)
-    const Color brandGreen = Color(0xFF388E3C);
-
     return InkWell(
       onTap: () => onTap(index),
       splashColor: Colors.transparent,
@@ -111,14 +108,13 @@ class _NavItem extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Icon stays the same green whether selected or not
-            Icon(isSelected ? activeIcon : icon, color: brandGreen, size: 26),
+            Icon(isSelected ? activeIcon : icon, color: Color(0xFF388E3C), size: 26),
             const SizedBox(height: 2),
             Text(
               label,
               style: const TextStyle(
                 fontSize: 11,
-                color: brandGreen, // Green text
+                color: Color(0xFF388E3C),
                 fontWeight: FontWeight.bold,
               ),
             ),
