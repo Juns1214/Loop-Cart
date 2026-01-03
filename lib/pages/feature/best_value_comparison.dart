@@ -1,4 +1,3 @@
-// lib/feature/smart_value_analyzer.dart
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
@@ -35,22 +34,15 @@ class _SmartValueDisplayState extends State<SmartValueDisplay> {
           ? 'preowned_reviews'
           : 'reviews';
 
-      print('🔍 Searching in collection: $collection');
-      print('🔍 Looking for productId: ${widget.productId}');
-
-      // 1. Get product data - TRY MULTIPLE FIELD NAMES
       QuerySnapshot query;
 
-      // First try with 'id' field
       query = await FirebaseFirestore.instance
           .collection(collection)
           .where('id', isEqualTo: widget.productId)
           .limit(1)
           .get();
 
-      // If not found, try with 'productId' field
       if (query.docs.isEmpty) {
-        print('⚠️ Not found with "id" field, trying "productId"...');
         query = await FirebaseFirestore.instance
             .collection(collection)
             .where('productId', isEqualTo: widget.productId)
@@ -58,18 +50,12 @@ class _SmartValueDisplayState extends State<SmartValueDisplay> {
             .get();
       }
 
-      // If still not found, try direct document fetch (if productId IS the document ID)
       if (query.docs.isEmpty) {
-        print(
-          '⚠️ Not found with "productId" field, trying direct document fetch...',
-        );
         var docSnapshot = await FirebaseFirestore.instance
             .collection(collection)
             .doc(widget.productId)
             .get();
-
         if (docSnapshot.exists) {
-          // Convert to QuerySnapshot format for consistency
           query = await FirebaseFirestore.instance
               .collection(collection)
               .where(FieldPath.documentId, isEqualTo: widget.productId)
@@ -78,7 +64,6 @@ class _SmartValueDisplayState extends State<SmartValueDisplay> {
       }
 
       if (query.docs.isEmpty) {
-        print('❌ Product not found in $collection');
         setState(() {
           analysisResult = 'Product info unavailable';
           isLoading = false;
@@ -86,19 +71,15 @@ class _SmartValueDisplayState extends State<SmartValueDisplay> {
         return;
       }
 
-      print('✅ Product found in $collection');
       var doc = query.docs.first;
       var data = doc.data() as Map<String, dynamic>;
-      print('📦 Product data: ${data.keys}');
 
-      // 2. Get ALL reviews to check count
       var reviewsSnapshot = await FirebaseFirestore.instance
           .collection(reviewCollection)
           .where('productId', isEqualTo: widget.productId)
           .get();
 
       int currentReviewCount = reviewsSnapshot.docs.length;
-      print('📊 Found $currentReviewCount reviews in $reviewCollection');
 
       if (currentReviewCount == 0) {
         setState(() {
@@ -108,7 +89,6 @@ class _SmartValueDisplayState extends State<SmartValueDisplay> {
         return;
       }
 
-      // 3. CHECK CACHE - compare review count
       int cachedReviewCount = (data['lastReviewCount'] ?? 0) as int;
       bool hasNewReviews = currentReviewCount != cachedReviewCount;
 
@@ -116,7 +96,6 @@ class _SmartValueDisplayState extends State<SmartValueDisplay> {
           data['aiSummary'] != null &&
           (data['aiSummary'] as String).isNotEmpty &&
           !hasNewReviews) {
-        print('✓ Using cached summary (no new reviews)');
         setState(() {
           analysisResult = data['aiSummary'];
           isLoading = false;
@@ -124,17 +103,9 @@ class _SmartValueDisplayState extends State<SmartValueDisplay> {
         return;
       }
 
-      print(
-        '⟳ Generating new analysis (review count changed: $cachedReviewCount → $currentReviewCount)',
-      );
-
-      // 4. Get product details with fallback field names
       String name = data['name'] ?? data['productName'] ?? 'Item';
       double price = ((data['price'] ?? 0) as num).toDouble();
 
-      print('💰 Product: $name, Price: RM$price');
-
-      // 5. Build ALL review texts for AI
       List<Map<String, dynamic>> allReviews = reviewsSnapshot.docs
           .map((d) => d.data())
           .toList();
@@ -146,9 +117,6 @@ class _SmartValueDisplayState extends State<SmartValueDisplay> {
           )
           .join('\n');
 
-      print('📝 Processing ${allReviews.length} reviews');
-
-      // 6. Enhanced prompt focusing on price-quality comparison
       String conditionNote = widget.isPreowned ? 'pre-owned/used' : 'brand new';
 
       String prompt =
@@ -161,45 +129,38 @@ Price: RM${price.toStringAsFixed(0)}
 ALL Customer Reviews:
 $reviewTexts
 
-Task: Compare price vs quality based ONLY on these reviews. Write 2-3 SHORT sentences that:
+Task: Compare price vs quality based only on these reviews. Write 2-3 SHORT sentences that:
 1. Mention if it's worth the price or overpriced based on review quality
 2. Give honest advice (e.g., "Great value despite higher price" or "Cheaper but quality concerns mentioned")
 
-Be direct and specific. No fluff.
+Be direct and specific.
 ''';
 
-      // 7. Call AI
       const String apiKey = 'AIzaSyAyK99yDMqz2IBwrr4KqrVnVmfEdq9atbA';
 
       try {
-        final response = await http
-            .post(
-              Uri.parse(
-                'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$apiKey',
-              ),
-              headers: {'Content-Type': 'application/json'},
-              body: json.encode({
-                'contents': [
-                  {
-                    'parts': [
-                      {'text': prompt},
-                    ],
-                  },
+        final response = await http.post(
+          Uri.parse(
+            'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$apiKey',
+          ),
+          headers: {'Content-Type': 'application/json'},
+          body: json.encode({
+            'contents': [
+              {
+                'parts': [
+                  {'text': prompt},
                 ],
-                'generationConfig': {
-                  'temperature': 0.7,
-                  'maxOutputTokens': 120,
-                },
-              }),
-            );
+              },
+            ],
+            'generationConfig': {'temperature': 0.7, 'maxOutputTokens': 120},
+          }),
+        );
+
         if (response.statusCode == 200) {
           var result = json.decode(response.body);
           String aiResponse =
               result['candidates'][0]['content']['parts'][0]['text'].trim();
 
-          print('✅ AI Response received');
-
-          // 8. Save summary + review count to product collection
           await FirebaseFirestore.instance
               .collection(collection)
               .doc(doc.id)
@@ -209,8 +170,6 @@ Be direct and specific. No fluff.
                 'lastAnalyzedAt': FieldValue.serverTimestamp(),
               });
 
-          print('✓ Saved summary to Firestore');
-
           setState(() {
             analysisResult = aiResponse;
             isLoading = false;
@@ -219,7 +178,6 @@ Be direct and specific. No fluff.
           throw Exception('AI API failed: ${response.statusCode}');
         }
       } catch (e) {
-        print('❌ AI Error: $e');
         setState(() {
           analysisResult =
               'Analysis temporarily unavailable. Please check reviews manually.';
@@ -227,7 +185,6 @@ Be direct and specific. No fluff.
         });
       }
     } catch (e) {
-      print('❌ Fatal Error: $e');
       setState(() {
         analysisResult = 'Unable to load analysis.';
         isLoading = false;
@@ -238,46 +195,27 @@ Be direct and specific. No fluff.
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return Container(
-        margin: EdgeInsets.symmetric(vertical: 12),
-        padding: EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFF388E3C).withOpacity(0.05),
-              Color(0xFF388E3C).withOpacity(0.1),
-            ],
-          ),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: Color(0xFF388E3C).withOpacity(0.3),
-            width: 1.5,
-          ),
-        ),
+      return _AnalysisCard(
         child: Row(
           children: [
-            Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Color(0xFF388E3C).withOpacity(0.2),
-                shape: BoxShape.circle,
-              ),
+            _IconBadge(
               child: SizedBox(
                 width: 20,
                 height: 20,
                 child: CircularProgressIndicator(
                   strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF388E3C)),
+                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF2E7D32)),
                 ),
               ),
             ),
-            SizedBox(width: 12),
-            Text(
+            const SizedBox(width: 12),
+            const Text(
               'Analyzing value...',
               style: TextStyle(
-                fontSize: 14,
-                color: Color(0xFF388E3C),
-                fontWeight: FontWeight.bold
+                fontFamily: 'Roboto',
+                fontSize: 15,
+                color: Color(0xFF1B5E20),
+                fontWeight: FontWeight.w700,
               ),
             ),
           ],
@@ -285,82 +223,64 @@ Be direct and specific. No fluff.
       );
     }
 
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 12),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            Color(0xFF388E3C).withOpacity(0.05),
-            Color(0xFF388E3C).withOpacity(0.1),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Color(0xFF388E3C).withOpacity(0.3),
-          width: 1.5,
-        ),
-      ),
+    return _AnalysisCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Container(
-                padding: EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Color(0xFF388E3C).withOpacity(0.2),
-                  shape: BoxShape.circle,
-                ),
+              _IconBadge(
                 child: Icon(
-                  Icons.verified_outlined,
-                  color: Color(0xFF388E3C),
+                  Icons.lightbulb,
+                  color: Color(0xFF2E7D32),
                   size: 20,
                 ),
               ),
-              SizedBox(width: 12),
-              Expanded(
+              const SizedBox(width: 12),
+              const Expanded(
                 child: Text(
                   'Value Analysis',
                   style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF388E3C),
+                    fontFamily: 'Roboto',
+                    fontSize: 17,
+                    fontWeight: FontWeight.w800,
+                    color: Color(0xFF1B5E20),
                   ),
                 ),
               ),
             ],
           ),
-          SizedBox(height: 12),
+          const SizedBox(height: 12),
           Container(
-            padding: EdgeInsets.all(12),
+            padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: BorderRadius.circular(10),
             ),
             child: Text(
               analysisResult ?? 'No analysis available',
-              style: TextStyle(
-                fontSize: 14,
-                height: 1.5,
-                color: Colors.black,
-                fontWeight: FontWeight.bold
+              style: const TextStyle(
+                fontFamily: 'Roboto',
+                fontSize: 15,
+                height: 1.6,
+                color: Color(0xFF212121),
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 10),
           Row(
             children: [
-              Icon(Icons.auto_awesome, size: 11, color: Colors.black),
-              SizedBox(width: 4),
-              Expanded(
+              Icon(Icons.auto_awesome, size: 14, color: Color(0xFF424242)),
+              const SizedBox(width: 6),
+              const Expanded(
                 child: Text(
                   'AI-powered price vs quality insight',
                   style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.black,
-                    fontStyle: FontStyle.italic,
-                    fontWeight: FontWeight.bold
+                    fontFamily: 'Roboto',
+                    fontSize: 12,
+                    color: Color(0xFF424242),
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -372,7 +292,53 @@ Be direct and specific. No fluff.
   }
 }
 
-// Backward compatibility wrapper
+class _AnalysisCard extends StatelessWidget {
+  final Widget child;
+
+  const _AnalysisCard({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFFE8F5E9), Color(0xFFC8E6C9)],
+        ),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Color(0xFF66BB6A), width: 2),
+      ),
+      child: child,
+    );
+  }
+}
+
+class _IconBadge extends StatelessWidget {
+  final Widget child;
+
+  const _IconBadge({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: Color(0xFF2E7D32).withOpacity(0.2),
+            blurRadius: 6,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+}
+
 class SmartValueButton extends StatelessWidget {
   final String productId;
   final bool isPreowned;

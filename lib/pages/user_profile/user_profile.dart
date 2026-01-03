@@ -96,7 +96,6 @@ class _UserProfileState extends State<UserProfile> {
     final email = userData?['email'] ?? '';
     final phone = userData?['phoneNumber']?.toString() ?? '';
     final dob = userData?['dateOfBirth'] ?? '';
-    final address = userData?['address'] as Map<String, dynamic>?;
     final profileImage = userData?['profileImageURL'];
 
     return Scaffold(
@@ -120,7 +119,7 @@ class _UserProfileState extends State<UserProfile> {
               child: Column(
                 children: [
                   Container(
-                    width: 100, height: 100,
+                    width: 150, height: 150,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       gradient: profileImage == null ? const LinearGradient(colors: [Color(0xFF2E7D32), Color(0xFF66BB6A)]) : null,
@@ -150,7 +149,7 @@ class _UserProfileState extends State<UserProfile> {
                         Container(
                           padding: const EdgeInsets.all(6),
                           decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                          child: const Icon(Icons.eco, color: Color(0xFF2E7D32), size: 20),
+                          child: Image.asset( 'assets/images/icon/Green Coin.png', width: 24, height: 24),
                         ),
                         const SizedBox(width: 12),
                         Text('$greenCoins Green Coins', style: const TextStyle(fontFamily: 'Roboto', fontSize: 17, fontWeight: FontWeight.w800, color: Color(0xFF1B5E20))),

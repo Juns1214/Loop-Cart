@@ -120,7 +120,7 @@ class _EditProfileState extends State<EditProfile> {
 
       await FirebaseFirestore.instance.collection('user_profile').doc(user!.uid).set(updateData, SetOptions(merge: true));
 
-      Fluttertoast.showToast(msg: "✓ Profile updated successfully!", backgroundColor: const Color(0xFF2E7D32), textColor: Colors.white);
+      Fluttertoast.showToast(msg: "Profile updated successfully!", backgroundColor: const Color(0xFF2E7D32), textColor: Colors.white);
       if (mounted) Navigator.pop(context, true);
     } catch (e) {
       Fluttertoast.showToast(msg: "Error updating: $e", backgroundColor: const Color(0xFFD32F2F), textColor: Colors.white);

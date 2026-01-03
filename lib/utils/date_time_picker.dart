@@ -1,116 +1,120 @@
 import 'package:flutter/material.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:intl/intl.dart';
 
-class SyncfusionDateTimePicker extends StatefulWidget {
+class DateTimePicker extends StatefulWidget {
   final Function(DateTime, TimeOfDay) onDateTimeSelected;
+  final DateTime? initialDate;
+  final TimeOfDay? initialTime;
 
-  const SyncfusionDateTimePicker({
+  const DateTimePicker({
     super.key,
     required this.onDateTimeSelected,
+    this.initialDate,
+    this.initialTime,
   });
 
   @override
-  State<SyncfusionDateTimePicker> createState() => _SyncfusionDateTimePickerState();
+  State<DateTimePicker> createState() => _DateTimePickerState();
 }
 
-class _SyncfusionDateTimePickerState extends State<SyncfusionDateTimePicker> {
-  DateTime selectedDate = DateTime.now();
-  TimeOfDay selectedTime = const TimeOfDay(hour: 14, minute: 0);
+class _DateTimePickerState extends State<DateTimePicker> {
+  late DateTime _selectedDate;
+  late TimeOfDay _selectedTime;
+  static const Color _primaryGreen = Color(0xFF2E7D32);
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDate = widget.initialDate ?? DateTime.now();
+    _selectedTime = widget.initialTime ?? const TimeOfDay(hour: 14, minute: 0);
+  }
+
+  Future<void> _selectDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 90)),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(primary: _primaryGreen, onPrimary: Colors.white, onSurface: Color(0xFF212121)),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null && mounted) {
+      setState(() => _selectedDate = picked);
+      widget.onDateTimeSelected(_selectedDate, _selectedTime);
+    }
+  }
+
+  Future<void> _selectTime() async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: _selectedTime,
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(primary: _primaryGreen, onPrimary: Colors.white, onSurface: Color(0xFF212121)),
+          ),
+          child: child!,
+        );
+      },
+    );
+    if (picked != null && mounted) {
+      setState(() => _selectedTime = picked);
+      widget.onDateTimeSelected(_selectedDate, _selectedTime);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 12, offset: Offset(0, 4))],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE0E0E0), width: 1.5),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildHeader("Pick a Date"),
-          const SizedBox(height: 12),
-          SfDateRangePicker(
-            selectionMode: DateRangePickerSelectionMode.single,
-            minDate: DateTime.now(),
-            onSelectionChanged: (args) {
-              if (args.value is DateTime) {
-                setState(() => selectedDate = args.value);
-                widget.onDateTimeSelected(selectedDate, selectedTime);
-              }
-            },
-            headerStyle: const DateRangePickerHeaderStyle(
-              textStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black87),
-            ),
-            selectionColor: const Color(0xFF2E5BFF),
-            todayHighlightColor: const Color(0xFF2E5BFF),
-            monthCellStyle: const DateRangePickerMonthCellStyle(
-              textStyle: TextStyle(color: Colors.black87),
-              todayTextStyle: TextStyle(color: Color(0xFF2E5BFF), fontWeight: FontWeight.bold),
-            ),
-          ),
-          const SizedBox(height: 24),
-          _buildHeader("Pick a Time"),
-          const SizedBox(height: 12),
-          _buildTimeSelector(),
-          const SizedBox(height: 24),
-          Center(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(8)),
-              child: Text(
-                "Selected: ${DateFormat('dd MMM, yyyy').format(selectedDate)} at ${selectedTime.format(context)}",
-                style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.w600),
-              ),
-            ),
-          ),
+          _buildDateTimeRow('Date', DateFormat('MMM dd, yyyy').format(_selectedDate), Icons.calendar_today, _selectDate),
+          const Divider(height: 24),
+          _buildDateTimeRow('Time', _selectedTime.format(context), Icons.access_time, _selectTime),
         ],
       ),
     );
   }
 
-  Widget _buildHeader(String title) {
-    return Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF1A1A1A)));
-  }
-
-  Widget _buildTimeSelector() {
-    return SizedBox(
-      height: 48,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: 24,
-        separatorBuilder: (_, __) => const SizedBox(width: 10),
-        itemBuilder: (context, index) {
-          final time = TimeOfDay(hour: index, minute: 0);
-          final isSelected = time.hour == selectedTime.hour;
-
-          return InkWell(
-            onTap: () {
-              setState(() => selectedTime = time);
-              widget.onDateTimeSelected(selectedDate, selectedTime);
-            },
-            borderRadius: BorderRadius.circular(8),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              decoration: BoxDecoration(
-                color: isSelected ? const Color(0xFF2E5BFF) : Colors.white,
-                border: Border.all(color: isSelected ? const Color(0xFF2E5BFF) : Colors.grey.shade300),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                time.format(context),
-                style: TextStyle(
-                  color: isSelected ? Colors.white : Colors.black87,
-                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                ),
+  Widget _buildDateTimeRow(String label, String value, IconData icon, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(color: _primaryGreen.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+              child: Icon(icon, color: _primaryGreen, size: 20),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label, style: const TextStyle(fontFamily: 'Roboto', fontSize: 13, fontWeight: FontWeight.w500, color: Color(0xFF424242))),
+                  const SizedBox(height: 2),
+                  Text(value, style: const TextStyle(fontFamily: 'Roboto', fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFF212121))),
+                ],
               ),
             ),
-          );
-        },
+            const Icon(Icons.arrow_forward_ios, size: 16, color: Color(0xFF9E9E9E)),
+          ],
+        ),
       ),
     );
   }

@@ -15,16 +15,18 @@ class RepairOptionSelector extends StatefulWidget {
 }
 
 class _RepairOptionSelectorState extends State<RepairOptionSelector> {
-  final List<String> categories = [
-    'Cloth / Apparel', 'Electronic & Gadgets', 'Furniture / Home', 
-    'Fitness / Sports', 'Kitchen Appliances / Tools', 'Custom Repair'
+  static const Color _primaryGreen = Color(0xFF2E7D32);
+
+  final List<String> _categories = [
+    'Cloth / Apparel',
+    'Electronic & Gadgets',
+    'Furniture / Home',
+    'Fitness / Sports',
+    'Kitchen Appliances / Tools',
+    'Custom Repair'
   ];
 
-  Map<String, String>? selectedRepair;
-  int? expandedCategoryIndex;
-  
-  // Static data map
-  final Map<String, List<Map<String, String>>> repairPrices = {
+  final Map<String, List<Map<String, String>>> _repairPrices = {
     'Cloth / Apparel': [
       {'Repair': 'Stitching', 'Price': 'RM15'},
       {'Repair': 'Button Replacement', 'Price': 'RM8'},
@@ -57,23 +59,25 @@ class _RepairOptionSelectorState extends State<RepairOptionSelector> {
     ],
   };
 
+  Map<String, String>? _selectedRepair;
+  int? _expandedCategoryIndex;
+
   @override
   void initState() {
     super.initState();
-    selectedRepair = widget.initialSelection;
+    _selectedRepair = widget.initialSelection;
   }
 
-  int calculateGreenCoin(String repairPrice) {
+  int _calculateGreenCoin(String repairPrice) {
     try {
-      final numbers = RegExp(r'\d+').allMatches(repairPrice)
-          .map((m) => int.parse(m.group(0)!)).toList();
+      final numbers = RegExp(r'\d+').allMatches(repairPrice).map((m) => int.parse(m.group(0)!)).toList();
       return numbers.isEmpty ? 0 : numbers.reduce((a, b) => a > b ? a : b);
     } catch (e) {
       return 0;
     }
   }
 
-  bool get _isCustomRepair => selectedRepair?['Repair'] == 'Custom Repair';
+  bool get _isCustomRepair => _selectedRepair?['Repair'] == 'Custom Repair';
 
   @override
   Widget build(BuildContext context) {
@@ -81,55 +85,51 @@ class _RepairOptionSelectorState extends State<RepairOptionSelector> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.black),
-            borderRadius: BorderRadius.circular(12),
-            color: Colors.white,
-          ),
+          decoration: BoxDecoration(border: Border.all(color: const Color(0xFFE0E0E0), width: 1.5), borderRadius: BorderRadius.circular(12), color: Colors.white),
           child: ListView.separated(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: categories.length,
-            separatorBuilder: (_, __) => Divider(height: 1, color: Colors.black),
+            itemCount: _categories.length,
+            separatorBuilder: (_, __) => const Divider(height: 1, color: Color(0xFFE0E0E0)),
             itemBuilder: (context, index) {
-              final category = categories[index];
+              final category = _categories[index];
               if (category == 'Custom Repair') return _buildCustomRepairTile();
               return _buildCategoryTile(index, category);
             },
           ),
         ),
-        if (selectedRepair != null && !_isCustomRepair) _buildGreenCoinInfo(),
+        if (_selectedRepair != null && !_isCustomRepair) _buildGreenCoinInfo(),
         if (_isCustomRepair) _buildCustomRepairInfo(),
       ],
     );
   }
 
   Widget _buildCategoryTile(int index, String category) {
-    final isExpanded = expandedCategoryIndex == index;
+    final isExpanded = _expandedCategoryIndex == index;
     return Column(
       children: [
         ListTile(
-          tileColor: isExpanded ? Colors.black : Colors.white,
-          title: Text(category, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.black87)),
-          trailing: Icon(isExpanded ? Icons.expand_less : Icons.expand_more, color: Colors.black),
-          onTap: () => setState(() => expandedCategoryIndex = isExpanded ? null : index),
+          tileColor: isExpanded ? _primaryGreen.withOpacity(0.05) : Colors.white,
+          title: Text(category, style: TextStyle(fontFamily: 'Roboto', fontSize: 15, fontWeight: FontWeight.w700, color: isExpanded ? _primaryGreen : const Color(0xFF212121))),
+          trailing: Icon(isExpanded ? Icons.expand_less : Icons.expand_more, color: isExpanded ? _primaryGreen : const Color(0xFF424242)),
+          onTap: () => setState(() => _expandedCategoryIndex = isExpanded ? null : index),
         ),
         if (isExpanded)
-          ...repairPrices[category]!.map((repair) {
-            final isSelected = repair == selectedRepair;
+          ..._repairPrices[category]!.map((repair) {
+            final isSelected = repair == _selectedRepair;
             return InkWell(
               onTap: () {
-                setState(() => selectedRepair = repair);
+                setState(() => _selectedRepair = repair);
                 widget.onSelectionChanged(repair);
               },
               child: Container(
-                color: isSelected ? const Color(0xFFE3F2FD) : Colors.white,
+                color: isSelected ? _primaryGreen.withOpacity(0.1) : Colors.white,
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(repair['Repair']!, style: TextStyle(color: isSelected ? const Color(0xFF2E5BFF) : Colors.black87, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
-                    Text(repair['Price']!, style: TextStyle(color: isSelected ? const Color(0xFF2E5BFF) : Colors.black87, fontWeight: FontWeight.w600)),
+                    Text(repair['Repair']!, style: TextStyle(fontFamily: 'Roboto', fontSize: 14, color: isSelected ? _primaryGreen : const Color(0xFF212121), fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500)),
+                    Text(repair['Price']!, style: TextStyle(fontFamily: 'Roboto', fontSize: 14, color: isSelected ? _primaryGreen : const Color(0xFF424242), fontWeight: FontWeight.w700)),
                   ],
                 ),
               ),
@@ -142,10 +142,9 @@ class _RepairOptionSelectorState extends State<RepairOptionSelector> {
   Widget _buildCustomRepairTile() {
     final isSelected = _isCustomRepair;
     return ListTile(
-      tileColor: isSelected ? const Color(0xFFE3F2FD) : Colors.white,
-      leading: Icon(Icons.build_outlined, color: isSelected ? const Color(0xFF2E5BFF) : Colors.black),
-      title: Text('Custom Repair', style: TextStyle(fontSize: 15, fontWeight: isSelected ? FontWeight.bold : FontWeight.w600, color: isSelected ? const Color(0xFF2E5BFF) : Colors.black87)),
-      trailing: isSelected ? const Icon(Icons.check_circle, color: Color(0xFF2E5BFF)) : null,
+      tileColor: isSelected ? _primaryGreen.withOpacity(0.1) : Colors.white,
+      leading: Icon(Icons.build_outlined, color: isSelected ? _primaryGreen : const Color(0xFF424242)),
+      title: Text('Custom Repair', style: TextStyle(fontFamily: 'Roboto', fontSize: 15, fontWeight: isSelected ? FontWeight.w800 : FontWeight.w700, color: isSelected ? _primaryGreen : const Color(0xFF212121))),
       onTap: _showCustomRepairDialog,
     );
   }
@@ -155,42 +154,43 @@ class _RepairOptionSelectorState extends State<RepairOptionSelector> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Custom Repair Request', style: TextStyle(fontWeight: FontWeight.bold)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Custom Repair Request', style: TextStyle(fontFamily: 'Roboto', fontSize: 18, fontWeight: FontWeight.w800, color: Color(0xFF212121))),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Describe your repair needs:', style: TextStyle(fontWeight: FontWeight.w500)),
-            const SizedBox(height: 12),
+            const Text('Describe your repair needs', style: TextStyle(fontFamily: 'Roboto', fontSize: 15, fontWeight: FontWeight.w500, color: Color(0xFF424242))),
+            const SizedBox(height: 16),
             TextField(
               controller: controller,
               maxLines: 4,
               maxLength: 200,
+              style: const TextStyle(fontFamily: 'Roboto', fontSize: 15, fontWeight: FontWeight.w500, color: Color(0xFF212121)),
               decoration: InputDecoration(
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: _primaryGreen, width: 2)),
                 hintText: 'Enter repair details...',
+                hintStyle: const TextStyle(fontFamily: 'Roboto', fontSize: 14, fontWeight: FontWeight.w500, color: Color(0xFF9E9E9E)),
+                contentPadding: const EdgeInsets.all(16),
               ),
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel', style: TextStyle(fontFamily: 'Roboto', fontSize: 15, fontWeight: FontWeight.w600, color: Color(0xFF424242)))),
           ElevatedButton(
             onPressed: () {
               if (controller.text.isNotEmpty) {
                 setState(() {
-                  selectedRepair = {
-                    'Repair': 'Custom Repair',
-                    'Price': 'To be determined',
-                    'Description': controller.text,
-                  };
-                  expandedCategoryIndex = categories.indexOf('Custom Repair');
+                  _selectedRepair = {'Repair': 'Custom Repair', 'Price': 'To be determined', 'Description': controller.text};
+                  _expandedCategoryIndex = _categories.indexOf('Custom Repair');
                 });
-                widget.onSelectionChanged(selectedRepair);
+                widget.onSelectionChanged(_selectedRepair);
                 Navigator.pop(ctx);
               }
             },
-            style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF2E5BFF)),
-            child: const Text('Select', style: TextStyle(color: Colors.white)),
+            style: ElevatedButton.styleFrom(backgroundColor: _primaryGreen, padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
+            child: const Text('Select', style: TextStyle(fontFamily: 'Roboto', fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white)),
           ),
         ],
       ),
@@ -201,21 +201,17 @@ class _RepairOptionSelectorState extends State<RepairOptionSelector> {
     return Container(
       margin: const EdgeInsets.only(top: 16),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF0FDF4),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFBBF7D0)),
-      ),
+      decoration: BoxDecoration(color: const Color(0xFFE8F5E9), borderRadius: BorderRadius.circular(12), border: Border.all(color: _primaryGreen.withOpacity(0.3))),
       child: Row(
         children: [
-          const Icon(Icons.eco, color: Color(0xFF22C55E), size: 28),
+          const Icon(Icons.eco, color: _primaryGreen, size: 28),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("Earn Green Coins", style: TextStyle(color: Color(0xFF166534), fontSize: 16, fontWeight: FontWeight.bold)),
-                Text("You will earn ${calculateGreenCoin(selectedRepair!['Price']!)} Green Coins (RM1 = 1 coin).", style: const TextStyle(color: Color(0xFF166534), fontSize: 14)),
+                const Text('Earn Green Coins', style: TextStyle(fontFamily: 'Roboto', fontSize: 16, fontWeight: FontWeight.w800, color: _primaryGreen)),
+                Text('You will earn ${_calculateGreenCoin(_selectedRepair!['Price']!)} Green Coins (RM1 = 1 coin)', style: const TextStyle(fontFamily: 'Roboto', fontSize: 14, fontWeight: FontWeight.w600, color: _primaryGreen)),
               ],
             ),
           ),
@@ -228,21 +224,13 @@ class _RepairOptionSelectorState extends State<RepairOptionSelector> {
     return Container(
       margin: const EdgeInsets.only(top: 16),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: const Color(0xFFE3F2FD),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF90CAF9)),
-      ),
+      decoration: BoxDecoration(color: _primaryGreen.withOpacity(0.1), borderRadius: BorderRadius.circular(12), border: Border.all(color: _primaryGreen.withOpacity(0.3))),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(children: [
-            Icon(Icons.build_circle, color: Color(0xFF2E5BFF)),
-            SizedBox(width: 8),
-            Text('Custom Request Selected', style: TextStyle(color: Color(0xFF2E5BFF), fontWeight: FontWeight.bold)),
-          ]),
+          Row(children: const [Icon(Icons.build_circle, color: _primaryGreen), SizedBox(width: 8), Text('Custom Request Selected', style: TextStyle(fontFamily: 'Roboto', fontSize: 15, fontWeight: FontWeight.w800, color: _primaryGreen))]),
           const SizedBox(height: 8),
-          Text(selectedRepair!['Description'] ?? '', style: const TextStyle(color: Colors.black87)),
+          Text(_selectedRepair!['Description'] ?? '', style: const TextStyle(fontFamily: 'Roboto', fontSize: 14, fontWeight: FontWeight.w500, color: Color(0xFF212121))),
         ],
       ),
     );
